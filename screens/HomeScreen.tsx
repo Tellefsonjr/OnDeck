@@ -50,14 +50,29 @@ export default function HomeScreen() {
     ))
   };
 
+  const handleDayPressed = (day) => {
+    const date = day;
+    console.log("DAY PRESSED ON HOME: ", date);
+  };
+
   return (
     <ImageBackground style={styles.container} source={require('../assets/images/bg.jpg')}>
-      <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0)', padding: 5}}>
-        <Agenda />
+      <View style={{ height: 115}}>
+        <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0)', padding: 5, height: 10}}>
+          <Agenda onDayPress={ handleDayPressed} hideKnob={true}/>
+        </View>
       </View>
 
       <View style={{ backgroundColor: 'rgba(0,0,0,0)' }}>
-        <Title style={{ fontWeight: 'bold', width: '100%', color: Colors.textLight, fontSize: 22, borderBottomWidth: 1, borderBottomColor: Colors.textLight, paddingHorizontal: 10,marginVertical: 10}}> Your Top 10: </Title>
+          <Title style={{ fontWeight: 'bold', width: '100%', color: Colors.textLight, fontSize: 22, borderBottomWidth: 1, borderBottomColor: Colors.textLight, paddingHorizontal: 10,marginVertical: 10}}> Featured companies: </Title>
+          <ScrollView style={ styles.scrollViewStyle } containerContainerStyle={ styles.cardContentContainer } horizontal={true}>
+            {
+              renderCards()
+            }
+          </ScrollView>
+      </View>
+      <View style={{ backgroundColor: 'rgba(0,0,0,0)' }}>
+        <Title style={{ fontWeight: 'bold', width: '100%', color: Colors.textLight, fontSize: 22, borderBottomWidth: 1, borderBottomColor: Colors.textLight, paddingHorizontal: 10,marginVertical: 10}}> Recommended for you: </Title>
         <ScrollView style={ styles.scrollViewStyle } containerContainerStyle={ styles.cardContentContainer } horizontal={true}>
         {
           renderCards()

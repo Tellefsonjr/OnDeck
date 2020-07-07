@@ -1,4 +1,3 @@
-import * as WebBrowser from 'expo-web-browser';
 import React, { useState } from 'react';
 import {Alert, StyleSheet, TouchableOpacity, View, Text} from 'react-native';
 import {Agenda} from 'react-native-calendars';
@@ -8,7 +7,9 @@ import { MonoText } from './StyledText';
 
 
 export default function AgendaComponent(props) {
+  console.log("PROPS", props);
   const [ items, setItems ] = useState( { } );
+
 
   function loadItems(day) {
   setTimeout(() => {
@@ -21,7 +22,8 @@ export default function AgendaComponent(props) {
         for (let j = 0; j < numItems; j++) {
           items[strTime].push({
             name: 'Item for ' + strTime + ' #' + j,
-            height: Math.max(50, Math.floor(Math.random() * 150))
+            height: Math.max(50, Math.floor(Math.random() * 150)),
+            id: Math.floor(Math.random() * 10),
           });
         }
       }
@@ -59,17 +61,41 @@ function timeToString(time) {
   const date = new Date(time);
   return date.toISOString().split('T')[0];
 }
+function dateNow(date){
+  var dateString = new Date(date.getTime() - (date.getTimezoneOffset() * 60000 ))
+                    .toISOString()
+                    .split("T")[0];
+    console.log("DATESTRING: ", dateString);
+  return(dateString);
+}
+function onDayPress(day){
+  console.log("PRESSED THE THING:::" ,day);
+  props.onDayPress(day);
+}
+const job1 = {key:'job1', color: 'blue', selectedDotColor: 'blue'};
+const job2 = {key:'job2', color: 'green'};
 
   return (
     <View style={styles.container}>
       <Agenda
         items={items}
         loadItemsForMonth={loadItems.bind(this)}
-        selected={'2017-05-16'}
+        selected={ dateNow(new Date()) }
         renderItem={renderItem.bind(this)}
         renderEmptyDate={renderEmptyDate.bind(this)}
         rowHasChanged={rowHasChanged.bind(this)}
-      // markingType={'period'}
+        onDayPress={(day)=>{ onDayPress(day) }}
+        hideKnob={props.hideKnob}
+        markedDates={{
+          '2020-07-05': {marked: true, dotColor: '#50cebb'},
+          '2020-07-06': {startingDay: true, color: '#50cebb', textColor: 'black'},
+          '2020-07-07': {color: '#70d7c7', textColor: 'black'},
+          '2020-07-08': {color: '#70d7c7', textColor: 'black', marked: true, dotColor: 'black'},
+          '2020-07-09': {color: '#70d7c7', textColor: 'black'},
+          '2020-07-10': {endingDay: true, color: '#50cebb', textColor: 'black'},
+          '2020-07-11': {marked: true, dotColor: 'rgba(218,134,36,1)'},
+        }}
+        markingType={'period'}
       // markedDates={{
       //    '2017-05-08': {textColor: '#43515c'},
       //    '2017-05-09': {textColor: '#43515c'},
