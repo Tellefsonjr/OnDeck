@@ -5,7 +5,7 @@ console.log("DATE::: ", date);
 const JOBS = [
   { id: Math.random().toString(),
     companyId: 1,
-    categories: [1, 4],
+    categories: [4, 1],
     title: "Crane Operator",
     description: "Crane Operator needed, must have ____ card. We are an up and coming construction crew working on a new hospital in Sydney. ",
     location: {
@@ -39,7 +39,7 @@ const JOBS = [
   },
   { id: Math.random().toString(),
     companyId: 2,
-    categories: [2, 5],
+    categories: [3, 5],
     title: "Delivery Driver",
     description: "Delivery Driver needed! We are a family-owned and operated bakery serving up the city's #1 meat pies. Must be fast & SAFE driver. No Jason Statham impersonators.",
     location: {

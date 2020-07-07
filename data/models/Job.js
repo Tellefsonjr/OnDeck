@@ -1,8 +1,8 @@
 class Job {
-  constructor(id, companyId, jobCategoryId, title, description, location, dates, pay,){
+  constructor(id, companyId, categories, title, description, location, dates, pay,){
     this.id = id;
     this.companyId = companyId;
-    this.jobCategoryId = jobCategoryId;
+    this.categories = categories;
     this.title = title;
     this.description = description;
     this.location = location;

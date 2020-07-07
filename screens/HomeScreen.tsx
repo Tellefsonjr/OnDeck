@@ -26,7 +26,7 @@ export default function HomeScreen() {
       <View key={index} style={styles.cardContainer}>
         <Card elevation={2} style={ styles.card }>
           <Card.Title title={job.title} subtitle="Time: 2wk+   $$" left={ (props) =>
-            <Avatar.Icon style={{ width: 28, height: 28, backgroundColor: Colors.primaryDark}} {...props} icon={ renderJobCategoryIcon(job.categories[1]) } />
+            <Avatar.Icon style={{ width: 28, height: 28, backgroundColor: Colors.primaryDark}} {...props} icon={ renderJobCategoryIcon(job.categories[0]) } />
           }
           style={{borderBottomWidth: .5, borderBottomColor: Colors.secondaryDark}} />
           <Card.Content style={ styles.cardInner}>
