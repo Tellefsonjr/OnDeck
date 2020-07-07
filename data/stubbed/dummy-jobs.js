@@ -29,6 +29,12 @@ const JOBS = [
       time_end: "5:00 PM",
       frequency: ["Mon", "Tues", "Wed", "Thurs", "Fri"],
       onCall: false,
+    },
+    pay: {
+      amount: "$40",
+      rate: "hourly",
+      estimated: false,
+      tips: false,
     }
   },
   { id: Math.random().toString(),
@@ -57,6 +63,12 @@ const JOBS = [
       time_end: "10:00 PM",
       frequency: ["Mon", "Wed", "Sat", "Sun"],
       onCall: true,
+    },
+    pay: {
+      amount: "$15",
+      rate: "hourly",
+      estimated: true,
+      tips: true,
     }
   },
 ];

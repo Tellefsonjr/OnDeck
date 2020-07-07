@@ -5,9 +5,11 @@ import * as React from 'react';
 
 import Colors from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
-import TabOneScreen from '../screens/TabOneScreen';
-import TabTwoScreen from '../screens/TabTwoScreen';
-import { BottomTabParamList, TabOneParamList, TabTwoParamList } from '../types';
+import HomeScreen from '../screens/HomeScreen';
+import BrowseScreen from '../screens/BrowseScreen';
+import EventsScreen from '../screens/EventsScreen';
+
+import { BottomTabParamList, HomeParamList, BrowseParamList } from '../types';
 
 const BottomTab = createBottomTabNavigator<BottomTabParamList>();
 
@@ -16,20 +18,27 @@ export default function BottomTabNavigator() {
 
   return (
     <BottomTab.Navigator
-      initialRouteName="TabOne"
+      initialRouteName="Home"
       tabBarOptions={{ activeTintColor: Colors[colorScheme].tint }}>
       <BottomTab.Screen
         name="Home"
-        component={TabOneNavigator}
+        component={HomeNavigator}
         options={{
           tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />,
         }}
       />
       <BottomTab.Screen
         name="Browse"
-        component={TabTwoNavigator}
+        component={Browse}
         options={{
           tabBarIcon: ({ color }) => <TabBarIcon name="magnify" color={color} />,
+        }}
+      />
+      <BottomTab.Screen
+        name="Events"
+        component={Events}
+        options={{
+          tabBarIcon: ({ color }) => <TabBarIcon name="calendar-text" color={color} />,
         }}
       />
     </BottomTab.Navigator>
@@ -44,30 +53,44 @@ function TabBarIcon(props: { name: string; color: string }) {
 
 // Each tab has its own navigation stack, you can read more about this pattern here:
 // https://reactnavigation.org/docs/tab-based-navigation#a-stack-navigator-for-each-tab
-const TabOneStack = createStackNavigator<TabOneParamList>();
+const HomeStack = createStackNavigator<HomeParamList>();
 
-function TabOneNavigator() {
+function HomeNavigator() {
   return (
-    <TabOneStack.Navigator>
-      <TabOneStack.Screen
-        name="TabOneScreen"
-        component={TabOneScreen}
-        options={{ headerTitle: 'Tab One Title' }}
+    <HomeStack.Navigator>
+      <HomeStack.Screen
+        name="HomeScreen"
+        component={HomeScreen}
+        options={{ headerTitle: 'OnDeck' }}
       />
-    </TabOneStack.Navigator>
+    </HomeStack.Navigator>
   );
 }
 
-const TabTwoStack = createStackNavigator<TabTwoParamList>();
+const BrowseStack = createStackNavigator<BrowseParamList>();
 
-function TabTwoNavigator() {
+function Browse() {
   return (
-    <TabTwoStack.Navigator>
-      <TabTwoStack.Screen
-        name="TabTwoScreen"
-        component={TabTwoScreen}
-        options={{ headerTitle: 'Tab Two Title' }}
+    <BrowseStack.Navigator>
+      <BrowseStack.Screen
+        name="BrowseScreen"
+        component={BrowseScreen}
+        options={{ headerTitle: 'Browse' }}
       />
-    </TabTwoStack.Navigator>
+    </BrowseStack.Navigator>
+  );
+}
+
+const EventsStack = createStackNavigator<EventsParamList>();
+
+function Events() {
+  return (
+    <EventsStack.Navigator>
+      <EventsStack.Screen
+        name="EventsScreen"
+        component={EventsScreen}
+        options={{ headerTitle: 'Events' }}
+      />
+    </EventsStack.Navigator>
   );
 }
