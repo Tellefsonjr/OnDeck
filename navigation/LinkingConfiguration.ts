@@ -9,11 +9,21 @@ export default {
           Home: {
             screens: {
               HomeScreen: 'home',
+
             },
           },
           Browse: {
             screens: {
               BrowseScreen: 'browse',
+              JobDetailScreen: {
+                path: 'jobs/:id',
+                parse: {
+                  id: (id) => id,
+                },
+                stringify: {
+                  id: (id) => id,
+                }
+              }
             },
           },
           Events: {

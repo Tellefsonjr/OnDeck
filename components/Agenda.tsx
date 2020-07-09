@@ -79,7 +79,6 @@ const job2 = {key:'job2', color: 'green'};
     <View style={styles.container}>
       <Agenda
         items={items}
-        loadItemsForMonth={loadItems.bind(this)}
         selected={ dateNow(new Date()) }
         renderItem={renderItem.bind(this)}
         renderEmptyDate={renderEmptyDate.bind(this)}

@@ -7,6 +7,7 @@ import Colors from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
 import HomeScreen from '../screens/HomeScreen';
 import BrowseScreen from '../screens/BrowseScreen';
+import JobDetailScreen from '../screens/JobDetailScreen';
 import EventsScreen from '../screens/EventsScreen';
 
 import { BottomTabParamList, HomeParamList, BrowseParamList } from '../types';
@@ -63,6 +64,11 @@ function HomeNavigator() {
         component={HomeScreen}
         options={{ headerTitle: 'OnDeck' }}
       />
+      <HomeStack.Screen
+        name="JobDetailScreen"
+        component={JobDetailScreen}
+        options={({ route }) => ({ title: route.params.title })}
+      />
     </HomeStack.Navigator>
   );
 }
@@ -76,6 +82,11 @@ function Browse() {
         name="BrowseScreen"
         component={BrowseScreen}
         options={{ headerTitle: 'Browse' }}
+      />
+      <BrowseStack.Screen
+        name="JobDetailScreen"
+        component={JobDetailScreen}
+        options={{ headerTitle: 'OnDeck' }}
       />
     </BrowseStack.Navigator>
   );

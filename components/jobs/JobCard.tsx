@@ -20,7 +20,7 @@ const JobCard: React.FC<Props> = (props) => {
   };
   return (
     <TouchableRipple
-      onPress={() => props.onPress(props.job.id) }
+      onPress={() => props.onPress(props.job) }
       >
       <View style={styles.cardContainer}>
       <Card elevation={2} style={ styles.card }>

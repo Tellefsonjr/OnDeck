@@ -14,7 +14,7 @@ import JobCard from '../components/jobs/JobCard';
 import JobDetailModal from '../components/jobs/JobDetailModal';
 
 
-export default function HomeScreen() {
+export default function HomeScreen(props) {
   const [jobModalVisible, setJobModalVisible] = React.useState(false);
   const [selectedJob, setSelectedJob] = React.useState(null);
   const dateToday = new Date();
@@ -28,7 +28,7 @@ export default function HomeScreen() {
   function renderJobCards(){
     return(JOBS.map((job, index) =>
       <View key={index} style={{ backgroundColor: 'rgba(0,0,0,0)',}}>
-        <JobCard job={job} onPress={ showJobModal }/>
+        <JobCard job={job} onPress={ handleJobPress }/>
       </View>
     ))
   };
@@ -37,7 +37,9 @@ export default function HomeScreen() {
     const date = day;
     console.log("DAY PRESSED ON HOME: ", date);
   };
-
+  const handleJobPress = (job) => {
+    props.navigation.navigate("JobDetailScreen", { id: job, title: job.title});
+  };
   return (
     <ImageBackground style={styles.container} source={require('../assets/images/bg.jpg')}>
       <View style={{ height: 115}}>
