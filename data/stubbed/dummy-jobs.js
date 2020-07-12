@@ -71,6 +71,40 @@ const JOBS = [
       tips: true,
     }
   },
+  { id: Math.random().toString(),
+    companyId: 2,
+    categories: [3, 5],
+    title: "Line Cook",
+    description: "Line cook needed! We are a family-owned and operated bakery serving up the city's #1 meat pies. Must be .",
+    location: {
+      address: {
+        line1: "9999 Roo Lane",
+        line2: "Bldg. 2",
+        zipCode: "",
+        city: "Perth",
+        state: "",
+        country: "Australia",
+      },
+      coordinates: {
+        lat: "31.9505° S",
+        long: "115.8605° E",
+      }
+    },
+    dates: {
+      date_start: date.toString(),
+      date_end: date.setDate(date.getDate() + 30),
+      time_start: "5:00 PM",
+      time_end: "10:00 PM",
+      frequency: ["Mon", "Wed", "Sat", "Sun"],
+      onCall: true,
+    },
+    pay: {
+      amount: "$15",
+      rate: "hourly",
+      estimated: true,
+      tips: true,
+    }
+  },
 ];
 
 export default JOBS;
