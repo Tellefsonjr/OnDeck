@@ -1,21 +1,57 @@
 import * as React from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, ScrollView, View, Text } from 'react-native';
+import { Button } from 'react-native-paper';
 import * as _ from 'lodash';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Video } from 'expo-av';
 
 import EditScreenInfo from '../components/EditScreenInfo';
-import { Text, View } from '../components/Themed';
 
 
 import JOBS from '../data/stubbed/dummy-jobs';
 
 export default function JobDetailScreen( route, navigation) {
   const job = _.find(JOBS, { id: route.route.params.id});
+  console.log("JOB Detail: ", job);
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>JobDetail Screen</Text>
-      <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      <EditScreenInfo path="/screens/BrowseScreen.tsx" />
+      <View style={ styles.headerContainer } >
+        <Text style={styles.title}> Company Name </Text>
+        <View style={ styles.horizontalList}>
+          <Text style={styles.subTitle}> {job.title} </Text>
+          <Text style={styles.subTitle}> Time info </Text>
+          <Text style={styles.subTitle}> {job.pay.amount}/{job.pay.rate == 'hourly'? 'hr': job.pay.rate } </Text>
+        </View>
+        <View style={ styles.horizontalList }>
+          <MaterialCommunityIcons name="star" size={20} />
+          <MaterialCommunityIcons name="star" size={20} />
+          <MaterialCommunityIcons name="star" size={20} />
+          <MaterialCommunityIcons name="star" size={20} />
+          <MaterialCommunityIcons name="star-outline" size={20} />
+        </View>
+
+      </View>
+      <View style={{ flex: 1, backgroundColor: 'transparent', marginTop: 5, marginBottom: 20}}>
+        <Video
+          source={{ uri: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4' }}
+          rate={1.0}
+          volume={1.0}
+          isMuted={false}
+          useNativeControls={true}
+          resizeMode="contain"
+          style={{ width: "100%", height: "100%" }} />
+      </View>
+
+      <View style={ styles.descriptionContainer }>
+        <Text style={ styles.title }> Description: </Text>
+        <Text> { job.description } </Text>
+      </View>
+      <View style={{ flexDirection: 'row', justifyContent: 'flex-end', padding: 10}}>
+        <Button icon="account-check" mode="contained">
+          Apply
+        </Button>
+      </View>
     </View>
   );
 };
@@ -35,16 +71,34 @@ JobDetailScreen.navigationOptions = (navData) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    backgroundColor: 'transparent',
+  },
+  headerContainer: {
     alignItems: 'center',
-    justifyContent: 'center',
+    padding: 10,
+  },
+  horizontalList: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    marginVertical: 10,
   },
   title: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: 'bold',
+    marginVertical: 2,
   },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: '80%',
+  subTitle: {
+    fontSize: 18,
+    fontWeight: 'normal',
+    color: 'rgba(97,97,97,1)'
   },
+  descriptionContainer: {
+    flex: 1,
+    marginTop: 10,
+    padding: 10,
+  }
+
 });

@@ -1,15 +1,29 @@
 import * as React from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, ScrollView, Text, View } from 'react-native';
 
 import EditScreenInfo from '../components/EditScreenInfo';
-import { Text, View } from '../components/Themed';
+import JobListItem from '../components/jobs/JobListItem';
 
-export default function BrowseScreen() {
+import JOBS from '../data/stubbed/dummy-jobs';
+
+export default function BrowseScreen(props) {
+  const handleJobPress = (job) => {
+    props.navigation.navigate("JobDetailScreen", { id: job.id, title: job.title});
+  };
+  const renderJobsList = () => {
+    return( JOBS.map( (job, i) => {
+      return(
+        <View key={i}>
+          <JobListItem job={job} onPress={ handleJobPress } />
+        </View>
+      )
+    }));
+  };
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Tab Two</Text>
-      <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      <EditScreenInfo path="/screens/BrowseScreen.tsx" />
+      <ScrollView contentContainerStyle={{  }}>
+        { renderJobsList() }
+      </ScrollView>
     </View>
   );
 }
@@ -17,8 +31,8 @@ export default function BrowseScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: 'rgba(0,0,0,0)'
   },
   title: {
     fontSize: 20,

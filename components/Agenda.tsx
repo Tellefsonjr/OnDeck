@@ -12,6 +12,7 @@ export default function AgendaComponent(props) {
 
 
   function loadItems(day) {
+    console.log("LoadingITems: ", day);
   setTimeout(() => {
     for (let i = -15; i < 85; i++) {
       const time = day.timestamp + i * 24 * 60 * 60 * 1000;
@@ -85,6 +86,7 @@ const job2 = {key:'job2', color: 'green'};
         rowHasChanged={rowHasChanged.bind(this)}
         onDayPress={(day)=>{ onDayPress(day) }}
         hideKnob={props.hideKnob}
+        loadItemsForMonth={loadItems.bind(this)}
         markedDates={{
           '2020-07-05': {marked: true, dotColor: '#50cebb'},
           '2020-07-06': {startingDay: true, color: '#50cebb', textColor: 'black'},
@@ -92,7 +94,7 @@ const job2 = {key:'job2', color: 'green'};
           '2020-07-08': {color: '#70d7c7', textColor: 'black', marked: true, dotColor: 'black'},
           '2020-07-09': {color: '#70d7c7', textColor: 'black'},
           '2020-07-10': {endingDay: true, color: '#50cebb', textColor: 'black'},
-          '2020-07-11': {marked: true, dotColor: 'rgba(218,134,36,1)'},
+          '2020-07-11': {marked: true, dotColor: 'rgba(218,134,36,1)', textColor: 'black'},
         }}
         markingType={'period'}
       // markedDates={{

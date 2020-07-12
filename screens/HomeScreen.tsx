@@ -38,7 +38,8 @@ export default function HomeScreen(props) {
     console.log("DAY PRESSED ON HOME: ", date);
   };
   const handleJobPress = (job) => {
-    props.navigation.navigate("JobDetailScreen", { id: job, title: job.title});
+    console.log("PRESSED: ", job.id);
+    props.navigation.navigate("JobDetailScreen", { id: job.id, title: job.title});
   };
   return (
     <ImageBackground style={styles.container} source={require('../assets/images/bg.jpg')}>
