@@ -11,7 +11,6 @@ import CATEGORIES from '../data/stubbed/dummy-job-categories';
 
 import Agenda from '../components/Agenda';
 import JobCard from '../components/jobs/JobCard';
-import JobDetailModal from '../components/jobs/JobDetailModal';
 
 
 export default function HomeScreen(props) {

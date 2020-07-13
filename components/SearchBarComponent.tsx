@@ -7,7 +7,7 @@ import { MonoText } from './StyledText';
 
 
 export default function SearchBarComponent(props) {
-  const [ searchQuery, setSearchQuery ] = useState('');
+  const [ searchQuery, setSearchQuery ] = useState(props.value);
 
 
   function onChangeSearch(query) {
