@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, ScrollView, View, Slider, Picker } from 'react-native';
+import { StyleSheet, ScrollView, View, Slider, Picker, Platform } from 'react-native';
 import { Avatar, Button, Title, Paragraph, Modal, TouchableRipple, TextInput, Checkbox} from 'react-native-paper';
 import Colors from '../../constants/Colors.ts';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
