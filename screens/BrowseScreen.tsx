@@ -19,6 +19,7 @@ export default function BrowseScreen(props) {
     categories: [],
     location: '',
     radius: '',
+    pay: 0,
   });
   const [ filterModalVisible, setFilterModalVisible ] = useState(false);
 
