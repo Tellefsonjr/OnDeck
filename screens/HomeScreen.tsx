@@ -7,6 +7,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import * as _ from 'lodash';
 
 import JOBS from '../data/stubbed/dummy-jobs';
+import COMPANIES from '../data/stubbed/dummy-companies';
 import CATEGORIES from '../data/stubbed/dummy-job-categories';
 
 import Agenda from '../components/Agenda';
@@ -27,7 +28,7 @@ export default function HomeScreen(props) {
   function renderJobCards(){
     return(JOBS.map((job, index) =>
       <View key={index} style={{ backgroundColor: 'rgba(0,0,0,0)',}}>
-        <JobCard job={job} onPress={ handleJobPress }/>
+        <JobCard job={job} company={ _.find(COMPANIES, { id: job.companyId }) } onPress={ handleJobPress }/>
       </View>
     ))
   };

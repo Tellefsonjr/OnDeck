@@ -9,6 +9,7 @@ import JobListItem from '../components/jobs/JobListItem';
 import JobFilterModal from '../components/jobs/JobFilterModal';
 
 import JOBS from '../data/stubbed/dummy-jobs';
+import COMPANIES from '../data/stubbed/dummy-companies';
 import CATEGORIES from '../data/stubbed/dummy-job-categories';
 
 export default function BrowseScreen(props) {
@@ -20,6 +21,7 @@ export default function BrowseScreen(props) {
     location: '',
     radius: '',
     pay: 0,
+    payRate: 'hr',
   });
   const [ filterModalVisible, setFilterModalVisible ] = useState(false);
 
@@ -77,7 +79,7 @@ export default function BrowseScreen(props) {
     return( filteredJobs.map( (job, i) => {
       return(
         <View key={i}>
-          <JobListItem job={job} onPress={ handleJobPress } />
+          <JobListItem job={job} company={ _.find(COMPANIES, { id: job.companyId }) } onPress={ handleJobPress } />
         </View>
       )
     }));
