@@ -12,7 +12,7 @@ export interface Props {
 }
 
 const JobCard: React.FC<Props> = (props) => {
-
+  console.log("COMPANY for: ", props.job.title, props.company);
   function renderJobCategoryIcon(categoryId){
     return(
       _.find(CATEGORIES, { id: categoryId}).icon
@@ -24,14 +24,14 @@ const JobCard: React.FC<Props> = (props) => {
       >
       <View style={styles.cardContainer}>
       <Card elevation={2} style={ styles.card }>
-        <Card.Title title={props.job.title} subtitle="Time: 2wk+   $$" left={ (p) =>
+        <Card.Title title={_.truncate(props.job.title, { 'length': 18})} subtitle="Time: 2wk+   $$" left={ (p) =>
           <Avatar.Icon style={{ width: 28, height: 28, backgroundColor: Colors.primaryDark}} {...p} icon={ renderJobCategoryIcon(props.job.categories[0]) } />
         }
         style={{borderBottomWidth: .5, borderBottomColor: Colors.secondaryDark}} />
         <Card.Content style={ styles.cardInner}>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 5}}>
+        <View style={{ flexDirection: 'row', marginTop: 5}}>
           <Avatar.Image size={28} source={{ uri: 'https://picsum.photos/'+((Math.floor(Math.random(0,1000)*1000)).toString()) }} />
-          <Title>Company Name</Title>
+          <Title style={{ marginLeft: 28}}>{ props.company.name }</Title>
         </View>
         <View style={{ flexDirection: 'row',}}>
           <Paragraph style={{flex: 1, flexWrap: 'wrap'}}>{_.truncate(props.job.description, { 'length': 29})}</Paragraph>

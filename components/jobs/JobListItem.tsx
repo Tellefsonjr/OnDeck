@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, ScrollView, ImageBackground, View } from 'react-native';
+import { StyleSheet, ScrollView, ImageBackground, View, Text } from 'react-native';
 import { Avatar, Button, Card, Title, Paragraph, Surface, TouchableRipple, } from 'react-native-paper';
 import Colors from '../../constants/Colors.ts';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -24,18 +24,30 @@ const JobListItem: React.FC<Props> = (props) => {
       >
       <View style={styles.cardContainer}>
       <Card elevation={2} style={ styles.card }>
-        <Card.Title title={props.job.title} subtitle="Time: 2wk+   $$" left={ (p) =>
-          <Avatar.Icon style={{ width: 28, height: 28, backgroundColor: Colors.primaryDark}} {...p} icon={ renderJobCategoryIcon(props.job.categories[0]) } />
-        }
-        style={{borderBottomWidth: .5, borderBottomColor: Colors.secondaryDark}} />
+        <View style={{ borderBottomWidth: .5, borderBottomColor: Colors.secondaryDark }}>
+          <Card.Title title={props.job.title} subtitle={props.company.name}
+            left={ (p) =>
+              <Avatar.Image
+                size={40} {...p}
+                source={{ uri: props.company.icon }}
+                style={{ marginTop: '60%'}}
+                />
+            }
+            style={{ paddingBottom: 0}} />
+           <View style={{ flexDirection: 'row', marginLeft: 70, marginTop: -10, paddingBottom: 2}}>
+             <MaterialCommunityIcons name="star" size={18} />
+             <MaterialCommunityIcons name="star" size={18} />
+             <MaterialCommunityIcons name="star" size={18} />
+             <MaterialCommunityIcons name="star" size={18} />
+             <MaterialCommunityIcons name="star-outline" size={18} />
+           </View>
+        </View>
         <Card.Content style={ styles.cardInner}>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 5}}>
-          <Avatar.Image size={28} source={{ uri: 'https://picsum.photos/'+((Math.floor(Math.random(0,1000)*1000)).toString()) }} />
-          <Title>Company Name</Title>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-around', marginTop: 5}}>
+          <Text style={ styles.detailText }> { props.job.pay.amount } { props.job.pay.rate} </Text>
+          <Text style={ styles.detailText }> { props.company.locations[props.job.location].address.city }, { props.company.locations[props.job.location].address.state } { props.job.location.country } </Text>
         </View>
-        <View style={{ flexDirection: 'row',}}>
-          <Paragraph style={{flex: 1, flexWrap: 'wrap'}}>{_.truncate(props.job.description, { 'length': 29})}</Paragraph>
-        </View>
+
         </Card.Content>
 
         { // ~~~ UNCOMMENT TO SHOW BUTTONS ~~~
@@ -61,11 +73,14 @@ const styles = StyleSheet.create({
   },
   card: {
     width: '100%',
-    paddingHorizontal: 10,
   },
   cardInner: {
-    width: '100%'
+    width: '100%',
+    paddingBottom: 5,
   },
+  detailText: {
+    color: 'rgba(66,66,66,1)',
+  }
 });
 
 export default JobListItem;
