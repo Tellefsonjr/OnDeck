@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import {Alert, StyleSheet, TouchableOpacity, View, Text} from 'react-native';
+import { Button, Avatar } from 'react-native-paper';
 import {Agenda} from 'react-native-calendars';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 import Colors from '../constants/Colors';
 import { MonoText } from './StyledText';
@@ -14,12 +16,12 @@ export default function AgendaComponent(props) {
   function loadItems(day) {
     console.log("LoadingITems: ", day);
   setTimeout(() => {
-    for (let i = -15; i < 85; i++) {
+    for (let i = -15; i < 21; i++) {
       const time = day.timestamp + i * 24 * 60 * 60 * 1000;
       const strTime = timeToString(time);
       if (!items[strTime]) {
         items[strTime] = [];
-        const numItems = Math.floor(Math.random() * 3 + 1);
+        const numItems = Math.floor(Math.random() * 2 + 1);
         for (let j = 0; j < numItems; j++) {
           items[strTime].push({
             name: 'Item for ' + strTime + ' #' + j,
@@ -37,12 +39,29 @@ export default function AgendaComponent(props) {
 
 function renderItem(item) {
   return (
-    <TouchableOpacity
-      style={[styles.item, { height: item.height }]}
-      onPress={() => Alert.alert(item.name)}
-    >
-      <Text>{item.name}</Text>
-    </TouchableOpacity>
+    <View style={ styles.item }>
+      <View style={ styles.eventItemTop }>
+        <Text style={{ fontWeight: 'bold'}}>10:00a - 2:00p</Text>
+        <Avatar.Image size={28} source={{ uri: 'https://picsum.photos/'+((Math.floor(Math.random(0,1000)*1000)).toString()) }} />
+      </View>
+      <View style={ styles.eventTitleContainer }>
+        <View style={{ flexDirection: 'row', alignItems: 'center'}}>
+          <MaterialCommunityIcons name="human-greeting" size={18} style={{ marginRight: 5, }}/>
+          <Text>Customer Service Rep</Text>
+        </View>
+        <View style={{ flexDirection: 'row', alignItems: 'center'}}>
+          <Text>@Planet Books</Text>
+        </View>
+      </View>
+      <View style={ styles.buttonContainer }>
+        <Button icon="phone" color='rgba(40,140,31,1)' onPress={() => console.log("Pressed Phone")} mode='contained' style={[ styles.eventButton, { borderTopLeftRadius: 5, borderBottomLeftRadius: 5, } ]} labelStyle={ styles.eventButtonInner }   />
+        <Button icon="message-text-outline" color='rgba(242,156,85,1)' onPress={() => console.log("Pressed Message")} mode='contained' style={ styles.eventButton } labelStyle={ styles.eventButtonInner } />
+        <Button icon="information-outline" color='rgba(77,177,249,1)' onPress={() => console.log("Pressed Info")} mode='contained' style={ styles.eventButton } labelStyle={ styles.eventButtonInner } />
+        <Button icon="map-outline" color='rgba(85,116,242,1)' onPress={() => console.log("Pressed Navigation")} mode='contained' style={ styles.eventButton } labelStyle={ styles.eventButtonInner }  />
+        <Button icon="cancel" color='rgba(221,104,46,1)' onPress={() => console.log("Pressed Phone")} mode='contained' style={[styles.eventButton, { borderTopRightRadius: 5, borderBottomRightRadius: 5, } ]} labelStyle={ styles.eventButtonInner }   />
+      </View>
+    </View>
+
   );
 }
 
@@ -121,17 +140,51 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  eventItemContainer: {
+  },
+  buttonContainer:{
+    flexDirection: 'row',
+    width: '100%',
+    justifyContent: 'center',
+  },
+  eventButton: {
+    flex: 1,
+    borderRadius: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginHorizontal: 1,
+    width: '16%',
+    paddingLeft: 5,
+  },
+  eventButtonInner: {
+    alignSelf: 'center',
+    marginLeft: '15%',
+    fontSize: 22,
+    color: 'white',
+  },
+  eventItemTop:{
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  eventTitleContainer:{
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    padding: 12,
+  },
   item: {
     backgroundColor: 'white',
     flex: 1,
     borderRadius: 5,
     padding: 10,
     marginRight: 10,
-    marginTop: 17
+    marginVertical: 10
   },
   emptyDate: {
     height: 15,
     flex:1,
     paddingTop: 30
-  }
+  },
+
 });
