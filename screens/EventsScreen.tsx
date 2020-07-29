@@ -1,12 +1,11 @@
 import * as React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
-import EditScreenInfo from '../components/EditScreenInfo';
 import Agenda from '../components/Agenda';
 
 
 export default function EventsScreen() {
-  const handleDayPressed = (day) => {
+  const handleDayPressed = (day: String) => {
     console.log("EventsScreen pressed: ", day);
   };
   return (

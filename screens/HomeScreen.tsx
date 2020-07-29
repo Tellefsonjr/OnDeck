@@ -1,36 +1,67 @@
-import * as React from 'react';
-import { StyleSheet, ScrollView, ImageBackground } from 'react-native';
-import { Avatar, Button, Card, Title, Paragraph, Surface, TouchableRipple, Provider, Portal } from 'react-native-paper';
-import Colors from '../constants/Colors.ts';
-import { Text, View, } from '../components/Themed';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import * as _ from 'lodash';
+import * as React from "react";
+import {
+  StyleSheet,
+  ScrollView,
+  ImageBackground,
+  TouchableHighlight,
+} from "react-native";
+import {
+  Avatar,
+  Button,
+  Card,
+  Title,
+  Paragraph,
+  Surface,
+  Provider,
+  Portal,
+} from "react-native-paper";
+import Colors from "../constants/Colors";
+import { Text, View } from "../components/Themed";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import * as _ from "lodash";
 
-import JOBS from '../data/stubbed/dummy-jobs';
-import COMPANIES from '../data/stubbed/dummy-companies';
-import CATEGORIES from '../data/stubbed/dummy-job-categories';
+import JOBS from "../data/stubbed/dummy-jobs";
+import COMPANIES from "../data/stubbed/dummy-companies";
+import CATEGORIES from "../data/stubbed/dummy-job-categories";
 
-import Agenda from '../components/Agenda';
-import JobCard from '../components/jobs/JobCard';
+import Agenda from "../components/Agenda";
+import JobListItem from "../components/jobs/JobListItem";
+import JobFilterModal from "../components/jobs/JobFilterModal";
 
-
-export default function HomeScreen(props) {
+export default function HomeScreen(props: any) {
+  const [filteredJobs, setFilteredJobs] = React.useState(JOBS);
   const [jobModalVisible, setJobModalVisible] = React.useState(false);
   const [selectedJob, setSelectedJob] = React.useState(null);
+  const [filters, setFilters] = React.useState({
+    search: "",
+    categories: [],
+    location: "",
+    radius: "",
+    pay: 0,
+    payRate: "hr",
+  });
+  const [ filterModalVisible, setFilterModalVisible ] = React.useState(false);
+
   const dateToday = new Date();
 
   const showJobModal = (jobId) => {
     setJobModalVisible(true);
     setSelectedJob(_.find(JOBS, { id: jobId }));
     console.log("TOGGLED JOB MODAL", jobModalVisible, selectedJob);
-  }
+  };
 
-  function renderJobCards(){
-    return(JOBS.map((job, index) =>
-      <View key={index} style={{ backgroundColor: 'rgba(0,0,0,0)',}}>
-        <JobCard job={job} company={ _.find(COMPANIES, { id: job.companyId }) } onPress={ handleJobPress }/>
-      </View>
-    ))
+  const renderJobsList = () => {
+    return filteredJobs.map((job, i) => {
+      return (
+        <View key={i} style={{ backgroundColor: "transparent" }}>
+          <JobListItem
+            job={job}
+            company={_.find(COMPANIES, { id: job.companyId })}
+            onPress={handleJobPress}
+          />
+        </View>
+      );
+    });
   };
 
   const handleDayPressed = (day) => {
@@ -39,38 +70,118 @@ export default function HomeScreen(props) {
   };
   const handleJobPress = (job) => {
     console.log("PRESSED: ", job.id);
-    props.navigation.navigate("JobDetailScreen", { id: job.id, title: job.title});
+    props.navigation.navigate("JobDetailScreen", {
+      id: job.id,
+      title: job.title,
+    });
+  };
+  const filterJobs = ( filters ) => {
+    // There has GOT to be a better way to filter, TO DO: revisit this ungly code.
+    var newJobs = JOBS;
+    console.log("Search Count: ", _.filter(JOBS, function(j) { _.includes(j.title, filters.search)}).length);
+    console.log("Category Matched: ", _.filter(JOBS, function(j){ _.includes(j.categories.some((e) => filters.categories.includes(e)))}));
+    if( filters.search == '' && filters.categories.length == 0 ){
+      console.log("First");
+      newJobs = JOBS;
+    } else if ( filters.search != '' && filters.categories.length == 0 ) {
+      console.log("Second");
+      newJobs = _.filter(JOBS, function(item){
+        return item.title.indexOf(filters.search) > -1;
+      })
+    } else if ( filters.search == '' &&filters.categories.length > 0 ) {
+      console.log("THIRD");
+      newJobs = _.filter(newJobs, function(item){
+        return item.categories.some((e) => filters.categories.includes(e))
+      });
+    } else if ( filters.search != '' && filters.categories.length > 0 ) {
+      console.log("FOURTH");
+      newJobs = _.filter(newJobs, function(item){
+        return( _.includes(item.title, filters.search) && item.categories.some((e) => filters.categories.includes(e)));
+      })
+    };
+    console.log("FILTERS:::: ", filters.search, filters.search == '', filters.categories.length == 0, filters.categories);
+    setFilteredJobs( newJobs );
+  };
+  const handleFilterSubmit = (filters) => {
+    setFilters(filters);
+    filterJobs(filters);
   };
   return (
-    <ImageBackground style={styles.container} source={require('../assets/images/bg.jpg')}>
-      <View style={{ height: 115}}>
-        <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0)', padding: 5, height: 10}}>
-          <Agenda onDayPress={ handleDayPressed} hideKnob={true}/>
+    <ImageBackground
+      style={styles.container}
+      source={require("../assets/images/bg.jpg")}
+    >
+      <View style={{ flex: 1, backgroundColor: "transparent" }}>
+        {/* Placeholder for 'emergency hireds' */}
+      </View>
+
+      <View style={{ flex: 1.5 }}>
+        <View
+          style={{
+            flex: 1,
+            height: 115,
+            backgroundColor: "rgba(0,0,0,0)",
+            padding: 5,
+            height: 10,
+          }}
+        >
+          <Agenda onDayPress={handleDayPressed} hideKnob={true} />
         </View>
       </View>
 
-      <View style={{ backgroundColor: 'rgba(0,0,0,0)' }}>
-          <Title style={{ fontWeight: 'bold', width: '100%', color: Colors.textLight, fontSize: 22, borderBottomWidth: 1, borderBottomColor: Colors.textLight, paddingHorizontal: 10,marginVertical: 10}}> Featured companies: </Title>
-          <ScrollView style={ styles.scrollViewStyle } containerContainerStyle={ styles.cardContentContainer } horizontal={true}>
-            {
-              renderJobCards()
-            }
-          </ScrollView>
-      </View>
-      <View style={{ backgroundColor: 'rgba(0,0,0,0)' }}>
-        <Title style={{ fontWeight: 'bold', width: '100%', color: Colors.textLight, fontSize: 22, borderBottomWidth: 1, borderBottomColor: Colors.textLight, paddingHorizontal: 10,marginVertical: 10}}> Recommended for you: </Title>
-        <ScrollView style={ styles.scrollViewStyle } containerContainerStyle={ styles.cardContentContainer } horizontal={true}>
-        {
-          renderJobCards()
-        }
+      <View style={{ backgroundColor: "rgba(0,0,0,0)", flex: 6 }}>
+        <View
+          style={{
+            backgroundColor: "transparent",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            borderBottomWidth: 1,
+            borderBottomColor: Colors.textLight,
+            paddingHorizontal: 15,
+            marginVertical: 10,
+          }}
+        >
+          <Title
+            style={{
+              fontWeight: "bold",
+              fontSize: 22,
+              color: Colors.textLight,
+            }}
+          >
+            {" "}
+            Recommended for you:{" "}
+          </Title>
+          <TouchableHighlight onPress={() => setFilterModalVisible(true)}>
+            <MaterialCommunityIcons
+              name="filter"
+              size={28}
+              color={Colors.textLight}
+            />
+          </TouchableHighlight>
+        </View>
+
+        <ScrollView
+          style={styles.scrollViewStyle}
+          containerContainerStyle={styles.cardContentContainer}
+        >
+          {renderJobsList()}
         </ScrollView>
       </View>
-      { selectedJob && selectedJob!=null?
-            <JobDetailModal job={selectedJob} visible={jobModalVisible} dismissModal={() => setJobModalVisible(false)}/>
-        :
-        null
-
-      }
+      {selectedJob && selectedJob != null ? (
+        <JobDetailModal
+          job={selectedJob}
+          visible={jobModalVisible}
+          dismissModal={() => setJobModalVisible(false)}
+        />
+      ) : null}
+      {filterModalVisible ? (
+        <JobFilterModal
+          filters={filters}
+          visible={filterModalVisible}
+          dismissModal={() => setFilterModalVisible(false)}
+          handleSubmit={handleFilterSubmit}
+        />
+      ) : null}
     </ImageBackground>
   );
 }
@@ -78,29 +189,30 @@ export default function HomeScreen(props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center'
-
+    justifyContent: "center",
   },
   scrollViewStyle: {
-    backgroundColor: 'rgba(0,0,0,0)',
-
+    backgroundColor: "transparent",
   },
   cardContentContainer: {
-    width: '100%',
-    flexDirection: 'row',
+    flex: 1,
+    width: "100%",
+    flexDirection: "row",
     marginHorizontal: 10,
-    justifyContent: 'space-around'
+    paddingHorizontal: 15,
+    justifyContent: "space-around",
+    backgroundColor: "transparent",
   },
   separator: {
-   width: 5,
-   backgroundColor: 'rgba(0,0,0,0.5)'
+    width: 5,
+    backgroundColor: "rgba(0,0,0,0.5)",
   },
   surface: {
-    width: '40%',
+    width: "40%",
     height: 40,
     marginVertical: 5,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     elevation: 4,
   },
 });

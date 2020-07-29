@@ -31,9 +31,8 @@ export default function BrowseScreen(props) {
   const handleChangeSearch = ( query ) => {
     console.log("QUERY CHANGED: ", query);
     const newFilters = {
+      ...filters,
       search: query,
-      categories: filters.categories,
-      location: filters.location,
     }
     setFilters(newFilters);
     filterJobs(newFilters);
@@ -42,7 +41,7 @@ export default function BrowseScreen(props) {
     const newCategories = filters.categories.includes(categoryId)?
       _.without(filters.categories, categoryId) : [...filters.categories, categoryId];
     const newFilters = {
-      search: filters.search,
+      ...filters,
       categories: newCategories,
     };
     setFilters( newFilters );

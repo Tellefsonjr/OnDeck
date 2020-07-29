@@ -33,7 +33,7 @@ export default function LoginScreen(props) {
         }
       ).start(() => {
         newValue = toValue == 0? 1 : 0;
-        console.log("Newvalue: ", Platform.OS, newValue);
+        //console.log("Newvalue: ", Platform.OS, newValue);
         newValue == 1? setNextRotation((Math.floor(Math.random() * 30 ) + 20)) : setCurrentRotation(-(Math.floor(Math.random() * 30 ) + 20));
         // console.log("Finished Animation", toValue, currentRotation, nextRotation);
         animate(newValue);
@@ -61,11 +61,11 @@ export default function LoginScreen(props) {
             style={ styles.wave }
             H={ 300 }
             waveParams={[
-                {A: 60, T: 600, fill: 'rgba(98,194,255,.8)'},
-                {A: 50, T: 540, fill: 'rgba(0,135,221,.8)'},
-                {A: 45, T: 500, fill: 'rgba(3,102,163,.7)'},
+                {A: 50, T: 600, fill: 'rgba(98,194,255,.8)'},
+                {A: 60, T: 540, fill: 'rgba(0,135,221,.8)'},
+                {A: 70, T: 500, fill: 'rgba(3,102,163,.7)'},
             ]}
-            speed={10000}
+            speed={12000}
             animated={true}
         />
       </View>
