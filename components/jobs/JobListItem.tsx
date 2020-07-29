@@ -19,7 +19,9 @@ const JobListItem: React.FC<Props> = (props) => {
     )
   };
   return (
+    <View style={{ backgroundColor: 'rgba(0,0,0,0)'}}>
     <TouchableRipple
+      style={{ backgroundColor: 'rgba(0,0,0,0)'}}
       onPress={() => props.onPress(props.job) }
       >
       <View style={styles.cardContainer}>
@@ -34,12 +36,13 @@ const JobListItem: React.FC<Props> = (props) => {
                 />
             }
             style={{ paddingBottom: 0}} />
-           <View style={{ flexDirection: 'row', marginLeft: 70, marginTop: -10, paddingBottom: 2}}>
+           <View style={{ flexDirection: 'row', marginLeft: 70, marginTop: -10, paddingBottom: 2, alignItems: 'center'}}>
              <MaterialCommunityIcons name="star" size={18} />
              <MaterialCommunityIcons name="star" size={18} />
              <MaterialCommunityIcons name="star" size={18} />
              <MaterialCommunityIcons name="star" size={18} />
              <MaterialCommunityIcons name="star-outline" size={18} />
+             <Text>4.0</Text>
            </View>
         </View>
         <Card.Content style={ styles.cardInner}>
@@ -61,6 +64,7 @@ const JobListItem: React.FC<Props> = (props) => {
       <View style = { styles.separator }/>
       </View>
     </TouchableRipple>
+    </View>
   );
 }
 

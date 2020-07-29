@@ -33,6 +33,7 @@ export default function LoginScreen(props) {
         }
       ).start(() => {
         newValue = toValue == 0? 1 : 0;
+        //console.log("Newvalue: ", Platform.OS, newValue);
         newValue == 1? setNextRotation((Math.floor(Math.random() * 30 ) + 20)) : setCurrentRotation(-(Math.floor(Math.random() * 30 ) + 20));
         // console.log("Finished Animation", toValue, currentRotation, nextRotation);
         animate(newValue);
@@ -52,7 +53,7 @@ export default function LoginScreen(props) {
       <View style={ styles.logoNameContainer }>
         <Text style={ styles.logoName }>OnDeck</Text>
       </View>
-      <Animated.View style={ [styles.logoContainer, { transform: [{ rotate: spin}] }] }>
+      <Animated.View style={ [styles.logoContainer, { transform: [{ rotate: spin}] }, {perspective: 1000}] }>
         <Logo width={250} height={250} fill={'#fff'} />
       </Animated.View>
 
@@ -60,33 +61,32 @@ export default function LoginScreen(props) {
             style={ styles.wave }
             H={ 300 }
             waveParams={[
-                {A: 60, T: 600, fill: 'rgba(98,194,255,.8)'},
-                {A: 50, T: 540, fill: 'rgba(0,135,221,.8)'},
-                {A: 45, T: 500, fill: 'rgba(3,102,163,.7)'},
+                {A: 50, T: 600, fill: 'rgba(98,194,255,.8)'},
+                {A: 60, T: 540, fill: 'rgba(0,135,221,.8)'},
+                {A: 70, T: 500, fill: 'rgba(3,102,163,.7)'},
             ]}
-            speed={10000}
+            speed={12000}
             animated={true}
         />
       </View>
       <KeyboardAwareScrollView
         enableOnAndroid={true}
         enableAutomaticScroll={true}
-        extraScrollHeight={ Platform.OS == 'ios' ? -150 : 100 }
+        extraScrollHeight={ Platform.OS == 'ios' ? -150 : 90 }
         keyboardShouldPersistTaps={'handled'}
-        style={{ marginTop: '10%',}}
+        style={{ }}
         contentContainerStyle={{  alignItems: 'center', justifyContent: 'space-between'}}
       >
-      <View style={{ flex: 1, backgroundColor: 'transparent', marginTop: 10, }}>
-        <View style={{ width: '40%', backgroundColor: 'transparent', justifyContent: 'space-between',}}>
-          <Button color='rgba(95,54,221,.9)' label="home" mode="contained" style={ styles.submitButton } onPress={ () => props.navigation.navigate('Home')}> Login </Button>
-          <Button color='rgba(95,54,221,.9)' label="home" mode="contained" style={ styles.submitButton } onPress={ () => props.navigation.navigate('Home')}> Register </Button>
-        </View>
-      </View>
         <View style={{ flex: 1, width: '80%', backgroundColor: 'transparent', justifyContent: 'space-between',}}>
           <TextInput onChangeText={(text) => setInput({...input, email: text})} label="Email" mode="outlined" style={ styles.textInput } value={ input.email }/>
           <TextInput onChangeText={(text) => setInput({...input, password: text})} label="Password" mode="outlined" style={ styles.textInput } value={ input.password }/>
         </View>
-
+        <View style={{ flex: 1, backgroundColor: 'transparent', marginTop: 10, }}>
+          <View style={{ width: '40%', backgroundColor: 'transparent', justifyContent: 'space-between',}}>
+            <Button color='rgba(95,54,221,.9)' label="home" mode="contained" style={ styles.submitButton } onPress={ () => props.navigation.navigate('Home')}> Login </Button>
+            <Button color='rgba(95,54,221,.9)' label="home" mode="contained" style={ styles.submitButton } onPress={ () => props.navigation.navigate('Home')}> Register </Button>
+          </View>
+        </View>
       </KeyboardAwareScrollView>
 
     </View>
@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
   },
   logoNameContainer: {
     zIndex: 3,
-    marginTop: '10%',
+    marginTop: '5%',
     width: '100%',
     justifyContent: 'center',
     alignItems: 'center',

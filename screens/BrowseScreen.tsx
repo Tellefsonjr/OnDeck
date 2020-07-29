@@ -12,7 +12,7 @@ import JOBS from '../data/stubbed/dummy-jobs';
 import COMPANIES from '../data/stubbed/dummy-companies';
 import CATEGORIES from '../data/stubbed/dummy-job-categories';
 
-export default function BrowseScreen(props) {
+export default function BrowseScreen(props: { navigation: { navigate: (arg0: string, arg1: { id: any; title: any; }) => void; }; }) {
   const [ filteredJobs, setFilteredJobs ] = useState(JOBS);
   // TO DO: Set filters as object, later to be pulled from Redux using user's preferred filters.
   const [ filters, setFilters ] = useState({
@@ -25,58 +25,52 @@ export default function BrowseScreen(props) {
   });
   const [ filterModalVisible, setFilterModalVisible ] = useState(false);
 
-  const handleJobPress = (job) => {
+  const handleJobPress = (job: { id: any; title: any; }) => {
     props.navigation.navigate("JobDetailScreen", { id: job.id, title: job.title});
   };
-  const handleChangeSearch = ( query ) => {
+  const handleChangeSearch = ( query: any ) => {
     console.log("QUERY CHANGED: ", query);
     const newFilters = {
+      ...filters,
       search: query,
-      categories: filters.categories,
-      location: filters.location,
     }
     setFilters(newFilters);
     filterJobs(newFilters);
   };
-  const handleCategoryPressed = (categoryId) => {
+  const handleCategoryPressed = (categoryId: number) => {
     const newCategories = filters.categories.includes(categoryId)?
       _.without(filters.categories, categoryId) : [...filters.categories, categoryId];
     const newFilters = {
-      search: filters.search,
+      ...filters,
       categories: newCategories,
     };
     setFilters( newFilters );
     filterJobs( newFilters );
   };
-  const filterJobs = ( filters ) => {
+  const filterJobs = ( filters: { search: any; categories: any; location?: string; radius?: string; pay?: number; payRate?: string; } ) => {
     // There has GOT to be a better way to filter, TO DO: revisit this ungly code.
     var newJobs = JOBS;
-    console.log("Search Count: ", _.filter(JOBS, function(j) { _.includes(j.title, filters.search)}).length);
-    console.log("Category Matched: ", _.filter(JOBS, function(j){ _.includes(j.categories.some((e) => filters.categories.includes(e)))}));
+    // console.log("Search Count: ", _.filter(JOBS, function(j) { _.includes(j.title, filters.search)}).length);
+    // console.log("Category Matched: ", _.filter(JOBS, function(j){ _.includes(j.categories.some((e) => filters.categories.includes(e)))}));
     if( filters.search == '' && filters.categories.length == 0 ){
-      console.log("First");
       newJobs = JOBS;
     } else if ( filters.search != '' && filters.categories.length == 0 ) {
-      console.log("Second");
       newJobs = _.filter(JOBS, function(item){
         return item.title.indexOf(filters.search) > -1;
       })
     } else if ( filters.search == '' &&filters.categories.length > 0 ) {
-      console.log("THIRD");
       newJobs = _.filter(newJobs, function(item){
-        return item.categories.some((e) => filters.categories.includes(e))
+        return item.categories.some((e: any) => filters.categories.includes(e))
       });
     } else if ( filters.search != '' && filters.categories.length > 0 ) {
-      console.log("FOURTH");
       newJobs = _.filter(newJobs, function(item){
-        return( _.includes(item.title, filters.search) && item.categories.some((e) => filters.categories.includes(e)));
+        return( _.includes(item.title, filters.search) && item.categories.some((e: any) => filters.categories.includes(e)));
       })
     };
-    console.log("FILTERS:::: ", filters.search, filters.search == '', filters.categories.length == 0, filters.categories);
     setFilteredJobs( newJobs );
   };
   const renderJobsList = () => {
-    return( filteredJobs.map( (job, i) => {
+    return( filteredJobs.map( (job: object | undefined, i: string | number | undefined) => {
       return(
         <View key={i}>
           <JobListItem job={job} company={ _.find(COMPANIES, { id: job.companyId }) } onPress={ handleJobPress } />
@@ -85,11 +79,9 @@ export default function BrowseScreen(props) {
     }));
   };
   const renderCategoryChips = () => {
-    return(CATEGORIES.map((category, i) => {
-        return(<Chip key={"category"+i} icon={category.icon} onPress={() => { handleCategoryPressed(category.id)}} mode="outlined" selected={ filters.categories.includes(category.id)}> {category.title} </Chip>)
-    }))
+    return(CATEGORIES.map((category: any, i: string | number | undefined) => (<Chip key={"category" + i} icon={category.icon} onPress={() => { handleCategoryPressed(category.id); } } mode="outlined" selected={filters.categories.includes(category.id)}> {category.title} </Chip>)))
   };
-  const handleFilterSubmit = (filters) => {
+  const handleFilterSubmit = (filters: React.SetStateAction<{ search: string; categories: never[]; location: string; radius: string; pay: number; payRate: string; }>) => {
     setFilters(filters);
     filterJobs(filters);
   };

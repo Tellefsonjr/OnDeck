@@ -107,13 +107,20 @@ const job2 = {key:'job2', color: 'green'};
         hideKnob={props.hideKnob}
         loadItemsForMonth={loadItems.bind(this)}
         markedDates={{
-          '2020-07-05': {marked: true, dotColor: '#50cebb'},
-          '2020-07-06': {startingDay: true, color: '#50cebb', textColor: 'black'},
-          '2020-07-07': {color: '#70d7c7', textColor: 'black'},
-          '2020-07-08': {color: '#70d7c7', textColor: 'black', marked: true, dotColor: 'black'},
-          '2020-07-09': {color: '#70d7c7', textColor: 'black'},
-          '2020-07-10': {endingDay: true, color: '#50cebb', textColor: 'black'},
-          '2020-07-11': {marked: true, dotColor: 'rgba(218,134,36,1)', textColor: 'black'},
+          '2020-07-25': {marked: true, dotColor: '#50cebb', textColor: 'black'},
+          '2020-07-26': {startingDay: true, color: '#50cebb', textColor: 'black'},
+          '2020-07-27': {color: '#70d7c7', textColor: 'black'},
+          '2020-07-28': {color: '#70d7c7', textColor: 'black', marked: true, dotColor: 'black'},
+          '2020-07-29': {color: '#70d7c7', textColor: 'black'},
+          '2020-07-30': {endingDay: true, color: '#50cebb', textColor: 'black'},
+          '2020-07-31': {marked: true, dotColor: 'rgba(218,134,36,1)', textColor: 'black'},
+          '2020-08-01': {marked: true, dotColor: '#50cebb', textColor: 'black'},
+          '2020-08-02': {startingDay: true, color: '#50cebb', textColor: 'black'},
+          '2020-08-03': {color: '#70d7c7', textColor: 'black'},
+          '2020-08-04': {color: '#70d7c7', textColor: 'black', marked: true, dotColor: 'black'},
+          '2020-08-05': {color: '#70d7c7', textColor: 'black'},
+          '2020-08-06': {endingDay: true, color: '#50cebb', textColor: 'black'},
+          '2020-08-07': {marked: true, dotColor: 'rgba(218,134,36,1)', textColor: 'black'},
         }}
         markingType={'period'}
       // markedDates={{

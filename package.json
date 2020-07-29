@@ -18,6 +18,7 @@
     "@react-navigation/drawer": "^5.8.4",
     "@react-navigation/native": "^5.6.1",
     "@react-navigation/stack": "^5.6.2",
+    "@types/lodash": "^4.14.158",
     "expo": "^38.0.8",
     "expo-asset": "~8.1.7",
     "expo-av": "~8.2.1",
