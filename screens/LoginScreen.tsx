@@ -19,11 +19,11 @@ export default function LoginScreen(props) {
     email: '',
     password: '',
   })
+  const spinValue = useRef(new Animated.Value(0)).current;
 
-  const spinValue = useRef(new Animated.Value(0)).current;  // Initial value for opacity: 0
-
-  React.useEffect(() => {
-    function animate(toValue){
+  const useAnimate = (startDelay = 500) => {
+  
+    const animate = (toValue) => {
       Animated.timing(
         spinValue,
         {
@@ -33,23 +33,24 @@ export default function LoginScreen(props) {
           useNativeDriver: true
         }
       ).start(() => {
-        newValue = toValue == 0? 1 : 0;
+        const newValue = toValue == 0? 1 : 0;
         //console.log("Newvalue: ", Platform.OS, newValue);
         newValue == 1? setNextRotation((Math.floor(Math.random() * 30 ) + 20)) : setCurrentRotation(-(Math.floor(Math.random() * 30 ) + 20));
         // console.log("Finished Animation", toValue, currentRotation, nextRotation);
         animate(newValue);
       });
-      return () => {
-        setAnimated(false);
-      }
-    }
-    animate(1);
-  }, [spinValue]);
+    };
 
-  const spin = spinValue.interpolate({
-    inputRange: [0, 1],
-    outputRange: [`${currentRotation}deg`, `${nextRotation}deg`]
-  });
+    useEffect(() => {
+      const timeout = setTimeout(() => animate(), startDelay);
+      return () => clearTimeout(timeout);
+    }, []);
+  
+    return spinValue;
+  };
+
+
+
 
   return (
     <View style={ styles.container }>
@@ -57,7 +58,7 @@ export default function LoginScreen(props) {
       <View style={ styles.logoNameContainer }>
         <Text style={ styles.logoName }>OnDeck</Text>
       </View>
-      <Animated.View style={ [styles.logoContainer, { transform: [{ rotate: spin}] }, {perspective: 1000}] }>
+      <Animated.View style={ [styles.logoContainer, { transform: [{ rotate: useAnimate()}] }, {perspective: 1000}] }>
         <Logo width={250} height={250} fill={'#fff'} />
       </Animated.View>
 

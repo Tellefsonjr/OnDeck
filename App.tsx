@@ -14,8 +14,10 @@ import { createStore, combineReducers, applyMiddleware } from 'redux';
 //Redux Reducers and Store
 import jobsReducer from './store/reducers/jobs';
 import companiesReducer from './store/reducers/companies';
+import usersReducer from './store/reducers/users';
 
 const rootReducer = combineReducers({
+  users: usersReducer,
   jobs: jobsReducer,
   companies: companiesReducer
 });
