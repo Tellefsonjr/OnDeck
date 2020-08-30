@@ -14,15 +14,16 @@ import Logo from '../assets/images/OD_Logo.svg';
 export default function LoginScreen(props) {
   const [ currentRotation, setCurrentRotation ] = useState(-(Math.floor(Math.random() * 30 ) + 20));
   const [ nextRotation, setNextRotation ] = useState((Math.floor(Math.random() * 30 ) + 20));
+  const [ animated, setAnimated ] = useState(true);
   const [ input, setInput ] = useState({
     email: '',
     password: '',
   })
+  const spinValue = useRef(new Animated.Value(0)).current;
 
-  const spinValue = useRef(new Animated.Value(0)).current;  // Initial value for opacity: 0
-
-  React.useEffect(() => {
-    function animate(toValue){
+  const useAnimate = (startDelay = 500) => {
+  
+    const animate = (toValue) => {
       Animated.timing(
         spinValue,
         {
@@ -32,20 +33,24 @@ export default function LoginScreen(props) {
           useNativeDriver: true
         }
       ).start(() => {
-        newValue = toValue == 0? 1 : 0;
+        const newValue = toValue == 0? 1 : 0;
         //console.log("Newvalue: ", Platform.OS, newValue);
         newValue == 1? setNextRotation((Math.floor(Math.random() * 30 ) + 20)) : setCurrentRotation(-(Math.floor(Math.random() * 30 ) + 20));
         // console.log("Finished Animation", toValue, currentRotation, nextRotation);
         animate(newValue);
       });
-    }
-    animate(1);
-  }, [spinValue]);
+    };
 
-  const spin = spinValue.interpolate({
-    inputRange: [0, 1],
-    outputRange: [`${currentRotation}deg`, `${nextRotation}deg`]
-  });
+    useEffect(() => {
+      const timeout = setTimeout(() => animate(), startDelay);
+      return () => clearTimeout(timeout);
+    }, []);
+  
+    return spinValue;
+  };
+
+
+
 
   return (
     <View style={ styles.container }>
@@ -53,7 +58,7 @@ export default function LoginScreen(props) {
       <View style={ styles.logoNameContainer }>
         <Text style={ styles.logoName }>OnDeck</Text>
       </View>
-      <Animated.View style={ [styles.logoContainer, { transform: [{ rotate: spin}] }, {perspective: 1000}] }>
+      <Animated.View style={ [styles.logoContainer, { transform: [{ rotate: useAnimate()}] }, {perspective: 1000}] }>
         <Logo width={250} height={250} fill={'#fff'} />
       </Animated.View>
 
@@ -66,7 +71,7 @@ export default function LoginScreen(props) {
                 {A: 70, T: 500, fill: 'rgba(3,102,163,.7)'},
             ]}
             speed={12000}
-            animated={true}
+            animated={animated}
         />
       </View>
       <KeyboardAwareScrollView
@@ -83,8 +88,8 @@ export default function LoginScreen(props) {
         </View>
         <View style={{ flex: 1, backgroundColor: 'transparent', marginTop: 10, }}>
           <View style={{ width: '40%', backgroundColor: 'transparent', justifyContent: 'space-between',}}>
-            <Button color='rgba(95,54,221,.9)' label="home" mode="contained" style={ styles.submitButton } onPress={ () => props.navigation.navigate('Home')}> Login </Button>
-            <Button color='rgba(95,54,221,.9)' label="home" mode="contained" style={ styles.submitButton } onPress={ () => props.navigation.navigate('Home')}> Register </Button>
+            <Button color='rgba(95,54,221,.9)' label="home" mode="contained" style={ styles.submitButton } onPress={ () => {setAnimated(false); props.navigation.navigate('Home')}}> Login </Button>
+            <Button color='rgba(95,54,221,.9)' label="home" mode="contained" style={ styles.submitButton } onPress={ () => {setAnimated(false); props.navigation.navigate('Home')}}> Register </Button>
           </View>
         </View>
       </KeyboardAwareScrollView>

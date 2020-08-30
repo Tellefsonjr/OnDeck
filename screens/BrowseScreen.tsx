@@ -3,16 +3,19 @@ import { StyleSheet, ScrollView, Text, View } from 'react-native';
 import { Chip, IconButton } from 'react-native-paper';
 import * as _ from 'lodash';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useSelector, useDispatch } from 'react-redux';
 
 import SearchBarComponent from '../components/SearchBarComponent';
 import JobListItem from '../components/jobs/JobListItem';
 import JobFilterModal from '../components/jobs/JobFilterModal';
 
-import JOBS from '../data/stubbed/dummy-jobs';
-import COMPANIES from '../data/stubbed/dummy-companies';
 import CATEGORIES from '../data/stubbed/dummy-job-categories';
 
 export default function BrowseScreen(props: { navigation: { navigate: (arg0: string, arg1: { id: any; title: any; }) => void; }; }) {
+  const dispatch = useDispatch();
+  const JOBS = useSelector(state => state.jobs.jobs);
+  const COMPANIES = useSelector(state => state.companies.companies);
+
   const [ filteredJobs, setFilteredJobs ] = useState(JOBS);
   // TO DO: Set filters as object, later to be pulled from Redux using user's preferred filters.
   const [ filters, setFilters ] = useState({

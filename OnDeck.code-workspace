@@ -5,6 +5,9 @@
 		},
 		{
 			"path": "."
+		},
+		{
+			"path": "../Initiative-App"
 		}
 	],
 	"settings": {}

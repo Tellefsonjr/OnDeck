@@ -19,9 +19,10 @@ import Colors from "../constants/Colors";
 import { Text, View } from "../components/Themed";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import * as _ from "lodash";
+import { useSelector, useDispatch } from 'react-redux';
 
-import JOBS from "../data/stubbed/dummy-jobs";
-import COMPANIES from "../data/stubbed/dummy-companies";
+
+
 import CATEGORIES from "../data/stubbed/dummy-job-categories";
 
 import Agenda from "../components/Agenda";
@@ -29,6 +30,10 @@ import JobListItem from "../components/jobs/JobListItem";
 import JobFilterModal from "../components/jobs/JobFilterModal";
 
 export default function HomeScreen(props: any) {
+  const dispatch = useDispatch();
+  const JOBS = useSelector(state => state.jobs.jobs);
+  const COMPANIES = useSelector(state => state.companies.companies);
+
   const [filteredJobs, setFilteredJobs] = React.useState(JOBS);
   const [jobModalVisible, setJobModalVisible] = React.useState(false);
   const [selectedJob, setSelectedJob] = React.useState(null);
@@ -112,7 +117,19 @@ export default function HomeScreen(props: any) {
       source={require("../assets/images/bg.jpg")}
     >
       <View style={{ flex: 1, backgroundColor: "transparent" }}>
-        {/* Placeholder for 'emergency hireds' */}
+        <View
+          style={{
+            backgroundColor: "transparent",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            borderBottomWidth: 1,
+            borderBottomColor: Colors.textLight,
+            padding: 15,
+            marginVertical: 10,
+          }}
+        >
+          <MaterialCommunityIcons name="access-point" size={30} color={"red"} />
+        </View>
       </View>
 
       <View style={{ flex: 1.5 }}>
