@@ -9,6 +9,7 @@ import useColorScheme from '../hooks/useColorScheme';
 import LoginScreen from '../screens/LoginScreen';
 import HomeScreen from '../screens/HomeScreen';
 import BrowseScreen from '../screens/BrowseScreen';
+import SosScreen from '../screens/SosScreen';
 import JobDetailScreen from '../screens/JobDetailScreen';
 import EventsScreen from '../screens/EventsScreen';
 
@@ -28,6 +29,13 @@ export default function BottomTabNavigator() {
         component={HomeNavigator}
         options={{
           tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />,
+        }}
+      />
+      <BottomTab.Screen
+        name="SOS"
+        component={Sos}
+        options={{
+          tabBarIcon: ({ color }) => <TabBarIcon name="access-point" color={color} />,
         }}
       />
       <BottomTab.Screen
@@ -88,6 +96,26 @@ function HomeNavigator() {
     </HomeStack.Navigator>
   );
 }
+
+const SosStack = createStackNavigator<SosParamList>();
+
+function Sos() {
+  return (
+    <SosStack.Navigator>
+      <SosStack.Screen
+        name="SosScreen"
+        component={SosScreen}
+        options={{ headerTitle: 'Sos' }}
+      />
+      <SosStack.Screen
+        name="JobDetailScreen"
+        component={JobDetailScreen}
+        options={{ headerTitle: 'OnDeck' }}
+      />
+    </SosStack.Navigator>
+  );
+}
+
 
 const BrowseStack = createStackNavigator<BrowseParamList>();
 

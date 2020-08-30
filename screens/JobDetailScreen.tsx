@@ -4,13 +4,15 @@ import { Button } from 'react-native-paper';
 import * as _ from 'lodash';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Video } from 'expo-av';
+import { useSelector, useDispatch } from 'react-redux';
 
 import EditScreenInfo from '../components/EditScreenInfo';
 
 
-import JOBS from '../data/stubbed/dummy-jobs';
 
 export default function JobDetailScreen( route, navigation) {
+  const dispatch = useDispatch();
+  const JOBS = useSelector(state => state.jobs.jobs);
   const job = _.find(JOBS, { id: route.route.params.id});
   console.log("JOB Detail: ", job);
 

@@ -14,6 +14,7 @@ import Logo from '../assets/images/OD_Logo.svg';
 export default function LoginScreen(props) {
   const [ currentRotation, setCurrentRotation ] = useState(-(Math.floor(Math.random() * 30 ) + 20));
   const [ nextRotation, setNextRotation ] = useState((Math.floor(Math.random() * 30 ) + 20));
+  const [ animated, setAnimated ] = useState(true);
   const [ input, setInput ] = useState({
     email: '',
     password: '',
@@ -38,6 +39,9 @@ export default function LoginScreen(props) {
         // console.log("Finished Animation", toValue, currentRotation, nextRotation);
         animate(newValue);
       });
+      return () => {
+        setAnimated(false);
+      }
     }
     animate(1);
   }, [spinValue]);
@@ -66,7 +70,7 @@ export default function LoginScreen(props) {
                 {A: 70, T: 500, fill: 'rgba(3,102,163,.7)'},
             ]}
             speed={12000}
-            animated={true}
+            animated={animated}
         />
       </View>
       <KeyboardAwareScrollView
@@ -83,8 +87,8 @@ export default function LoginScreen(props) {
         </View>
         <View style={{ flex: 1, backgroundColor: 'transparent', marginTop: 10, }}>
           <View style={{ width: '40%', backgroundColor: 'transparent', justifyContent: 'space-between',}}>
-            <Button color='rgba(95,54,221,.9)' label="home" mode="contained" style={ styles.submitButton } onPress={ () => props.navigation.navigate('Home')}> Login </Button>
-            <Button color='rgba(95,54,221,.9)' label="home" mode="contained" style={ styles.submitButton } onPress={ () => props.navigation.navigate('Home')}> Register </Button>
+            <Button color='rgba(95,54,221,.9)' label="home" mode="contained" style={ styles.submitButton } onPress={ () => {setAnimated(false); props.navigation.navigate('Home')}}> Login </Button>
+            <Button color='rgba(95,54,221,.9)' label="home" mode="contained" style={ styles.submitButton } onPress={ () => {setAnimated(false); props.navigation.navigate('Home')}}> Register </Button>
           </View>
         </View>
       </KeyboardAwareScrollView>
