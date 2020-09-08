@@ -20,8 +20,8 @@ import { Text, View } from "../components/Themed";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import * as _ from "lodash";
 import { useSelector, useDispatch } from 'react-redux';
-
-
+import CustomHeaderButton from '../components/HeaderButton';
+import { HeaderButtons, Item } from 'react-navigation-header-buttons';
 
 import CATEGORIES from "../data/stubbed/dummy-job-categories";
 
@@ -201,7 +201,18 @@ export default function HomeScreen(props: any) {
       ) : null}
     </ImageBackground>
   );
-}
+};
+
+HomeScreen.navigationOptions = navData => {
+  return {
+    headerTitle: "Home",
+    headerRight: (
+      <HeaderButtons HeaderButtonComponent={CustomHeaderButton}>
+        <Item title="Menu" iconName="menu" onPress={ () => { navData.navigation.openDrawer()}} />
+      </HeaderButtons>
+    )
+  };
+};
 
 const styles = StyleSheet.create({
   container: {
