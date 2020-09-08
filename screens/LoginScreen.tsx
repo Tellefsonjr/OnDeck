@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { StyleSheet, ScrollView, ImageBackground, TouchableWithoutFeedback, Text, Image, View, Dimensions, Animated, Easing, Platform } from 'react-native';
+import { StyleSheet, ScrollView, ImageBackground, TouchableWithoutFeedback, Text, Image, View, Dimensions, Animated, Easing, Platform, ActivityIndicator, Alert } from 'react-native';
 import { Button, TextInput} from 'react-native-paper';
 import Colors from '../constants/Colors.ts';
 // import { Text, View, } from '../components/Themed';
@@ -7,14 +7,20 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Wave from 'react-native-waveview';
 import * as _ from 'lodash';
+import { useSelector, useDispatch } from 'react-redux';
+import * as userActions from '../store/actions/users'; //Redux Actions
+
 
 import Logo from '../assets/images/OD_Logo.svg';
 
 
 export default function LoginScreen(props) {
+  const dispatch = useDispatch();
   const [ currentRotation, setCurrentRotation ] = useState(-(Math.floor(Math.random() * 30 ) + 20));
   const [ nextRotation, setNextRotation ] = useState((Math.floor(Math.random() * 30 ) + 20));
   const [ animated, setAnimated ] = useState(true);
+  const [ isLoading, setIsLoading ] = useState(false);
+  const [ error, setError ] = useState();
   const [ input, setInput ] = useState({
     email: '',
     password: '',
@@ -48,8 +54,22 @@ export default function LoginScreen(props) {
   
     return spinValue;
   };
+  const authHandler = async () => {
+    setError(null);
+    setIsLoading(true);
+    try {
+      await dispatch(userActions.login(input));
+    } catch (err) {
+      setError(err.message);
+      setIsLoading(false);
+    }
+  }
 
-
+  useEffect( () => {
+    if(error){ 
+      Alert.alert('An error occurred!', error, [{ text: 'Dismiss' }])
+    }
+  }, [error])
 
 
   return (
@@ -83,13 +103,17 @@ export default function LoginScreen(props) {
         contentContainerStyle={{  alignItems: 'center', justifyContent: 'space-between'}}
       >
         <View style={{ flex: 1, width: '80%', backgroundColor: 'transparent', justifyContent: 'space-between',}}>
-          <TextInput onChangeText={(text) => setInput({...input, email: text})} label="Email" mode="outlined" style={ styles.textInput } value={ input.email }/>
-          <TextInput onChangeText={(text) => setInput({...input, password: text})} label="Password" mode="outlined" style={ styles.textInput } value={ input.password }/>
+          <TextInput onChangeText={(text) => setInput({...input, email: text})} label="Email" mode="outlined" style={ styles.textInput } value={ input.email } keyboardType="email-address"/>
+          <TextInput onChangeText={(text) => setInput({...input, password: text})} label="Password" mode="outlined" style={ styles.textInput } value={ input.password } secureTextEntry keyboardType="default"/>
         </View>
         <View style={{ flex: 1, backgroundColor: 'transparent', marginTop: 10, }}>
           <View style={{ width: '40%', backgroundColor: 'transparent', justifyContent: 'space-between',}}>
-            <Button color='rgba(95,54,221,.9)' label="home" mode="contained" style={ styles.submitButton } onPress={ () => {setAnimated(false); props.navigation.navigate('Home')}}> Login </Button>
-            <Button color='rgba(95,54,221,.9)' label="home" mode="contained" style={ styles.submitButton } onPress={ () => {setAnimated(false); props.navigation.navigate('Home')}}> Register </Button>
+            { isLoading == true ? 
+              <ActivityIndicator size="small" color={Colors.primary} />
+            :
+              <Button color='rgba(95,54,221,.9)' label="home" mode="contained" style={ styles.submitButton } onPress={ () => {setAnimated(false); authHandler()}}> Login </Button>
+            }
+            <Button color='rgba(95,54,221,.9)' label="home" mode="contained" style={ styles.submitButton } onPress={ () => {setAnimated(false); props.navigation.navigate('Register')}}> Register </Button>
           </View>
         </View>
       </KeyboardAwareScrollView>
