@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { StyleSheet, ScrollView, ImageBackground, TouchableWithoutFeedback, Text, Image, View, Dimensions, Animated, Easing, Platform, Alert, ActivityIndicator } from 'react-native';
-import { Button, TextInput } from 'react-native-paper';
+import { Button, TextInput, Avatar, Paragraph } from 'react-native-paper';
 import Colors from '../constants/Colors.ts';
 // import { Text, View, } from '../components/Themed';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -8,7 +8,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Wave from 'react-native-waveview';
 import * as _ from 'lodash';
 import { useSelector, useDispatch } from 'react-redux';
-import * as userActions from '../store/actions/users'; //Redux Actions
+import * as authActions from '../store/actions/auth'; //Redux Actions
 
 import RegisterForm1 from '../components/auth/RegisterForm1';
 import RegisterForm2 from '../components/auth/RegisterForm2';
@@ -25,27 +25,65 @@ export default function RegisterScreen(props) {
     const [ isLoading, setIsLoading ] = useState(false);
     const [ error, setError ] = useState();
     const [ page, setPage ] = useState( 1 );
-    const [input, setInput] = useState({
+    const [ authInput, setAuthInput ] = useState({
         email: '',
         password: '',
+    })
+    const [userInput, setUserInput] = useState({
+        userId: '',
+        type: '',
+        contactInfo: {
+            email: '',
+            phone: '',
+        },
+        fullName: '',
+        currentLocation: '',
+        preferences: {
+            autoUpdateLocation: false,
+            notifications: false,
+            theme: "default",
+        },
+        profile: {
+            avatar: null,
+            bio: "",
+            certificates: [
+                {type: '', frontImage: '', backImage: ''}
+            ],
+            resume: "",
+        },
+
     })
     const prevPage = (  ) => {
         page == 1 ? setPage(1) : setPage(page-1);
     };
-    const nextPage = (  ) => {
+    const nextPage = ( values ) => {
+        console.log("VALUES AFTER NEXT: ", values);
+        values ? setUserInput(values) : null;
         page == 3 ? setPage(3) : setPage( page+1);
     };
-
     const signUpHandler = async (input) => {
         setError(null);
         setIsLoading(true);
         try {
-          await dispatch(userActions.signUp(input));
+          const user = await dispatch(authActions.signUp(input));
+          console.log( "User Authorized: ", user);
+
         } catch (err) {
           setError(err.message);
           setIsLoading(false);
         }
-      }
+        setUserInput({ ...userInput, contactInfo: {phone: "", email: input.email}});
+        setIsLoading(false);
+        nextPage();
+      };
+    const handleSetType = (type) => {
+        setUserInput({
+            ...userInput,
+            type: type
+        });
+        console.log(userInput);
+    };
+
     const spinValue = useRef(new Animated.Value(0)).current;
 
     const useAnimate = (startDelay = 500) => {
@@ -86,13 +124,13 @@ export default function RegisterScreen(props) {
     const showPage = () => {
         switch (page) {
             case 1:
-                return <RegisterForm1 page={page} handleNext={ nextPage } handlePrev={ prevPage } handleSignUp={ signUpHandler } error={error} isLoading={isLoading} />;
+                return <RegisterForm1 page={ page } handleNext={ nextPage } handlePrev={ prevPage } handleSignUp={ signUpHandler } error={error} isLoading={isLoading} auth={ authInput } />;
 
             case 2: 
-                return <RegisterForm2 page={page} handleNext={ nextPage } handlePrev={ prevPage } />;
+                return <RegisterForm2 page={ page } handleNext={ nextPage } handlePrev={ prevPage } handleSetType={ handleSetType } user={ userInput } />;
 
             case 3: 
-                return <RegisterForm3 page={page} handleNext={ nextPage } handlePrev={ prevPage } />;
+                return <RegisterForm3 page = { page } handleNext={ nextPage } handlePrev={ prevPage } user={ userInput } />;
         }
     }
 
@@ -122,10 +160,33 @@ export default function RegisterScreen(props) {
             </View>
 
             <View style={ styles.formContainer }>
+                <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
+                    <View style={{ alignItems: 'center'}}>
+                        <Paragraph>Login Info</Paragraph>
+                        <Avatar.Icon size={page==1? 60 : 50} icon="account-key" style={{backgroundColor: page >=1? Colors.primary: Colors.primaryLight, elevation: 10}}/>
+                    </View>
+                    <View style={{ paddingTop: 20 }}>
+                        <Paragraph> - - - </Paragraph>
+                    </View>
+                    <View style={{ alignItems: 'center'}}>
+                        <Paragraph>About You</Paragraph>
+                        <Avatar.Icon size={ page==2? 60 : 50}  icon="account-details" style={{backgroundColor: page >=2? Colors.primary: Colors.primaryLight, elevation: 10}}/>
+                    </View>
+                    <View style={{ paddingTop: 20 }}>
+                        <Paragraph> - - - </Paragraph>
+                    </View>
+                    <View style={{ alignItems: 'center'}}>
+                        <Paragraph>Preferences</Paragraph>
+                        <Avatar.Icon size={ page==3? 60 : 50}  icon="account-settings" style={{backgroundColor: page >=3? Colors.primary: Colors.primaryLight, elevation: 10}}/>
+                    </View>
+                </View> 
+                <View style={{ flex: 10, }}>
                 {
                     showPage()
                 }
+                </View>
 
+                
             </View>
         </View>
     );
@@ -164,10 +225,12 @@ const styles = StyleSheet.create({
         textShadowRadius: 10,
     },
     formContainer: {
-        marginTop: -20,
+        zIndex: 4,
+        marginTop: -50,
         flex: 15,
         justifyContent: 'center', 
         alignItems: 'center',
+        backgroundColor: "rgba(255,255,255, .9)",
     },
     waveContainer: {
         height: Dimensions.get('window').height,

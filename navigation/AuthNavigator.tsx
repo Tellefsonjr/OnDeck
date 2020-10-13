@@ -10,6 +10,8 @@ import HomeScreen from '../screens/HomeScreen';
 import BrowseScreen from '../screens/BrowseScreen';
 import JobDetailScreen from '../screens/JobDetailScreen';
 import EventsScreen from '../screens/EventsScreen';
+import RegisterScreen from '../screens/RegisterScreen';
+
 import BottomTabNavigator from './BottomTabNavigator';
 import { BottomTabParamList, HomeParamList, BrowseParamList } from '../types';
 
@@ -20,6 +22,7 @@ export default function AuthNavigator() {
 
   return (
     <AuthStack.Navigator
+      screenOptions={{ headerTitle: null }}
       initialRouteName="Login"
       tabBarOptions={{ activeTintColor: Colors[colorScheme].tint }}>
       <AuthStack.Screen
@@ -28,9 +31,9 @@ export default function AuthNavigator() {
         options={{ }}
       />
       <AuthStack.Screen
-        name="Home"
-        component={BottomTabNavigator}
-        options={{ headerTitle: null }}
+        name="Register"
+        component={RegisterScreen}
+        options= {{ }}
       />
     </AuthStack.Navigator>
   );

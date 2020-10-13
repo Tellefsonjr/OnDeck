@@ -1,45 +1,29 @@
-import {firebase, db} from '../../firebaseConfig.js';
+import {FIREBASE_KEY} from '@env';
 import { AsyncStorage } from 'react-native';
 
-export const CREATE = 'CREATE';
-export const GET = 'GET';
-export const UPDATE = 'UPDATE';
+export const SIGNUP = 'SIGNUP';
 export const DELETE = 'DELETE';
-export const SET_USER_FILTERS = 'SET_USER_FILTERS';
+export const RESTORE_TOKEN = "RESTORE_TOKEN";
+export const LOGIN = "LOGIN";
+export const LOGOUT = "LOGOUT";
+export const AUTHENTICATE = 'AUTHENTICATE';
 
-export const create = (payload) => {
-    // TO DO - wire up create with firebaseDB GET example:
-    const userRef = db.collection('users').doc(payload.userId);
-    // userRef.get().then(function(doc) {
-    //     if (doc.exists) {
-    //         console.log("Document data:", doc.data());
-    //     } else {
-    //         // doc.data() will be undefined in this case
-    //         console.log("No such document!");
-    //     }
-    // }).catch(function(error) {
-    //     console.log("Error getting document:", error);
-    // });
+export const signUp = (payload) => {
     return async dispatch => {
-        const response = await userRef.set({
-            contactInfo: {
-                email: payload.email,
-                phone: payload.phone,
+        const response = await fetch(
+          `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${FIREBASE_KEY}`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
             },
-            firstName: payload.firstName,
-            lastName: payload.lastName,
-            preferences: {
-                autoUpdateLocation: false,
-                notifications: false,
-                theme: "default",
-            },
-            profile: {
-                avatar: "",
-                bio: "",
-            },
-            certificates: [],
-            resume: "",
-        });
+            body: JSON.stringify({
+              email: payload.email,
+              password: payload.password,
+              returnSecureToken: true
+            })
+          }
+        );
     
         if (!response.ok) {
             const errorResData = await response.json();
@@ -59,7 +43,7 @@ export const create = (payload) => {
         }
     
         const resData = await response.json();
-        dispatch(authenticate(resData.localId, resData.idToken, resData.email));
+        dispatch(authenticate(resData.localId, resData.idToken, resData.email, true));
         const expirationDate = new Date(new Date().getTime() + parseInt(resData.expiresIn) * 1000);
         saveDataToStorage({
             userId: resData.localId,
@@ -70,8 +54,8 @@ export const create = (payload) => {
       };
 };
 
-export const get = (userId) => {
-    return { type: GET, userId: userId };
+export const authenticate = (userId, token, email, isSignUp) => {
+    return { type: AUTHENTICATE, userId: userId, token: token, email: email, isSignUp: isSignUp };
 };
 
 export const updateUser = (payload) => ({
@@ -121,7 +105,7 @@ export const login = (payload) => {
         }
     
         const resData = await response.json();
-        dispatch(authenticate(resData.localId, resData.idToken, resData.email));
+        dispatch(authenticate(resData.localId, resData.idToken, resData.email, false));
         const expirationDate = new Date(new Date().getTime() + parseInt(resData.expiresIn) * 1000);
         saveDataToStorage({
             userId: resData.localId,
