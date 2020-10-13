@@ -1,21 +1,28 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
+import { createDrawerNavigator } from '@react-navigation/drawer';
 import { createStackNavigator } from '@react-navigation/stack';
+import { View, Text } from 'react-native';
 import * as React from 'react';
 
 import Colors from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
+
 import LoginScreen from '../screens/LoginScreen';
 import HomeScreen from '../screens/HomeScreen';
 import BrowseScreen from '../screens/BrowseScreen';
 import SosScreen from '../screens/SosScreen';
 import JobDetailScreen from '../screens/JobDetailScreen';
 import EventsScreen from '../screens/EventsScreen';
+import UserProfileScreen from '../screens/UserProfileScreen';
+import DrawerNavigator from './AppNavigator';
+import ProfileHeader from '../components/users/ProfileHeader';
 
 import { BottomTabParamList, HomeParamList, BrowseParamList } from '../types';
 
 const BottomTab = createBottomTabNavigator<BottomTabParamList>();
+// const drawerNavigator = createDrawerNavigator();
 
 export default function BottomTabNavigator() {
   const colorScheme = useColorScheme();
@@ -64,20 +71,6 @@ function TabBarIcon(props: { name: string; color: string }) {
 
 // Each tab has its own navigation stack, you can read more about this pattern here:
 // https://reactnavigation.org/docs/tab-based-navigation#a-stack-navigator-for-each-tab
-const LoginStack = createStackNavigator<LoginParamList>();
-
-function LoginNavigator() {
-  return (
-    <LoginStack.Navigator>
-      <LoginStack.Screen
-        name="LoginScreen"
-        component={LoginScreen}
-        options={{ headerTitle: null }}
-      />
-    </LoginStack.Navigator>
-  );
-}
-
 const HomeStack = createStackNavigator<HomeParamList>();
 
 function HomeNavigator() {
@@ -86,7 +79,9 @@ function HomeNavigator() {
       <HomeStack.Screen
         name="HomeScreen"
         component={HomeScreen}
-        options={{ headerTitle: 'OnDeck' }}
+        options={{ headerTitle: props => 
+        <ProfileHeader title="Home" navProps={props}/>
+        }}
       />
       <HomeStack.Screen
         name="JobDetailScreen"
@@ -147,5 +142,19 @@ function Events() {
         options={{ headerTitle: 'Events' }}
       />
     </EventsStack.Navigator>
+  );
+}
+
+const UserStack = createStackNavigator<SosParamList>();
+
+function User() {
+  return (
+    <UserStack.Navigator>
+      <UserStack.Screen
+        name="Profile"
+        component={UserProfileScreen}
+        options={{ headerTitle: 'Profile' }}
+      />
+    </UserStack.Navigator>
   );
 }

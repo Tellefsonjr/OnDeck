@@ -6,7 +6,7 @@ import Colors from '../constants/Colors.ts';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useSelector, useDispatch } from 'react-redux';
-import * as userActions from '../store/actions/users'; //Redux Actions
+import * as userActions from '../store/actions/auth'; //Redux Actions
 
 
 import Logo from '../assets/images/OD_Logo.svg';

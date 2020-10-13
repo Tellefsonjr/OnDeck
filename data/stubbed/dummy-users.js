@@ -3,6 +3,7 @@
 const USERS = [
     {
         id: 1,
+        userToken: "dummy-token",
         email: "test1@test.com",
         password: "test1",
         profile: {

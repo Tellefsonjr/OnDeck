@@ -8,7 +8,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Wave from 'react-native-waveview';
 import * as _ from 'lodash';
 import { useSelector, useDispatch } from 'react-redux';
-import * as userActions from '../store/actions/users'; //Redux Actions
+import * as authActions from '../store/actions/auth'; //Redux Actions
 
 
 import Logo from '../assets/images/OD_Logo.svg';
@@ -58,7 +58,7 @@ export default function LoginScreen(props) {
     setError(null);
     setIsLoading(true);
     try {
-      await dispatch(userActions.login(input));
+      await dispatch(authActions.login(input));
     } catch (err) {
       setError(err.message);
       setIsLoading(false);
