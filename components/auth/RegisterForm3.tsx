@@ -18,28 +18,28 @@ import JOB_CATEGORIES from '../../data/stubbed/dummy-job-categories';
 export default function RegisterForm3(props) {
   const [ jobTypes, setJobTypes ] = useState([]);
   const [ showTypeCards, setShowTypeCards ] = useState( true );
+  // console.log(" USER AT PAGE 3: ", props.user);
   const fields = [
     [         
-      {label: 'Auto Update Location?', type: 'switch', name: 'preferences.autoUpdateLocation', icon: 'map-marker-off', icon2: 'map-marker-check', size: 'med'},
-      {label: 'Receive Notification?', type: 'switch', name: 'preferences.notifications', icon: 'bell-off', icon2: 'bell-ring', size: 'med'},
+      {label: 'Auto Update Location?', type: 'switch', name: 'preferences.autoUpdateLocation', icon: 'map-marker-off', icon2: 'map-marker-check', size: 'lrg'},
+      {label: 'Receive Notification?', type: 'switch', name: 'preferences.notifications', icon: 'bell-off', icon2: 'bell-ring', size: 'lrg'},
+      {label: 'Theme', type: 'switch', name: 'preferences.theme', icon: 'brightness-2', icon2: 'brightness-5', size: 'lrg'},
+
     ],
-    [         
-      {label: 'Theme', type: 'switch', name: 'preferences.theme', icon: 'brightness-2', icon2: 'brightness-5', size: 'med'},
-      {label: 'Theme', type: 'switch', name: 'preferences.theme', icon: 'brightness-2', icon2: 'brightness-5', size: 'med'},
-    ],
+ 
   ];
 
   const toggleShowTypeCards = () => {
     setShowTypeCards(!showTypeCards);
   };
-  const handleSetType = (type) => {
-    props.handleSetType(type);
+  const handleSetTypes = () => {
+    props.handleSetJobTypes(jobTypes);
     toggleShowTypeCards();
   };
-  const toggleSelectType = (categoryId, selected) => {
+  const toggleSelectTypes = (categoryId, selected) => {
     let temp = jobTypes;
-    selected ? setJobTypes(_.filter(temp, categoryId)) : setJobTypes([ ...jobTypes, categoryId]);  
-    console.log("Toggling, JobTypes: ", temp);  
+    selected ? setJobTypes(_.without(temp, categoryId)) : setJobTypes([ ...jobTypes, categoryId]);  
+    // console.log("Toggling, JobTypes: ", temp);  
   };
   const renderTypeCards = () => {
     // id: 3,
@@ -48,9 +48,9 @@ export default function RegisterForm3(props) {
     // icon: "run-fast"
     return(JOB_CATEGORIES.map((cat) => {
       let selected = jobTypes.includes(cat.id);
-      console.log(selected, cat.id);
+      // console.log(selected, cat.id);
       return(
-        <Card key={cat.id} elevation={15} onPress={() => toggleSelectType(cat.id, selected)} style={{ opacity: selected ? .8 : 1, width: '100%', marginVertical: 5 }}>
+        <Card key={cat.id} elevation={15} onPress={() => toggleSelectTypes(cat.id, selected)} style={{ opacity: selected ? .8 : 1, width: '100%', marginVertical: 5 }}>
           
           <Card.Title title={cat.title}
           left={({props}) => <Avatar.Icon {...props} size={40} style={{backgroundColor: Colors.primary}}  icon={cat.icon} />}
@@ -63,24 +63,37 @@ export default function RegisterForm3(props) {
   };
   return (
     <View style={styles.container}>
-        <Title>Preferences</Title>
-        <Paragraph>
+      <View style={{ flexDirection: 'row', justifyContent: "space-around", alignItems: 'center'}}>
+        <Paragraph style={{ fontStyle: 'italic'}}>
           Customize your experience.
         </Paragraph>
+      </View>
+        
       <View style={ styles.formContainer }>
         {
           showTypeCards ?
-            <View style={{ flexDirection: 'column', alignItems: 'center', justifyContent: 'space-between', width: '100%'}}>
-                
-                <Title>What type of jobs are you looking for?</Title>
-                <View style={{ flexWrap: 'wrap', width: '90%',  flexDirection: 'row', justifyContent: 'space-around', padding: 5,}}>
-                { renderTypeCards() }
+            <View style={{ flex: 1, flexDirection: 'column', alignItems: 'center', justifyContent: 'space-between', width: '100%'}}>
+                <View style={{ flex: 1,}}>
+                  <Title>What type of jobs are you looking for?</Title>
+                </View>
+                <View style={{ flex: 8, flexWrap: 'wrap', width: '90%',  flexDirection: 'row', justifyContent: 'space-around', padding: 5,}}>
+                  <ScrollView contentContainerStyle={{ flex: 1}}>
+                  { renderTypeCards() }
+                  </ScrollView>
                 </View>
                 
-                <View style={{ justifyContent: 'flex-end', alignItems: 'flex-end'}}>
-                  <TouchableHighlight onPress={ () => toggleShowTypeCards() } style={{ padding: 10, }}>
+                <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
+                  <TouchableHighlight onPress={ () => toggleSelectTypes() } style={{ padding: 10, }}>
                     <Paragraph>Skip for now</Paragraph>
                   </TouchableHighlight>
+                  <Button disabled={jobTypes.length > 0 ? false : true} onPress={() => handleSetTypes()} style={{}}
+                  type="submit"
+                  icon={"check-circle-outline"}
+                  mode="contained"
+                  title="Submit"
+                  color="#00578A">
+                  Submit
+                </Button>
                 </View>
                 
             </View>

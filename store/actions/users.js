@@ -7,67 +7,27 @@ export const UPDATE = 'UPDATE';
 export const DELETE = 'DELETE';
 export const SET_USER_FILTERS = 'SET_USER_FILTERS';
 
+
+
 export const create = (payload) => {
-    // TO DO - wire up create with firebaseDB GET example:
-    const userRef = db.collection('users').doc(payload.userId);
-    // userRef.get().then(function(doc) {
-    //     if (doc.exists) {
-    //         console.log("Document data:", doc.data());
-    //     } else {
-    //         // doc.data() will be undefined in this case
-    //         console.log("No such document!");
-    //     }
-    // }).catch(function(error) {
-    //     console.log("Error getting document:", error);
-    // });
     return async dispatch => {
-        const response = await userRef.set({
-            contactInfo: {
-                email: payload.email,
-                phone: payload.phone,
-            },
-            firstName: payload.firstName,
-            lastName: payload.lastName,
-            preferences: {
-                autoUpdateLocation: false,
-                notifications: false,
-                theme: "default",
-            },
-            profile: {
-                avatar: "",
-                bio: "",
-            },
-            certificates: [],
-            resume: "",
+    // console.log("CREATE PAYLOAD: ", payload.userId);
+    // TO DO - wire up create with firebaseDB GET example:
+    db.collection("users").doc(payload.userId).set({
+            type: payload.type,
+            contactInfo: payload.contactInfo,
+            fullName: payload.fullName,
+            location: payload.location,
+            preferences: payload.preferences,
+            profile: payload.profile,
+        })
+        .then(function() {
+            console.log("Document successfully written!");
+        })
+        .catch(function(error) {
+            console.error("Error writing document: ", error);
         });
-    
-        if (!response.ok) {
-            const errorResData = await response.json();
-            const errorCode = errorResData.error.message;
-            console.log("Sign Up error: ", errorResData);
-            let message = 'Something went wrong!';
-            if (errorCode == 'EMAIL_EXISTS'){
-                message = 'This email is already taken. Please go back to login, or try a new email.'
-            } else if ( errorCode == 'INVALID_EMAIL'){
-                message = 'Invalid email, please try another one.';
-            } else if ( errorCode == 'TOO_MANY_ATTEMPTS_TRY_LATER'){
-                message = 'An error occurred, please try again later. If the issue persists, please contact support.'
-            } else if ( errorCode == 'OPERATION_NOT_ALLOWED'){
-                message = 'An error occurred, please contact support.'
-            }
-            throw new Error(message);
-        }
-    
-        const resData = await response.json();
-        dispatch(authenticate(resData.localId, resData.idToken, resData.email));
-        const expirationDate = new Date(new Date().getTime() + parseInt(resData.expiresIn) * 1000);
-        saveDataToStorage({
-            userId: resData.localId,
-            token: resData.idToken,
-            email: resData.email, 
-            expirationDate: expirationDate.toISOString()
-        });
-      };
+    }
 };
 
 export const get = (userId) => {

@@ -4,12 +4,13 @@
 
 import * as WebBrowser from 'expo-web-browser';
 import React, { useState } from 'react';
-import { StyleSheet, TouchableHighlight, View, Alert, ActivityIndicator} from 'react-native';
+import { StyleSheet, TouchableHighlight, View, Alert, ActivityIndicator, ScrollView} from 'react-native';
 import { Card, TextInput, Title, Paragraph, Button, Avatar } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import validation from '../../data/validation/UserValidation';
 import DynamicForm from '../DynamicForm';
+import { useSelector, useDispatch } from 'react-redux';
 
 import Colors from '../../constants/Colors';
 import { MonoText } from '../StyledText';
@@ -17,6 +18,7 @@ import { MonoText } from '../StyledText';
 export default function RegisterForm2(props) {
   const [ userType, setUserType ] = useState( props.user.type );
   const [ showTypeCards, setShowTypeCards ] = useState( true );
+  const userId = useSelector(state => state.auth.userId);
   const fields = [
     [ {label: 'Avatar', type: 'image-picker', name: 'profile.avatar', size: 'med'},
       {
@@ -40,7 +42,7 @@ export default function RegisterForm2(props) {
       {
         label: "Location",
         type: "input",
-        name: "location",
+        name: "location.home.address",
         placeholder: "Perth, WA, Australia",
         icon: "map-marker-outline",
         size: "lrg",
@@ -68,25 +70,32 @@ export default function RegisterForm2(props) {
     props.handleSetType(type);
     toggleShowTypeCards();
   };
+  const handleSubmit = (values) => {
+    // console.log("VALUES on Second PAGE ~~~~~~~~~~~~~~~~~~~~~~~~~~~: ", values);
+    values.userId = userId;
+    props.handleNext(values);
+  };
   return (
     <View style={styles.container}>
-        <Title>About You</Title>
-        <Paragraph>
+      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around'}}>
+        <Paragraph style={{ fontStyle: 'italic'}}>
           Tell us more about yourself.
         </Paragraph>
+      </View>
+        
       <View style={ styles.formContainer }>
         {
           showTypeCards ?
             <View style={{ flexDirection: 'column', justifyContent: 'space-between', width: '100%'}}>
                 <Card elevation={30} onPress={() => handleSetType("Labourer")}>
                 <Card.Content style={{ alignItems: 'center'}}>
-                    <Icon name="hard-hat" size="40" />
+                    <Icon name="hard-hat" size={40} />
                   </Card.Content>
                   <Card.Title title="Labourer" subtitle="I am looking for work." />
                 </Card>
                 <Card elevation={30} style={{  marginTop: 20, padding: 5, width: '100%'}}  onPress={() => handleSetType("Business")}>
                 <Card.Content style={{ width: '100%', alignItems: 'center'}}>
-                    <Icon name="store" size="40" />
+                    <Icon name="store" size={40} />
                   </Card.Content>
                   <Card.Title title="Business" subtitle="I am looking for labourers." />                  
                 </Card>
@@ -100,6 +109,8 @@ export default function RegisterForm2(props) {
             </View>
             
           </TouchableHighlight>
+          <ScrollView>
+
           <DynamicForm
             fields={fields}
             data={props.user}
@@ -107,8 +118,10 @@ export default function RegisterForm2(props) {
             paginated={ true }
             page={ props.page }
             handleCancel={ props.handlePrev }
-            handleSubmit={ props.handleNext }
+            handleSubmit={ handleSubmit }
           />
+          </ScrollView>
+
           </View>
           
         }
@@ -124,11 +137,12 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     elevation: 10,
     padding: 10,
+    marginTop: 5,
     paddingBottom: 50
   },
   formContainer: {
     height: '90%',
-    marginTop: 20
+    marginTop: 5
 
   },
   textInput: {

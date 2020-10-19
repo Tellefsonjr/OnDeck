@@ -20,7 +20,7 @@ const authReducer = (state = initialState, action) => {
     //     return {(o) => action.jobIds.includes(o.id);}
     //   )};
     case AUTHENTICATE:
-      console.log("LOGGING IN REDUCER", action.userId, action.token, action.email, action.isSignUp);
+      // console.log("LOGGING IN REDUCER", action.userId, action.token, action.email, action.isSignUp);
       return {
         userId: action.userId,
         token: action.token,

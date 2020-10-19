@@ -9,18 +9,22 @@ import Wave from 'react-native-waveview';
 import * as _ from 'lodash';
 import { useSelector, useDispatch } from 'react-redux';
 import * as authActions from '../store/actions/auth'; //Redux Actions
+import * as userActions from '../store/actions/users'; //Redux Actions
+
 
 import RegisterForm1 from '../components/auth/RegisterForm1';
 import RegisterForm2 from '../components/auth/RegisterForm2';
 import RegisterForm3 from '../components/auth/RegisterForm3';
 
 import Logo from '../assets/images/OD_Logo.svg';
+import AsyncStorage from '@react-native-community/async-storage';
 
 
 export default function RegisterScreen(props) {
     const dispatch = useDispatch();
     const [currentRotation, setCurrentRotation] = useState(-(Math.floor(Math.random() * 30) + 20));
     const [nextRotation, setNextRotation] = useState((Math.floor(Math.random() * 30) + 20));
+    // console.log("USER ID: ", userId);
     const [animated, setAnimated] = useState(true);
     const [ isLoading, setIsLoading ] = useState(false);
     const [ error, setError ] = useState();
@@ -28,7 +32,7 @@ export default function RegisterScreen(props) {
     const [ authInput, setAuthInput ] = useState({
         email: '',
         password: '',
-    })
+    });
     const [userInput, setUserInput] = useState({
         userId: '',
         type: '',
@@ -37,11 +41,19 @@ export default function RegisterScreen(props) {
             phone: '',
         },
         fullName: '',
-        currentLocation: '',
+        location: {
+            currentLocation: '',
+            home: {
+                address: '',
+                latitude: '',
+                longitude: ''
+            }
+        },
         preferences: {
             autoUpdateLocation: false,
             notifications: false,
             theme: "default",
+            jobCategories: [],
         },
         profile: {
             avatar: null,
@@ -57,16 +69,16 @@ export default function RegisterScreen(props) {
         page == 1 ? setPage(1) : setPage(page-1);
     };
     const nextPage = ( values ) => {
-        console.log("VALUES AFTER NEXT: ", values);
+        // console.log("VALUES AFTER NEXT: ", values);
         values ? setUserInput(values) : null;
-        page == 3 ? setPage(3) : setPage( page+1);
+        page == 3 ? createUser(values) : setPage( page+1);
     };
     const signUpHandler = async (input) => {
         setError(null);
         setIsLoading(true);
         try {
           const user = await dispatch(authActions.signUp(input));
-          console.log( "User Authorized: ", user);
+        //   console.log( "User Authorized: ", user);
 
         } catch (err) {
           setError(err.message);
@@ -76,11 +88,39 @@ export default function RegisterScreen(props) {
         setIsLoading(false);
         nextPage();
       };
+      const createUser = async (input) => {
+        setError(null);
+        setIsLoading(true);
+        try {
+          const user = await dispatch(userActions.create(input));
+        } catch (err) {
+          setError(err.message);
+          setIsLoading(false);
+        }
+        let userData = await AsyncStorage.getItem('userData');
+        let authContext = {
+              email: userData.email,
+              token: userData.token,
+              userId: userData.userId,
+              isSignUp: false,
+        };
+        dispatch(authActions.authenticate(authContext));
+        setIsLoading(false);
+    };
+    const authPostSignUp = () => {
+
+    };
     const handleSetType = (type) => {
         setUserInput({
             ...userInput,
             type: type
         });
+        console.log(userInput);
+    };
+    const handleSetJobTypes = (types) => {
+        let newUserInputs = userInput;
+        newUserInputs.preferences.jobCategories = types;
+        setUserInput(newUserInputs);
         console.log(userInput);
     };
 
@@ -127,10 +167,10 @@ export default function RegisterScreen(props) {
                 return <RegisterForm1 page={ page } handleNext={ nextPage } handlePrev={ prevPage } handleSignUp={ signUpHandler } error={error} isLoading={isLoading} auth={ authInput } />;
 
             case 2: 
-                return <RegisterForm2 page={ page } handleNext={ nextPage } handlePrev={ prevPage } handleSetType={ handleSetType } user={ userInput } />;
+                return <RegisterForm2 page={ page } handleNext={ nextPage } handlePrev={ prevPage } handleSetType={ handleSetType }  user={ userInput } />;
 
             case 3: 
-                return <RegisterForm3 page = { page } handleNext={ nextPage } handlePrev={ prevPage } user={ userInput } />;
+                return <RegisterForm3 page = { page } handleNext={ nextPage } handlePrev={ prevPage } handleSetJobTypes={ handleSetJobTypes } user={ userInput } />;
         }
     }
 
@@ -160,7 +200,7 @@ export default function RegisterScreen(props) {
             </View>
 
             <View style={ styles.formContainer }>
-                <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
+                <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: '10%'}}>
                     <View style={{ alignItems: 'center'}}>
                         <Paragraph>Login Info</Paragraph>
                         <Avatar.Icon size={page==1? 60 : 50} icon="account-key" style={{backgroundColor: page >=1? Colors.primary: Colors.primaryLight, elevation: 10}}/>
@@ -252,4 +292,5 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(255,255,255,.7)',
         height: 40,
     },
+    
 });
