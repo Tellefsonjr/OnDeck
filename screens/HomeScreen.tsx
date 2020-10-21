@@ -28,12 +28,16 @@ import CATEGORIES from "../data/stubbed/dummy-job-categories";
 import Agenda from "../components/Agenda";
 import JobListItem from "../components/jobs/JobListItem";
 import JobFilterModal from "../components/jobs/JobFilterModal";
+import * as userActions from '../store/actions/users'; //Redux Actions
 
 export default function HomeScreen(props: any) {
   const dispatch = useDispatch();
   const JOBS = useSelector(state => state.jobs.jobs);
   const COMPANIES = useSelector(state => state.companies.companies);
-
+  const loggedInUser = useSelector(state => state.auth.userId);
+  // dispatch(userActions.get(loggedInUser));
+  const USER = useSelector(state => state.users.user);
+  console.log("PULLED USER: ", USER, loggedInUser);
   const [filteredJobs, setFilteredJobs] = React.useState(JOBS);
   const [jobModalVisible, setJobModalVisible] = React.useState(false);
   const [selectedJob, setSelectedJob] = React.useState(null);

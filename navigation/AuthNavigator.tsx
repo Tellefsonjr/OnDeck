@@ -28,12 +28,16 @@ export default function AuthNavigator() {
       <AuthStack.Screen
         name="Login"
         component={LoginScreen}
-        options={{ }}
+        options={{
+          headerShown: false
+         }}
       />
       <AuthStack.Screen
         name="Register"
         component={RegisterScreen}
-        options= {{ }}
+        options= {{
+          headerShown: false
+         }}
       />
     </AuthStack.Navigator>
   );

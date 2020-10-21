@@ -105,10 +105,8 @@ export default function RegisterScreen(props) {
               isSignUp: false,
         };
         dispatch(authActions.authenticate(authContext));
+        dispatch(userActions.get(authContext.userId));
         setIsLoading(false);
-    };
-    const authPostSignUp = () => {
-
     };
     const handleSetType = (type) => {
         setUserInput({
@@ -201,21 +199,21 @@ export default function RegisterScreen(props) {
 
             <View style={ styles.formContainer }>
                 <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: '10%'}}>
-                    <View style={{ alignItems: 'center'}}>
+                    <View style={{ alignItems: 'center',}}>
                         <Paragraph>Login Info</Paragraph>
                         <Avatar.Icon size={page==1? 60 : 50} icon="account-key" style={{backgroundColor: page >=1? Colors.primary: Colors.primaryLight, elevation: 10}}/>
                     </View>
                     <View style={{ paddingTop: 20 }}>
                         <Paragraph> - - - </Paragraph>
                     </View>
-                    <View style={{ alignItems: 'center'}}>
+                    <View style={{ alignItems: 'center',}}>
                         <Paragraph>About You</Paragraph>
                         <Avatar.Icon size={ page==2? 60 : 50}  icon="account-details" style={{backgroundColor: page >=2? Colors.primary: Colors.primaryLight, elevation: 10}}/>
                     </View>
                     <View style={{ paddingTop: 20 }}>
                         <Paragraph> - - - </Paragraph>
                     </View>
-                    <View style={{ alignItems: 'center'}}>
+                    <View style={{ alignItems: 'center',}}>
                         <Paragraph>Preferences</Paragraph>
                         <Avatar.Icon size={ page==3? 60 : 50}  icon="account-settings" style={{backgroundColor: page >=3? Colors.primary: Colors.primaryLight, elevation: 10}}/>
                     </View>
