@@ -1,5 +1,6 @@
 import {FIREBASE_KEY} from '@env';
 import { AsyncStorage } from 'react-native';
+import * as userActions from './users'; //Redux Actions
 
 export const SIGNUP = 'SIGNUP';
 export const DELETE = 'DELETE';
@@ -106,6 +107,7 @@ export const login = (payload) => {
     
         const resData = await response.json();
         dispatch(authenticate(resData.localId, resData.idToken, resData.email, false));
+        dispatch(userActions.login(resData.localId));
         const expirationDate = new Date(new Date().getTime() + parseInt(resData.expiresIn) * 1000);
         saveDataToStorage({
             userId: resData.localId,

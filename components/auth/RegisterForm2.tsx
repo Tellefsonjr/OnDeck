@@ -135,7 +135,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     borderRadius: 5,
-    elevation: 10,
     padding: 10,
     marginTop: 5,
     paddingBottom: 50

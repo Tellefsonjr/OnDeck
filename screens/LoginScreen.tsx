@@ -9,6 +9,7 @@ import Wave from 'react-native-waveview';
 import * as _ from 'lodash';
 import { useSelector, useDispatch } from 'react-redux';
 import * as authActions from '../store/actions/auth'; //Redux Actions
+import * as userActions from '../store/actions/users'; //Redux Actions
 
 
 import Logo from '../assets/images/OD_Logo.svg';
@@ -62,7 +63,7 @@ export default function LoginScreen(props) {
     } catch (err) {
       setError(err.message);
       setIsLoading(false);
-    }
+    };
   }
 
   useEffect( () => {

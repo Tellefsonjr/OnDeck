@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button, View, Text } from 'react-native';
 import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList, DrawerItem } from '@react-navigation/drawer';
 import { NavigationContainer } from '@react-navigation/native';
@@ -6,7 +6,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { createStackNavigator} from '@react-navigation/stack';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { HeaderButtons, Item } from 'react-navigation-header-buttons';
-import { useDispatch } from 'react-redux';
+import { useSelector, useDispatch, connect } from 'react-redux';
 import Colors from '../constants/Colors';
 
 import CustomHeaderButton from '../components/HeaderButton';
@@ -20,7 +20,13 @@ import EventsScreen from '../screens/EventsScreen';
 import UserProfileScreen from '../screens/UserProfileScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 
+import AuthNavigator from './AuthNavigator';
+import AsyncStorage from '@react-native-community/async-storage';
+
 import * as authActions from '../store/actions/auth'; //Redux Actions
+import * as userActions from '../store/actions/users'; //Redux Actions
+
+const AuthContext = React.createContext();
 
 
 const Tab = createBottomTabNavigator();
@@ -65,7 +71,10 @@ return <MaterialCommunityIcons name={iconName} size={size} color={color}     />;
 const HomeStack = createStackNavigator<HomeParamList>();
 
 function HomeNavigator(props) {
-  console.log("Home navigator props", props.navigation);
+  console.log("Home navigator props", props.route);
+
+
+
   return (
     <HomeStack.Navigator>
       <HomeStack.Screen
@@ -87,7 +96,7 @@ function HomeNavigator(props) {
         name="JobDetailScreen"
         component={JobDetailScreen}
         options={({ route }) => ({ title: route.params.title })}
-      />
+      />  
     </HomeStack.Navigator>
   );
 }
@@ -148,7 +157,7 @@ function Events() {
 
 function CustomDrawerContent(props) {
   const dispatch = useDispatch();
-  console.log("DRAWER PROPS: ", props.navigation.navigate);
+  // console.log("DRAWER PROPS: ", props.navigation.navigate);
   return (
     <DrawerContentScrollView {...props} contentContainerStyle={{ flex: 1 }}>
       <DrawerItemList {...props} />
@@ -156,7 +165,7 @@ function CustomDrawerContent(props) {
         style={{backgroundColor: Colors.secondary, position: 'absolute', bottom: 10, width: '92%'}} 
         onPress={() => {
           dispatch(authActions.logout()); 
-          // props.navigation.navigate("Auth", { screen: 'LoginScreen'})
+          props.navigation.navigate("Home", {screen: "AuthScreen"});
         }}
           icon= {() => (
             <MaterialCommunityIcons name='logout' size={36} color="white" />
@@ -167,8 +176,10 @@ function CustomDrawerContent(props) {
   );
 }
 
+
+
 const Drawer = createDrawerNavigator();
-export default function App() {
+function DrawerNavigator(props) {
   return (
     <Drawer.Navigator initialRouteName="Home" drawerContent={props => <CustomDrawerContent {...props} />}>
       <Drawer.Screen name="Profile" component={ UserProfileScreen } options={{
@@ -188,4 +199,94 @@ export default function App() {
     </Drawer.Navigator>
 
   )
-}
+};
+let App = ({ getUser, ...props }) => {
+  const dispatch = useDispatch();
+  const email = useSelector(state => state.auth.email);
+  const token = useSelector(state => state.auth.token);
+  const userId = useSelector(state => state.auth.userId);
+  const isSignUp = useSelector(state => state.auth.isSignUp);
+
+  const [ authContext, setAuthContext ] = useState({
+    user: {
+      email: email,
+      token: token,
+      userId: userId,
+      isSignUp: isSignUp,
+    }
+  });
+  React.useEffect(() => {
+    let userData;
+    // Fetch the token from storage then navigate to our appropriate place
+    if(!isSignUp){
+    const tryLogin = async () => {
+    userData = await AsyncStorage.getItem('userData');
+    console.log("UserData found: ", userData);
+    if( !userData ){
+      console.log("No user data found, first catch");
+      setAuthContext({
+        user: {
+          email: null,
+          token: null,
+          userId: null,
+          isSignUp: isSignUp,
+        }
+      })
+      // if no cached data for user, don't try transforming data
+      return;
+    };
+    const transformedData = JSON.parse(userData);
+    setAuthContext(transformedData);
+    const { token, userId, expirationDate, email } = transformedData;
+    if(new Date(expirationDate) <= new Date()){
+      console.log("Expiry: ", expirationDate, " >= ", new Date().toISOString());
+      return;
+    }
+    };
+    tryLogin();
+    console.log("Auth Context: ", authContext);
+    }
+  }, [email, userId, token, isSignUp]);
+
+
+  const AppStack = createStackNavigator<AppStackParamList>();
+
+  return (
+    <AppStack.Navigator>
+      { !authContext.user.token || !authContext.user.userId || authContext.user.isSignUp ? (
+        <AppStack.Screen
+        name="AuthScreen"
+        component={AuthNavigator}
+        options={{
+          tabBarVisible: false,
+          headerShown: false,
+        }}
+       />        
+       ) :
+      ( 
+        <AppStack.Screen name="Home" component={DrawerNavigator} options={{
+          headerShown: false,
+        }}/>
+      )
+      }
+    </AppStack.Navigator>
+
+  );
+};
+
+const mapStateToProps = (state, ownProps) => {
+  return {
+    user: state.users.user,
+  }
+};
+const mapDispatchToProps = dispatch => {
+  return {
+    getUser: (userId) => dispatch(userActions.get(userId))
+  }
+};
+App = connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(App);
+
+export default App;

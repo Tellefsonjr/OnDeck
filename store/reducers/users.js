@@ -1,35 +1,26 @@
 import USERS from '../../data/stubbed/dummy-users';
-import { CREATE, GET, UPDATE, DELETE} from '../actions/users';
+import { CREATE, GET, LOGIN, LOGOUT, UPDATE, DELETE, CREATE_ERROR} from '../actions/users';
 import User from '../../data/models/User';
 
 const initialState = {
-  // JOBS: [],
-  // filteredJOBS: [],
-  // orderedJOBS: [],
   user: null,
   userId: null,
+  users: [],
+  selectedUser: null,
 };
 
 const usersReducer = (state = initialState, action) => {
+  // console.log(" ~~~~~~~~~~~~~~GOT TO THE REDUCER ~~~~~~~~~~~~~~~~~~~");
   switch (action.type) {
-    // case GET:
-    //   return { ...state, filteredJOBS: state.JOBS.filter(
-    //     return {(o) => action.jobIds.includes(o.id);}
-    //   )};
+    case GET:
+      // console.log("~~~~~~~~~~~~~~~~GETTING USER IN REDUCER", action);
+      return { ...state, selectedUser: action.data};
     case CREATE: 
-        const newUser = new User(
-          action.data.id,
-          action.data.name,
-          action.data.ein,
-          action.data.icon,
-          action.data.categories,
-          action.data.description,
-          action.data.tagline,
-          action.data.locations,
-          action.data.jobs,
-          action.data.team,
-        );
-        return { ...state, companies: state.companies.concat( newCompany ) };
+        console.log("Creating user in reducer: ", action.data.userId);
+        return {...state, user: action.data, userId: action.data.userId};
+    case CREATE_ERROR:
+        console.log("Error when creating user: ", action.err);
+        return state
     case UPDATE:
         const userIndex = state.users.findIndex( user => user.id == action.data.id);
         const updatedUser = new User(
@@ -51,6 +42,11 @@ const usersReducer = (state = initialState, action) => {
     case DELETE:
     console.log("Deleting in reducer: ", action.userId);
       return { ...state, users: state.users.filter((user) => user.id !== action.userId ) };
+    case LOGIN:
+        console.log(`LOGGED IN USER:  ${action.data.contactInfo.email} /// ${action.data.userId}`);
+        return { ...state, user: action.data, userId: action.data.userId }
+    case LOGOUT: 
+        return { initialState }
   };
   return state;
 }
