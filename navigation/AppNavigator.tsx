@@ -3,6 +3,7 @@ import { Button, View, Text } from 'react-native';
 import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList, DrawerItem } from '@react-navigation/drawer';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
+import { HeaderBackButton } from '@react-navigation/stack';
 import { createStackNavigator} from '@react-navigation/stack';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { HeaderButtons, Item } from 'react-navigation-header-buttons';
@@ -26,7 +27,6 @@ import AsyncStorage from '@react-native-community/async-storage';
 import * as authActions from '../store/actions/auth'; //Redux Actions
 import * as userActions from '../store/actions/users'; //Redux Actions
 
-const AuthContext = React.createContext();
 
 
 const Tab = createBottomTabNavigator();
@@ -71,10 +71,6 @@ return <MaterialCommunityIcons name={iconName} size={size} color={color}     />;
 const HomeStack = createStackNavigator<HomeParamList>();
 
 function HomeNavigator(props) {
-  console.log("Home navigator props", props.route);
-
-
-
   return (
     <HomeStack.Navigator>
       <HomeStack.Screen
@@ -83,7 +79,7 @@ function HomeNavigator(props) {
         options={{
           headerTitle: "Home",
           headerLeft: () => (
-            <ProfileHeader size={36} paddingLeft={15}/>
+            <ProfileHeader size={36} paddingLeft={15} navProps={props.navigation}/>
           ),
           headerRight: () => (
           <HeaderButtons HeaderButtonComponent={CustomHeaderButton}>
@@ -95,26 +91,51 @@ function HomeNavigator(props) {
       <HomeStack.Screen
         name="JobDetailScreen"
         component={JobDetailScreen}
-        options={({ route }) => ({ title: route.params.title })}
+        options={({ route }) => ({ title: route.params.title,
+          headerLeft: () => (
+            <ProfileHeader size={36} paddingLeft={15} navProps={props.navigation} />
+          ),
+          headerRight: () => (
+          <HeaderButtons HeaderButtonComponent={CustomHeaderButton}>
+            <Item title="Menu" iconName="menu" onPress={ () => { props.navigation.toggleDrawer()}} />
+          </HeaderButtons>
+          ) })}
       />  
+
     </HomeStack.Navigator>
   );
 }
 
 const SosStack = createStackNavigator<SosParamList>();
 
-function Sos() {
+function Sos(props) {
   return (
     <SosStack.Navigator>
       <SosStack.Screen
         name="SosScreen"
         component={SosScreen}
-        options={{ headerTitle: 'Sos' }}
+        options={{ headerTitle: 'Sos',
+        headerLeft: () => (
+          <ProfileHeader size={36} paddingLeft={15} navProps={props.navigation} />
+        ),
+        headerRight: () => (
+        <HeaderButtons HeaderButtonComponent={CustomHeaderButton}>
+          <Item title="Menu" iconName="menu" onPress={ () => { props.navigation.toggleDrawer()}} />
+        </HeaderButtons>
+        ) }}
       />
       <SosStack.Screen
         name="JobDetailScreen"
         component={JobDetailScreen}
-        options={{ headerTitle: 'OnDeck' }}
+        options={{ headerTitle: 'OnDeck',
+        headerLeft: () => (
+          <ProfileHeader size={36} paddingLeft={15} navProps={props.navigation} />
+        ),
+        headerRight: () => (
+        <HeaderButtons HeaderButtonComponent={CustomHeaderButton}>
+          <Item title="Menu" iconName="menu" onPress={ () => { props.navigation.toggleDrawer()}} />
+        </HeaderButtons>
+        ) }}
       />
     </SosStack.Navigator>
   );
@@ -123,18 +144,34 @@ function Sos() {
 
 const BrowseStack = createStackNavigator<BrowseParamList>();
 
-function Browse() {
+function Browse(props) {
   return (
     <BrowseStack.Navigator>
       <BrowseStack.Screen
         name="BrowseScreen"
         component={BrowseScreen}
-        options={{ headerTitle: 'Browse' }}
+        options={{ headerTitle: 'Browse',
+        headerLeft: () => (
+          <ProfileHeader size={36} paddingLeft={15} navProps={props.navigation} />
+        ),
+        headerRight: () => (
+        <HeaderButtons HeaderButtonComponent={CustomHeaderButton}>
+          <Item title="Menu" iconName="menu" onPress={ () => { props.navigation.toggleDrawer()}} />
+        </HeaderButtons>
+        ) }}
       />
       <BrowseStack.Screen
         name="JobDetailScreen"
         component={JobDetailScreen}
-        options={{ headerTitle: 'OnDeck' }}
+        options={{ headerTitle: 'OnDeck',
+        headerLeft: () => (
+          <ProfileHeader size={36} paddingLeft={15} navProps={props.navigation} />
+        ),
+        headerRight: () => (
+        <HeaderButtons HeaderButtonComponent={CustomHeaderButton}>
+          <Item title="Menu" iconName="menu" onPress={ () => { props.navigation.toggleDrawer()}} />
+        </HeaderButtons>
+        ) }}
       />
     </BrowseStack.Navigator>
   );
@@ -142,15 +179,80 @@ function Browse() {
 
 const EventsStack = createStackNavigator<EventsParamList>();
 
-function Events() {
+function Events(props) {
   return (
     <EventsStack.Navigator>
       <EventsStack.Screen
         name="EventsScreen"
         component={EventsScreen}
-        options={{ headerTitle: 'Events' }}
+        options={{ headerTitle: 'Events',
+        headerLeft: () => (
+          <ProfileHeader size={36} paddingLeft={15} navProps={props.navigation} />
+        ),
+        headerRight: () => (
+        <HeaderButtons HeaderButtonComponent={CustomHeaderButton}>
+          <Item title="Menu" iconName="menu" onPress={ () => { props.navigation.toggleDrawer()}} />
+        </HeaderButtons>
+        ) }}
       />
     </EventsStack.Navigator>
+  );
+}
+const ProfileStack = createStackNavigator<ProfileParamList>();
+
+function Profile(props) {
+  return (
+    <ProfileStack.Navigator>
+      <ProfileStack.Screen
+        name="ProfileScreen"
+        component={UserProfileScreen}
+        options={({ navigation }) => ({
+          title: 'Profile',
+          headerLeft: (props) => (
+            <HeaderBackButton
+              {...props}
+              onPress={() => {
+                navigation.goBack()
+              }}
+            />
+          ),
+          headerRight: () => (
+            <HeaderButtons HeaderButtonComponent={CustomHeaderButton}>
+              <Item title="Menu" iconName="menu" onPress={ () => { props.navigation.toggleDrawer()}} />
+            </HeaderButtons>
+            )
+        })}
+      />
+    </ProfileStack.Navigator>
+  );
+}
+
+const SettingsStack = createStackNavigator<SettingsParamList>();
+
+function Settings(props) {
+  return (
+    <SettingsStack.Navigator>
+      <SettingsStack.Screen
+        name="SettingsScreen"
+        component={SettingsScreen}
+        options={({ navigation }) => ({
+          title: 'Settings',
+          headerLeft: (props) => (
+            <HeaderBackButton
+              {...props}
+              onPress={() => {
+                navigation.goBack()
+              }}
+            />
+          ),
+          headerRight: () => (
+            <HeaderButtons HeaderButtonComponent={CustomHeaderButton}>
+              <Item title="Menu" iconName="menu" onPress={ () => { props.navigation.toggleDrawer()}} />
+            </HeaderButtons>
+            )
+        })}
+      />
+    </SettingsStack.Navigator>
   );
 }
 
@@ -182,111 +284,54 @@ const Drawer = createDrawerNavigator();
 function DrawerNavigator(props) {
   return (
     <Drawer.Navigator initialRouteName="Home" drawerContent={props => <CustomDrawerContent {...props} />}>
-      <Drawer.Screen name="Profile" component={ UserProfileScreen } options={{
-          drawerIcon: () => (
-            <ProfileHeader size={36} paddingLeft={0} />
-          )
-          }}
+      <Drawer.Screen name="Profile" component={ Profile } 
+      options={({ navigation }) => ({
+        headerTitle: "Hello",
+        drawerIcon: () => (
+          <ProfileHeader size={36} paddingLeft={0} navProps={props.navigation} />
+        ),
+        headerLeft: () => (
+          <ProfileHeader
+            size={36}
+            paddingLeft={15}
+            navProps={navigation}
+          />
+        ),
+        headerRight: () => (
+          <HeaderButtons HeaderButtonComponent={CustomHeaderButton}>
+            <Item
+              title="Menu"
+              iconName="menu"
+              onPress={() => {
+                navigation.toggleDrawer();
+              }}
+            />
+          </HeaderButtons>
+        ),
+      })}
+
         />
         <Drawer.Screen name="Home" component={ TabNavigator } options={{
           drawerIcon: () => (
             <MaterialCommunityIcons name='home-outline' size={36} />
-          ) }} />
-        <Drawer.Screen name="Settings" style={{ position: 'absolute', bottom: 0}} component={ SettingsScreen } options={{
+          ),          
+           }} />
+        <Drawer.Screen name="Settings" style={{ position: 'absolute', bottom: 0}} component={ Settings } options={{
           drawerIcon: () => (
             <MaterialCommunityIcons name='cogs' size={36} />
+          ), 
+          headerLeft: () => (
+            <ProfileHeader size={36} paddingLeft={15} navProps={props.navigation} />
+          ),
+          headerRight: () => (
+          <HeaderButtons HeaderButtonComponent={CustomHeaderButton}>
+            <Item title="Menu" iconName="menu" onPress={ () => { props.navigation.toggleDrawer()}} />
+          </HeaderButtons>
           ) }} />
     </Drawer.Navigator>
 
   )
 };
-let App = ({ getUser, ...props }) => {
-  const dispatch = useDispatch();
-  const email = useSelector(state => state.auth.email);
-  const token = useSelector(state => state.auth.token);
-  const userId = useSelector(state => state.auth.userId);
-  const isSignUp = useSelector(state => state.auth.isSignUp);
+  
 
-  const [ authContext, setAuthContext ] = useState({
-    user: {
-      email: email,
-      token: token,
-      userId: userId,
-      isSignUp: isSignUp,
-    }
-  });
-  React.useEffect(() => {
-    let userData;
-    // Fetch the token from storage then navigate to our appropriate place
-    if(!isSignUp){
-    const tryLogin = async () => {
-    userData = await AsyncStorage.getItem('userData');
-    console.log("UserData found: ", userData);
-    if( !userData ){
-      console.log("No user data found, first catch");
-      setAuthContext({
-        user: {
-          email: null,
-          token: null,
-          userId: null,
-          isSignUp: isSignUp,
-        }
-      })
-      // if no cached data for user, don't try transforming data
-      return;
-    };
-    const transformedData = JSON.parse(userData);
-    setAuthContext(transformedData);
-    const { token, userId, expirationDate, email } = transformedData;
-    if(new Date(expirationDate) <= new Date()){
-      console.log("Expiry: ", expirationDate, " >= ", new Date().toISOString());
-      return;
-    }
-    };
-    tryLogin();
-    console.log("Auth Context: ", authContext);
-    }
-  }, [email, userId, token, isSignUp]);
-
-
-  const AppStack = createStackNavigator<AppStackParamList>();
-
-  return (
-    <AppStack.Navigator>
-      { !authContext.user.token || !authContext.user.userId || authContext.user.isSignUp ? (
-        <AppStack.Screen
-        name="AuthScreen"
-        component={AuthNavigator}
-        options={{
-          tabBarVisible: false,
-          headerShown: false,
-        }}
-       />        
-       ) :
-      ( 
-        <AppStack.Screen name="Home" component={DrawerNavigator} options={{
-          headerShown: false,
-        }}/>
-      )
-      }
-    </AppStack.Navigator>
-
-  );
-};
-
-const mapStateToProps = (state, ownProps) => {
-  return {
-    user: state.users.user,
-  }
-};
-const mapDispatchToProps = dispatch => {
-  return {
-    getUser: (userId) => dispatch(userActions.get(userId))
-  }
-};
-App = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(App);
-
-export default App;
+export default DrawerNavigator;

@@ -12,7 +12,7 @@ import { Provider as ReduxProvider } from 'react-redux';
 import { createStore, combineReducers, applyMiddleware, compose } from 'redux';
 import thunk from 'redux-thunk';
 import { createFirestoreInstance, getFirestore, reduxFirestore} from 'redux-firestore';
-import { ReactReduxFirebaseProvider, getFirebase } from 'react-redux-firebase';
+import { ReactReduxFirebaseProvider, getFirebase, firebaseReducer } from 'react-redux-firebase';
 import {firebase, firebaseConfig} from './firebaseConfig.js';
 
 //Redux Reducers and Store
@@ -22,6 +22,7 @@ import authReducer from './store/reducers/auth';
 import usersReducer from './store/reducers/users';
 
 const rootReducer = combineReducers({
+  firebase: firebaseReducer,
   auth: authReducer,
   users: usersReducer,
   jobs: jobsReducer,
@@ -66,6 +67,6 @@ export default function App(navigation) {
 
     );
   }
-}
+};
 
 registerRootComponent(App);
