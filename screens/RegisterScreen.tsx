@@ -10,11 +10,13 @@ import * as _ from 'lodash';
 import { useSelector, useDispatch } from 'react-redux';
 import * as authActions from '../store/actions/auth'; //Redux Actions
 import * as userActions from '../store/actions/users'; //Redux Actions
+import * as companyActions from '../store/actions/companies'; //Redux Actions
 
 
 import RegisterForm1 from '../components/auth/RegisterForm1';
 import RegisterForm2 from '../components/auth/RegisterForm2';
 import RegisterForm3 from '../components/auth/RegisterForm3';
+import RegisterForm4 from '../components/auth/RegisterForm4';
 
 import Logo from '../assets/images/OD_Logo.svg';
 import AsyncStorage from '@react-native-community/async-storage';
@@ -64,14 +66,59 @@ export default function RegisterScreen(props) {
             resume: "",
         },
 
-    })
+    });
+    // address: {
+    //     line1: "71 Hobart St",
+    //     line2: "",
+    //     zipCode: "",
+    //     city: "Riverstone",
+    //     state: "NSW",
+    //     country: "Australia",
+    //   },
+    // coordinates: {
+    //     lat: "-33.6607668",
+    //     long: "150.8740506",
+    //   }
+    const [ companyInput, setCompanyInput ] = useState({
+        companyId: '',
+        name: "",
+        ein: "",
+        icon: '',
+        categories: [],
+        description: "",
+        locations: [
+            {
+                address: '',
+                siteName: '',
+                siteId: '',
+            },
+        ],
+        jobs: [],
+        teamMembers: [],
+    });
     const prevPage = (  ) => {
         page == 1 ? setPage(1) : setPage(page-1);
     };
     const nextPage = ( values ) => {
-        // console.log("VALUES AFTER NEXT: ", values);
-        values ? setUserInput(values) : null;
-        page == 3 ? createUser(values) : setPage( page+1);
+        console.log("UserInput on NextPage: ", userInput, page);
+        if(userInput.type == '' || userInput.type == "Labourer"){
+            console.log("User flow: ");
+            setUserInput(values);
+            if(page == 3){
+                createUser(values)
+            };
+        } else if (userInput.type == "Business") {
+            console.log("VALUES AFTER NEXT: ", "PAGE: ", page, values, userInput);
+            if(page==4){
+                console.log("~~~~~~~~~~~~~Page4Action~~~~~~~~~~~~~~~~")
+                createBusiness(values);
+                createUser(userInput);
+            } else {
+                setUserInput(values);
+            };
+            // console.log("GOing to nexT PaGE", page+1);
+        };
+        setPage(page+1);
     };
     const signUpHandler = async (input) => {
         setError(null);
@@ -84,29 +131,49 @@ export default function RegisterScreen(props) {
           setError(err.message);
           setIsLoading(false);
         }
-        setUserInput({ ...userInput, contactInfo: {phone: "", email: input.email}});
+        let tempUser = userInput;
+        tempUser.contactInfo.email = input.email;
+        setUserInput(tempUser);
         setIsLoading(false);
-        nextPage();
+        nextPage(userInput);
       };
       const createUser = async (input) => {
         setError(null);
         setIsLoading(true);
         try {
           const user = await dispatch(userActions.create(input));
+          let userData = await AsyncStorage.getItem('userData');
+          let authContext = {
+                email: userData.email,
+                token: userData.token,
+                userId: userData.userId,
+                isSignUp: false,
+          };
+          if(authContext){
+              await dispatch(authActions.authenticate(authContext));
+              await dispatch(userActions.get(authContext.userId));
+              setIsLoading(false);
+          };
         } catch (err) {
           setError(err.message);
           setIsLoading(false);
         }
-        let userData = await AsyncStorage.getItem('userData');
-        let authContext = {
-              email: userData.email,
-              token: userData.token,
-              userId: userData.userId,
-              isSignUp: false,
-        };
-        dispatch(authActions.authenticate(authContext));
-        dispatch(userActions.get(authContext.userId));
-        setIsLoading(false);
+
+    };
+    const createBusiness = async (values) => {
+        console.log("CREATING BUSINESS", values);
+        let userId = userInput.userId;
+        let company = values;
+        company.teamMembers.push(userId);
+        console.log("Then create business");
+        setError(null);
+        setIsLoading(true);
+        try {
+          const newCompany = await dispatch(companyActions.create(company));
+        } catch (err) {
+          setError(err.message);
+          setIsLoading(false);
+        }
     };
     const handleSetType = (type) => {
         setUserInput({
@@ -120,6 +187,12 @@ export default function RegisterScreen(props) {
         newUserInputs.preferences.jobCategories = types;
         setUserInput(newUserInputs);
         console.log(userInput);
+    };
+    const handleSetCompanyTypes = (types) => {
+        let newCompanyInput = companyInput;
+        newCompanyInput.categories = types;
+        setCompanyInput(newCompanyInput);
+
     };
 
     const spinValue = useRef(new Animated.Value(0)).current;
@@ -169,8 +242,11 @@ export default function RegisterScreen(props) {
 
             case 3: 
                 return <RegisterForm3 page = { page } handleNext={ nextPage } handlePrev={ prevPage } handleSetJobTypes={ handleSetJobTypes } user={ userInput } />;
+            case 4:
+                return <RegisterForm4 page = { page } handleNext={ nextPage } handlePrev={ prevPage } handleSetCompanyTypes={ handleSetCompanyTypes } company={ companyInput } />;
         }
-    }
+    };
+    
 
 
 
@@ -204,21 +280,32 @@ export default function RegisterScreen(props) {
                         <Avatar.Icon size={page==1? 60 : 50} icon="account-key" style={{backgroundColor: page >=1? Colors.primary: Colors.primaryLight, elevation: 10}}/>
                     </View>
                     <View style={{ paddingTop: 20 }}>
-                        <Paragraph> - - - </Paragraph>
+                        <Paragraph> { userInput.type == '' || userInput.type == 'Labourer' ? '- - -' : '-'} </Paragraph>
                     </View>
                     <View style={{ alignItems: 'center',}}>
                         <Paragraph>About You</Paragraph>
                         <Avatar.Icon size={ page==2? 60 : 50}  icon="account-details" style={{backgroundColor: page >=2? Colors.primary: Colors.primaryLight, elevation: 10}}/>
                     </View>
                     <View style={{ paddingTop: 20 }}>
-                        <Paragraph> - - - </Paragraph>
+                        <Paragraph> {userInput.type == '' || userInput.type == 'Labourer' ? '- - -' : '-'} </Paragraph>
                     </View>
                     <View style={{ alignItems: 'center',}}>
                         <Paragraph>Preferences</Paragraph>
                         <Avatar.Icon size={ page==3? 60 : 50}  icon="account-settings" style={{backgroundColor: page >=3? Colors.primary: Colors.primaryLight, elevation: 10}}/>
                     </View>
+                    { userInput.type !='' && userInput.type == 'Business' ? (
+                        <>
+                        <View style={{ paddingTop: 20 }}>
+                            <Paragraph> - </Paragraph>
+                        </View>
+                        <View style={{ alignItems: 'center',}}>
+                            <Paragraph>Business Setup</Paragraph>
+                            <Avatar.Icon size={ page==4? 60 : 50}  icon="store" style={{backgroundColor: page >=4? Colors.primary: Colors.primaryLight, elevation: 10}}/>
+                        </View>
+                        </>
+                    ) : ( null )}
                 </View> 
-                <View style={{ flex: 10, }}>
+                <View style={{ flex: 10, width: '100%' }}>
                 {
                     showPage()
                 }

@@ -24,6 +24,7 @@ import CustomHeaderButton from '../components/HeaderButton';
 import { HeaderButtons, Item } from 'react-navigation-header-buttons';
 
 import CATEGORIES from "../data/stubbed/dummy-job-categories";
+import COMPANIES from "../data/stubbed/dummy-companies";
 
 import Agenda from "../components/Agenda";
 import JobListItem from "../components/jobs/JobListItem";
@@ -33,7 +34,7 @@ import * as userActions from '../store/actions/users'; //Redux Actions
 export default function HomeScreen(props: any) {
   const dispatch = useDispatch();
   const JOBS = useSelector(state => state.jobs.jobs);
-  const COMPANIES = useSelector(state => state.companies.companies);
+  const companies = useSelector(state => state.companies.companies);
   const loggedInUser = useSelector(state => state.auth.userId);
   // dispatch(userActions.get(loggedInUser));
   const USER = useSelector(state => state.users.user);

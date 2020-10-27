@@ -3,13 +3,25 @@ import React from 'react';
 import { StyleSheet, TouchableOpacity } from 'react-native';
 import { Avatar } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import {useSelector} from 'react-redux';
+import { useSelector, useDispatch, connect } from "react-redux";
 
 import Colors from '../../constants/Colors';
 import { MonoText } from '../StyledText';
 import { Text, View } from '../Themed';
 
-export default function ProfileHeader(props) {
+const mapStateToProps = (state, ownProps) => {
+  return {
+    auth: state.auth.userId,
+    user: state.users.user,
+  };
+};
+const mapDispatchToProps = (dispatch) => {
+  return {
+    getUser: (userId) => dispatch(userActions.get(userId)),
+  };
+};
+
+const ProfileHeader = (props, getUser) => {
   const loggedInUser = useSelector(state => state.auth.userId);
   // console.log("USER~~~~~~: ", loggedInUser);
   // console.log("~~~~~~PROPS FROM HEADER: ", props);
@@ -18,7 +30,11 @@ export default function ProfileHeader(props) {
             style={[styles.profileImage, { paddingLeft: props.paddingLeft }]} >
         <Avatar.Image
             size={props.size}
-            source={ require("../../assets/images/ProfileIcon.png") }
+            source={
+              props.user && props.user.profile.avatar
+                ? { uri: props.user.profile.avatar }
+                : require("../../assets/images/ProfileIcon.png")
+            }
           />   
         </TouchableOpacity>
   );
@@ -31,3 +47,5 @@ const styles = StyleSheet.create({
   }
 
 });
+
+export default connect(mapStateToProps, mapDispatchToProps)(ProfileHeader);

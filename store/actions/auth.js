@@ -57,6 +57,7 @@ export const signUp = (payload) => {
 };
 
 export const authenticate = (userId, token, email, isSignUp) => {
+    // console.log("GOT TO AUTHENTICATE~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~", userId);
     return { type: AUTHENTICATE, userId: userId, token: token, email: email, isSignUp: isSignUp };
 };
 

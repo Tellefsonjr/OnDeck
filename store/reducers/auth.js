@@ -22,6 +22,7 @@ const authReducer = (state = initialState, action) => {
     case AUTHENTICATE:
       // console.log("LOGGING IN REDUCER", action.userId, action.token, action.email, action.isSignUp);
       return {
+        ...state,
         userId: action.userId,
         token: action.token,
         email: action.email,

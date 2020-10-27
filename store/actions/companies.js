@@ -1,18 +1,67 @@
-export const GET = 'GET_COMPANIES';
-export const ADD = 'ADD_COMPANY';
-export const UPDATE = 'UPDATE_COMPANY';
-export const DELETE = 'DELETE_COMPANY';
+import {firebase, db} from '../../firebaseConfig.js';
+import { AsyncStorage } from 'react-native';
 
-export const getCompanies = companyIds => {
-  return { type: GET, data: companyIds }
+export const CREATE = 'CREATE';
+export const CREATE_ERROR = 'CREATE_ERROR';
+export const GET = 'GET';
+export const LOGIN = 'LOGIN';
+export const LOGOUT = 'LOGOUT';
+export const UPDATE = 'UPDATE';
+export const DELETE = 'DELETE';
+export const SET_COMPANY_FILTERS = 'SET_COMPANY_FILTERS';
+
+
+
+export const create = (payload) => {
+    return(dispatch, getState, {getFirestore, }) => {
+        const firestore = getFirestore();
+        firestore.collection('companies').doc(payload.companyId).set({
+                ...payload
+            }).then(() => {
+                dispatch({ type: "CREATE", data: payload});
+            }).catch((err) => {
+                dispatch({ type: "CREATE_ERROR", err});
+            })
+    }
 };
 
-export const addCompany = company => {
-  return { type: ADD, data: company }
+export const get = (payload) => {
+    return(dispatch, getState, {getFirestore, }) => {
+        const firestore = getFirestore();
+        firestore.collection('companies').doc(payload).get().then((doc) => {
+            dispatch({ type: "GET", data: doc.data()})
+        })
+    }
 };
-export const updateCompany = company => {
-  return { type: UPDATE, data: company }
+
+export const login = (payload) => {
+    return(dispatch, getState, {getFirestore, }) => {
+        const firestore = getFirestore();
+        firestore.collection('companies').doc(payload).get().then((doc) => {
+            dispatch({ type: "LOGIN", data: doc.data()})
+        })
+    }
 };
-export const deleteCompany = companyId => {
-  return { type: DELETE, data: companyId }
+
+export const logout = () => {
+    return(dispatch, getState, {getFirestore, }) => {
+        const firestore = getFirestore();
+        // TO DO ? Any logic needed here for DB?
+        dispatch({ type: "LOGOUT", data: {}});
+    }
 };
+
+export const updateUser = (payload) => ({
+    type: UPDATE,
+    data: payload
+});
+
+export const deleteUser = (payload) => ({
+    type: DELETE,
+    data: payload
+});
+
+export const setUserFilters = (payload) => ({
+    type: SET_USER_FILTERS,
+    payload
+})

@@ -52,7 +52,7 @@ export default function Navigation(
     if (!isSignUp) {
       const tryLogin = async () => {
         userData = await AsyncStorage.getItem("userData");
-        // console.log("UserData found: ", userData);
+        console.log("UserData found: ", userData);
         if (!userData) {
           console.log("No user data found, first catch");
           setAuthContext({
@@ -69,6 +69,15 @@ export default function Navigation(
         const transformedData = JSON.parse(userData);
         setAuthContext(transformedData);
         const { token, userId, expirationDate, email } = transformedData;
+        // console.log("~~~~~~~~~~~~~~~~~~~~~TRANSFORMED DATA~~~~~~~~~~~~", transformedData, userId, token, email);
+        dispatch(
+          authActions.authenticate(
+            transformedData.user.userId,
+            transformedData.user.token,
+            transformedData.user.email,
+            false
+          )
+        );
         if (new Date(expirationDate) <= new Date()) {
           console.log(
             "Expiry: ",
@@ -80,14 +89,7 @@ export default function Navigation(
         }
       };
       tryLogin();
-      dispatch(
-        authActions.authenticate(
-          authContext.user.userId,
-          authContext.user.token,
-          authContext.user.email,
-          false
-        )
-      );
+      
 
       // console.log("Auth Context: ", authContext);
     }

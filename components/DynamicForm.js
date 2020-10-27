@@ -260,11 +260,11 @@ class DynamicForm extends PureComponent {
               </View>
               </KeyboardAwareScrollView>
               </View>
-              {/* { errors || isSubmitting || !isValid ?
+              { errors || isSubmitting || !isValid ?
               console.log("Something's up: ", errors, "submitting?: ", isSubmitting, "valid?: ",isValid)
               :
               null
-              } */}
+              }
               { this.props.paginated?
                 <View style={styles.buttonContainer}>
                 <Button onPress={this.props.handleCancel} style={ this.props.buttonIcons? styles.buttonIcon : styles.button }
