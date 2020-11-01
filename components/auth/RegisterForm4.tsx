@@ -8,46 +8,94 @@ import { StyleSheet, TouchableHighlight, View, Alert, ActivityIndicator, ScrollV
 import { Card, TextInput, Title, Paragraph, Button, Avatar, IconButton } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import validation from '../../data/validation/UserValidation';
+import uuid from 'react-native-uuid';
+
+import validation from '../../data/validation/CompanyValidation';
 import DynamicForm from '../DynamicForm';
 import * as _ from 'lodash';
 import Colors from '../../constants/Colors';
 import { MonoText } from '../StyledText';
-import JOB_CATEGORIES from '../../data/stubbed/dummy-job-categories';
+import COMPANY_CATEGORIES from '../../data/stubbed/dummy-company-categories';
 
-export default function RegisterForm3(props) {
-  const [ jobTypes, setJobTypes ] = useState([]);
-  const [ showTypeCards, setShowTypeCards ] = useState( props.user.type == "Labourer" ? true : false );
+export default function RegisterForm4(props) {
+  const [ companyTypes, setCompanyTypes ] = useState([]);
+  const [ showTypeCards, setShowTypeCards ] = useState( true );
   // console.log(" USER AT PAGE 3: ", props.user);
+  // name: "",
+  //       ein: "",
+  //       logo: '',
+  //       rating: '',
+  //       categories: [],
+  //       description: "",
+  //       locations: [],
+  //       jobs: [],
+  //       teamMembers: [],
   const fields = [
-    [         
-      {label: 'Auto Update Location?', type: 'switch', name: 'preferences.autoUpdateLocation', icon: 'map-marker-off', icon2: 'map-marker-check', size: 'lrg'},
-      {label: 'Receive Notification?', type: 'switch', name: 'preferences.notifications', icon: 'bell-off', icon2: 'bell-ring', size: 'lrg'},
-      {label: 'Theme', type: 'switch', name: 'preferences.theme', icon: 'brightness-2', icon2: 'brightness-5', size: 'lrg'},
-
+    [ {label: 'Company Icon', type: 'image-picker', name: 'logo', size: 'med'},
+      {
+        label: "Company Name",
+        type: "input",
+        name: "name",
+        placeholder: "Stark Industries",
+        icon: "store",
+        size: "mlrg",
+      },
+      {
+        label: "Description",
+        type: "input",
+        name: "description",
+        placeholder: "Short description of yourself. Maybe say what you're looking for.!",
+        icon: "comment-text-outline",
+        size: "lrg",
+      },
     ],
- 
+    [
+      {
+        label: "EIN",
+        type: "input",
+        name: "ein",
+        placeholder: "123456789",
+        icon: "account-badge-horizontal-outline",
+        size: "lrg",
+      },
+      {
+        label: "Site Name",
+        type: "input",
+        name: "locations.[0].siteName",
+        placeholder: "Perth, WA, Australia",
+        icon: "map-marker-outline",
+        size: "lrg",
+      },
+      {
+        label: "Address",
+        type: "input",
+        name: "locations.[0].address",
+        placeholder: "Perth, WA, Australia",
+        icon: "map-marker-outline",
+        size: "lrg",
+      },
+    ],
   ];
 
   const toggleShowTypeCards = () => {
     setShowTypeCards(!showTypeCards);
   };
   const handleSetTypes = () => {
-    props.handleSetJobTypes(jobTypes);
+    props.handleSetCompanyTypes(companyTypes);
     toggleShowTypeCards();
   };
   const toggleSelectTypes = (categoryId, selected) => {
-    let temp = jobTypes;
-    selected ? setJobTypes(_.without(temp, categoryId)) : setJobTypes([ ...jobTypes, categoryId]);  
-    // console.log("Toggling, JobTypes: ", temp);  
+    let temp = companyTypes;
+    selected ? setCompanyTypes(_.without(temp, categoryId)) : setCompanyTypes([ ...companyTypes, categoryId]);  
+    // console.log("Toggling, companyTypes: ", temp);  
   };
   const renderTypeCards = () => {
     // id: 3,
     // title: "Gig",
     // description: "Gigs are temporary, flexible jobs where you will be considered a contractor or freelancer.",
     // icon: "run-fast"
-    return(JOB_CATEGORIES.map((cat) => {
-      let selected = jobTypes.includes(cat.id);
+    return(COMPANY_CATEGORIES.map((cat) => {
+      let selected = companyTypes.includes(cat.id);
       // console.log(selected, cat.id);
       return(
         <Card key={cat.id} elevation={15} onPress={() => toggleSelectTypes(cat.id, selected)} style={{ opacity: selected ? .8 : 1, width: '100%', marginVertical: 5 }}>
@@ -61,11 +109,21 @@ export default function RegisterForm3(props) {
       )
     }));
   };
+  const handleSubmit = (values) => {
+    // console.log("SUBMITTING COMPANY: ", values);
+    let companyId = uuid.v4();
+    let siteId = uuid.v4();
+    // console.log("SITE ID: ", siteId);
+    let company = values;
+    company.locations[0].siteId = siteId;
+    company.companyId = companyId;
+    props.handleNext(values);
+  };
   return (
     <View style={styles.container}>
       <View style={{ flexDirection: 'row', justifyContent: "space-around", alignItems: 'center'}}>
         <Paragraph style={{ fontStyle: 'italic'}}>
-          Customize your experience.
+          Let's create your company account.
         </Paragraph>
       </View>
         
@@ -73,20 +131,19 @@ export default function RegisterForm3(props) {
         {
           showTypeCards ?
             <View style={{ flex: 1, flexDirection: 'column', alignItems: 'center', justifyContent: 'space-between', width: '100%'}}>
-                <View style={{ flex: 1,}}>
-                  <Title>What type of jobs are you looking for?</Title>
+                <View style={{ flex: 1, flexWrap: 'wrap', flexDirection: 'row', }}>
+                  <Title style={{ flex: 1, flexWrap: 'wrap', }}>Which industry(ies) best describe your business?</Title>
                 </View>
-                <View style={{ flex: 8, flexWrap: 'wrap', width: '90%',  flexDirection: 'row', justifyContent: 'space-around', padding: 5,}}>
-                  <ScrollView contentContainerStyle={{ flex: 1}}>
+                <View style={{flex: 8, padding: 5, width: '100%', marginTop: 20, }}>
+                  <ScrollView style={{  }} contentContainerStyle={{ width: '100%',}}>
                   { renderTypeCards() }
                   </ScrollView>
                 </View>
-                
                 <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
                   <TouchableHighlight onPress={ () => toggleSelectTypes() } style={{ padding: 10, }}>
                     <Paragraph>Skip for now</Paragraph>
                   </TouchableHighlight>
-                  <Button disabled={jobTypes.length > 0 ? false : true} onPress={() => handleSetTypes()} style={{}}
+                  <Button disabled={companyTypes.length > 0 ? false : true} onPress={() => handleSetTypes()} style={{}}
                   type="submit"
                   icon={"check-circle-outline"}
                   mode="contained"
@@ -102,12 +159,12 @@ export default function RegisterForm3(props) {
           
           <DynamicForm
             fields={fields}
-            data={props.user}
+            data={props.company}
             validation={validation}
             paginated={ true }
             page={ props.page }
             handleCancel={ props.handlePrev }
-            handleSubmit={ props.handleNext }
+            handleSubmit={ handleSubmit }
           />
           </View>
           
@@ -121,6 +178,7 @@ export default function RegisterForm3(props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    width: '100%',
     borderRadius: 5,
     padding: 10,
     paddingBottom: 50

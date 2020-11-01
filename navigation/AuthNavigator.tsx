@@ -19,7 +19,7 @@ const AuthStack = createStackNavigator<AuthStackParamList>();
 
 export default function AuthNavigator() {
   const colorScheme = useColorScheme();
-
+  console.log("Got to Auth Navigator");
   return (
     <AuthStack.Navigator
       screenOptions={{ headerTitle: null }}

@@ -56,12 +56,21 @@ export default function RegisterForm2(props) {
         size: "lrg",
       },
     ],
-    [ {label: 'Select Certificate', type: 'select', name: 'profile.certificates[0].type', default: 'Select Certificate', icon: 'account-card-details', size: 'sm',
-    data: ['White Card', 'Blue Card', 'Yellow Card'],},
-      { label: 'Front', type: 'document-picker', name: 'profile.certificates[0].frontImage', size: 'sm' },
-      { label: 'Back', type: 'document-picker', name: 'profile.certificates[0].backImage', size: 'sm' },
-    ],
   ];
+  props.user.type == "Labourer" ? fields.push([ {label: 'Select Certificate', type: 'select', name: 'profile.certificates[0].type', default: 'Select Certificate', icon: 'account-card-details', size: 'sm',
+  data: ['White Card', 'Blue Card', 'Yellow Card'],},
+    { label: 'Front', type: 'document-picker', name: 'profile.certificates[0].frontImage', size: 'sm' },
+    { label: 'Back', type: 'document-picker', name: 'profile.certificates[0].backImage', size: 'sm' },
+  ]) : fields[1].push(
+    {
+      label: "role",
+      type: "input",
+      name: "profile.role",
+      placeholder: "Company Role",
+      icon: "account-question",
+      size: "lrg",
+    }
+  );
 
   const toggleShowTypeCards = () => {
     setShowTypeCards(!showTypeCards);
@@ -86,14 +95,14 @@ export default function RegisterForm2(props) {
       <View style={ styles.formContainer }>
         {
           showTypeCards ?
-            <View style={{ flexDirection: 'column', justifyContent: 'space-between', width: '100%'}}>
-                <Card elevation={30} onPress={() => handleSetType("Labourer")}>
+            <View style={{ flexDirection: 'column', justifyContent: 'space-between', alignItems: 'center', width: '100%'}}>
+                <Card elevation={30} onPress={() => handleSetType("Labourer")} style={{  marginTop: 20, padding: 5, width: '60%'}}>
                 <Card.Content style={{ alignItems: 'center'}}>
                     <Icon name="hard-hat" size={40} />
                   </Card.Content>
                   <Card.Title title="Labourer" subtitle="I am looking for work." />
                 </Card>
-                <Card elevation={30} style={{  marginTop: 20, padding: 5, width: '100%'}}  onPress={() => handleSetType("Business")}>
+                <Card elevation={30} style={{  marginTop: 20, padding: 5, width: '60%'}}  onPress={() => handleSetType("Business")}>
                 <Card.Content style={{ width: '100%', alignItems: 'center'}}>
                     <Icon name="store" size={40} />
                   </Card.Content>
@@ -104,7 +113,7 @@ export default function RegisterForm2(props) {
           <View>
           <TouchableHighlight onPress={ () => toggleShowTypeCards() } style={{ padding: 10, }}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center' }}>
-            <Paragraph>I am a labourer</Paragraph>
+            <Paragraph>User type: { props.user.type }</Paragraph>
             <Avatar.Icon size={50} icon={props.user.type == "Labourer"? 'hard-hat' : 'store'} style={{backgroundColor:Colors.primary}} />
             </View>
             

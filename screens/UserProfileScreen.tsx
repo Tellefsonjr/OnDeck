@@ -21,15 +21,18 @@ import Colors from "../constants/Colors.ts";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useSelector, useDispatch, connect } from "react-redux";
+import { Video } from 'expo-av';
+
 import * as userActions from "../store/actions/auth"; //Redux Actions
 import { HeaderButtons, Item } from "react-navigation-header-buttons";
 
-import JOB_CATEGORIES from '../data/stubbed/dummy-job-categories';
+import JOB_CATEGORIES from "../data/stubbed/dummy-job-categories";
 import ProfileCard from "../assets/images/ProfileCard.svg";
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    user: state.users.user,
+    auth: state.firebase.auth,
+    user: state.firebase,
   };
 };
 const mapDispatchToProps = (dispatch) => {
@@ -38,79 +41,203 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 
-const UserProfileScreen = ( props, getUser,) => {
-  const dispatch = useDispatch();
-  console.log("~~~USER ON PROFILE : ", props);
+const UserProfileScreen = (props, getUser) => {
+  // console.log("~~~USER ON PROFILE : ", props);
+  const user = props.user.profile;
   const [toggleImage, setToggleImage] = useState(false);
+  const [toggleVideo, setToggleVideo] = useState(false);
 
+  const [ isEditing, setIsEditing ] = useState(false);
+  const editable = props.user && props.auth.uid;
+  // TO DO: Either edit in line / pop up modal / nav to screen
+  // const [ editUser, setEditUser ] = useState(props.user);
   const renderJobCategories = () => {
-    return(
-      <Text>hello</Text>
-      )
+    return <Text>hello</Text>;
   };
 
   return (
     <View style={styles.container}>
-      <View style={ styles.editContainer}>
-        <IconButton
+      {/* TO DO...Get Reauth working.... */}
+      {
+        editable ? (
+          <View style={styles.editContainer}>
+            {isEditing ? (
+              <View style={ styles.horizontalList }>
+                <IconButton
+                  icon="close"
+                  color={Colors.dark.text}
+                  size={30}
+                  onPress={() => setIsEditing(!isEditing)}
+                />
+                <IconButton
+                  icon="check"
+                  color={Colors.dark.text}
+                  size={30}
+                  onPress={() => console.log("Pressed Save")}
+                />
+              </View>
+            ) : (
+              <IconButton
+                icon="pencil-outline"
+                color={Colors.dark.text}
+                size={30}
+                onPress={() => setIsEditing(!isEditing)}
+              />
+            )}
+          
+        </View>
+        ) : (
+          <IconButton
           icon="pencil-outline"
+          style={{ display: 'none'}}
           color={Colors.dark.text}
           size={30}
-          onPress={() => setToggleImage(!toggleImage)}
+          onPress={() => console.log("Pressed invisible button!")}
         />
-      </View>
+        )
+      }
+
 
       <View style={styles.cardContainer}>
         <View style={styles.avatarContainer}>
           <TouchableWithoutFeedback onPress={() => setToggleImage(true)}>
+            <View style={{ paddingBottom: 0, marginBottom: '-5%'}}>
             <Avatar.Image
               size={128}
-              source={  props.user.profile.avatar ? {uri: props.user.profile.avatar} : require("../assets/images/ProfileIcon.png") }
+              source={
+                user.profile.avatar
+                  ? { uri: user.profile.avatar }
+                  : require("../assets/images/ProfileIcon.png")
+              }
             />
+            <IconButton
+              icon="play-circle-outline"
+              style={{ alignSelf: 'flex-end', marginTop: '-10%', marginRight: -15}}
+              color={Colors.light.text}
+              size={35}
+              onPress={() => setToggleVideo(true)}
+            />
+            </View>
+
           </TouchableWithoutFeedback>
-          <Title>{ props.user.fullName }</Title>
-          <View style={ [styles.horizontalList, { alignItems: 'center', marginLeft: '7%', alignSelf: 'center'}] }>
+          <Title>{user.fullName}</Title>
+          <View
+            style={[
+              styles.horizontalList,
+              { alignItems: "center", marginLeft: "7%", alignSelf: "center" },
+            ]}
+          >
             <MaterialCommunityIcons name="star" size={20} />
             <MaterialCommunityIcons name="star" size={20} />
             <MaterialCommunityIcons name="star" size={20} />
             <MaterialCommunityIcons name="star" size={20} />
             <MaterialCommunityIcons name="star-outline" size={20} />
-            <Paragraph style={{ opacity: .8, marginLeft: 5,}}>4.0</Paragraph>
+            <Paragraph style={{ opacity: 0.8, marginLeft: 5 }}>4.0</Paragraph>
           </View>
-          <View style={{ padding: 5,}}>
-          <Paragraph>{ props.user.profile.bio }</Paragraph>
+          <View style={{ padding: 5 }}>
+            <Paragraph>{user.profile.bio}</Paragraph>
           </View>
         </View>
 
-        <View style={ styles.infoContainer }>
-          <View style={ styles.iconTextPair }>
-            <MaterialCommunityIcons name='map-marker' size={20} style={{ marginRight: 10, alignSelf: 'center' }}/>
-            <Paragraph> {props.user.location.home.address} </Paragraph>
+        <View style={styles.infoContainer}>
+          <View style={styles.iconTextPair}>
+            <MaterialCommunityIcons
+              name="map-marker"
+              size={20}
+              style={{ marginRight: 10, alignSelf: "center" }}
+            />
+            <Paragraph> {user.location.home.address} </Paragraph>
           </View>
-          <View style={ styles.iconTextPair }>
-            <MaterialCommunityIcons name='magnify' size={20} style={{ marginRight: 10, alignSelf: 'center' }}/>
-            <View style={ styles.horizontalList }>
-              <Chip icon="information" style={{ padding: 0,}} textStyle={{ fontSize: 12}}>Gig</Chip>
-              <Chip icon="information" style={{ padding: 0,}} textStyle={{ fontSize: 12}}>Full-Time</Chip>
-              <Chip icon="information" style={{ padding: 0,}} textStyle={{ fontSize: 12}}>Part-Time</Chip>
-              <Chip icon="information" style={{ padding: 0,}} textStyle={{ fontSize: 12}}>Skilled</Chip>
-              <Chip icon="information" style={{ padding: 0,}} textStyle={{ fontSize: 12}}>Unskilled</Chip>
+          <View style={styles.iconTextPair}>
+            <MaterialCommunityIcons
+              name="magnify"
+              size={20}
+              style={{ marginRight: 10, alignSelf: "center" }}
+            />
+            <View style={styles.horizontalList}>
+              <Chip
+                icon="information"
+                style={{ padding: 0 }}
+                textStyle={{ fontSize: 12 }}
+              >
+                Gig
+              </Chip>
+              <Chip
+                icon="information"
+                style={{ padding: 0 }}
+                textStyle={{ fontSize: 12 }}
+              >
+                Full-Time
+              </Chip>
+              <Chip
+                icon="information"
+                style={{ padding: 0 }}
+                textStyle={{ fontSize: 12 }}
+              >
+                Part-Time
+              </Chip>
+              <Chip
+                icon="information"
+                style={{ padding: 0 }}
+                textStyle={{ fontSize: 12 }}
+              >
+                Skilled
+              </Chip>
+              <Chip
+                icon="information"
+                style={{ padding: 0 }}
+                textStyle={{ fontSize: 12 }}
+              >
+                Unskilled
+              </Chip>
             </View>
           </View>
-          <View style={ styles.iconTextPair }>
-            <MaterialCommunityIcons name='certificate' size={20} style={{ marginRight: 10, alignSelf: 'center' }}/>
+          <View style={styles.iconTextPair}>
+            <MaterialCommunityIcons
+              name="certificate"
+              size={20}
+              style={{ marginRight: 10, alignSelf: "center" }}
+            />
             <Paragraph> White card </Paragraph>
           </View>
-          <View style={ styles.iconTextPair }>
-            <MaterialCommunityIcons name='bag-personal-outline' size={20} style={{ marginRight: 10, alignSelf: 'center' }}/>
-            <Paragraph style={{ flex: 1, flexWrap: 'wrap' }}>PPE: high visibility clothing, steel-toe boots, hard hat, ear plugs, face mask</Paragraph>
+          <View style={styles.iconTextPair}>
+            <MaterialCommunityIcons
+              name="bag-personal-outline"
+              size={20}
+              style={{ marginRight: 10, alignSelf: "center" }}
+            />
+            <Paragraph style={{ flex: 1, flexWrap: "wrap" }}>
+              PPE: high visibility clothing, steel-toe boots, hard hat, ear
+              plugs, face mask
+            </Paragraph>
           </View>
         </View>
 
-        <View style={ styles.buttonContainer }>
-          <Button icon="file-document-outline" mode='contained' compact={true} color={ Colors.primary}>documents</Button>
-          <Button icon="comment-text-multiple-outline" mode='contained' compact={true} color={ Colors.primary}>reviews</Button>
-          <Button icon="tooltip-text-outline" mode='contained' compact={true} color={ Colors.primary}>contact</Button>
+        <View style={styles.buttonContainer}>
+          <Button
+            icon="file-document-outline"
+            mode="contained"
+            compact={true}
+            color={Colors.primary}
+          >
+            documents
+          </Button>
+          <Button
+            icon="comment-text-multiple-outline"
+            mode="contained"
+            compact={true}
+            color={Colors.primary}
+          >
+            reviews
+          </Button>
+          <Button
+            icon="tooltip-text-outline"
+            mode="contained"
+            compact={true}
+            color={Colors.primary}
+          >
+            contact
+          </Button>
         </View>
       </View>
 
@@ -137,18 +264,38 @@ const UserProfileScreen = ( props, getUser,) => {
                 <Avatar.Image
                   style={styles.modalAvatar}
                   size={360}
-                  source={require("../assets/images/ProfileIcon.png")}
+                  source={
+                    user.profile.avatar
+                      ? { uri: user.profile.avatar }
+                      : require("../assets/images/ProfileIcon.png")
+                  }
                 />
               </View>
             </View>
           </TouchableWithoutFeedback>
         </Modal>
-      ) : null}
-
-
+      ) : null }
+      { toggleVideo ? (
+        <Modal
+          visible={toggleVideo}
+          onDismiss={() => setToggleVideo(!toggleVideo)}
+          style={styles.modal}
+         >
+          <View style={styles.modalVideoContainer}>
+          <Video
+            source={{ uri: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4' }}
+            rate={1.0}
+            volume={1.0}
+            isMuted={false}
+            useNativeControls={true}
+            resizeMode="contain"
+            style={{ height: '100%', width: '100%'}} />
+        </View>
+        </Modal>
+        ) : null }
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -156,7 +303,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   editContainer: {
-    alignItems: 'flex-end',
+    alignItems: "flex-end",
   },
   cardContainer: {
     flex: 1,
@@ -185,12 +332,17 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   iconTextPair: {
-    flexDirection: 'row',
+    flexDirection: "row",
     marginBottom: 5,
   },
   modal: {},
   modalContainer: {
     height: "100%",
+    backgroundColor: "rgba(0,0,0,0.7)",
+  },
+  modalVideoContainer: {
+    height: '60%',
+    alignItems: 'center',
     backgroundColor: "rgba(0,0,0,0.7)",
   },
   exitContainer: {
@@ -202,13 +354,13 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-around',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-around",
   },
   horizontalList: {
-    flexDirection: 'row',
-  }
+    flexDirection: "row",
+  },
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(UserProfileScreen);

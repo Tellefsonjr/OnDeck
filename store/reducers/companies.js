@@ -1,59 +1,51 @@
-import COMPANIES from '../../data/stubbed/dummy-companies';
-import { GET, ADD, DELETE, UPDATE, } from '../actions/companies';
-import Company from '../../data/models/Company';
+import companies from '../../data/stubbed/dummy-companies';
+import { CREATE, GET, LOGIN, LOGOUT, UPDATE, DELETE, CREATE_ERROR} from '../actions/companies';
 
 const initialState = {
-  // Companies: [],
-  // filteredCompanies: [],
-  // orderedCompanies: [],
-  companies: COMPANIES,
-  filteredCompanies: COMPANIES,
-  orderedCompanies: COMPANIES
+  company: null,
+  companyId: null,
+  companies: companies,
+  selectedCompany: null,
 };
 
 const companiesReducer = (state = initialState, action) => {
+  // console.log(" ~~~~~~~~~~~~~~GOT TO THE REDUCER ~~~~~~~~~~~~~~~~~~~");
   switch (action.type) {
-    // case GET:
-    //   return { ...state, filteredCompanies: state.Companies.filter(
-    //     return {(o) => action.jobIds.includes(o.id);}
-    //   )};
-    case ADD:
-      const newCompany = new Company(
-        action.data.id,
-        action.data.name,
-        action.data.ein,
-        action.data.icon,
-        action.data.categories,
-        action.data.description,
-        action.data.tagline,
-        action.data.locations,
-        action.data.jobs,
-        action.data.team,
-      );
-      return { ...state, companies: state.companies.concat( newCompany ) };
+    case GET:
+      // console.log("~~~~~~~~~~~~~~~~GETTING company IN REDUCER", action);
+      return { ...state, selectedCompany: action.data};
+    case CREATE: 
+        console.log("Creating company in reducer: ", action.data.companyId);
+        return {...state, company: action.data, companyId: action.data.companyId};
+    case CREATE_ERROR:
+        console.log("Error when creating company: ", action.err);
+        return state
     case UPDATE:
         const companyIndex = state.companies.findIndex( company => company.id == action.data.id);
         const updatedCompany = new Company(
             action.data.id,
-            action.data.name,
-            action.data.ein,
-            action.data.icon,
+            action.data.companyId,
             action.data.categories,
+            action.data.title,
             action.data.description,
-            action.data.tagline,
-            action.data.locations,
-            action.data.jobs,
-            action.data.team,
+            action.data.location,
+            action.data.dates,
+            action.data.pay
         );
         const updatedCompanies = [ ...state.companies ];
-        updatedCompanies[companyIndex] = updatedCompany;
+        updatedCompany[companyIndex] = updatedCompany;
         return {
           ...state,
-          companies: updatedCompanies,
+          companies: updatedCompany,
         }
     case DELETE:
     console.log("Deleting in reducer: ", action.companyId);
-      return { ...state, companies: state.companies.filter((company) => company.id !== action.companyId ) }
+      return { ...state, companies: state.companies.filter((company) => company.id !== action.companyId ) };
+    case LOGIN:
+        console.log(`LOGGED IN company:  ${action.data.companyId} /// ${action.data.companyId}`);
+        return { ...state, company: action.data, companyId: action.data.companyId }
+    case LOGOUT: 
+        return { initialState }
   };
   return state;
 }

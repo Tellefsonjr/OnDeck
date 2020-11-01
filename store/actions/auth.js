@@ -1,62 +1,50 @@
 import {FIREBASE_KEY} from '@env';
 import { AsyncStorage } from 'react-native';
-import * as userActions from './users'; //Redux Actions
-import { useSelector, useDispatch } from 'react-redux';
 
 export const SIGNUP = 'SIGNUP';
+export const SIGNUP_ERROR = 'SIGNUP_ERROR';
+export const SIGNUP_SUCCESS = 'SIGNUP_SUCCESS';
 export const DELETE = 'DELETE';
 export const RESTORE_TOKEN = "RESTORE_TOKEN";
 export const LOGIN = "LOGIN";
+export const LOGIN_SUCCESS = "LOGIN_SUCCESS";
+export const LOGIN_ERROR = "LOGIN_ERROR";
 export const LOGOUT = "LOGOUT";
+export const LOGOUT_SUCCESS = "LOGOUT_SUCCESS";
+export const LOGOUT_ERROR = "LOGOUT_ERROR";
+
 export const AUTHENTICATE = 'AUTHENTICATE';
 
+
 export const signUp = (payload) => {
-    return async dispatch => {
-        const response = await fetch(
-          `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${FIREBASE_KEY}`,
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              email: payload.email,
-              password: payload.password,
-              returnSecureToken: true
-            })
-          }
-        );
-    
-        if (!response.ok) {
-            const errorResData = await response.json();
-            const errorCode = errorResData.error.message;
-            console.log("Sign Up error: ", errorResData);
-            let message = 'Something went wrong!';
-            if (errorCode == 'EMAIL_EXISTS'){
-                message = 'This email is already taken. Please go back to login, or try a new email.'
-            } else if ( errorCode == 'INVALID_EMAIL'){
-                message = 'Invalid email, please try another one.';
-            } else if ( errorCode == 'TOO_MANY_ATTEMPTS_TRY_LATER'){
-                message = 'An error occurred, please try again later. If the issue persists, please contact support.'
-            } else if ( errorCode == 'OPERATION_NOT_ALLOWED'){
-                message = 'An error occurred, please contact support.'
-            }
-            throw new Error(message);
-        }
-    
-        const resData = await response.json();
-        dispatch(authenticate(resData.localId, resData.idToken, resData.email, true));
-        const expirationDate = new Date(new Date().getTime() + parseInt(resData.expiresIn) * 1000);
-        saveDataToStorage({
-            userId: resData.localId,
-            token: resData.idToken,
-            email: resData.email, 
-            expirationDate: expirationDate.toISOString()
-        });
-      };
+    return (dispatch, getState, {getFirebase, getFirestore}) => {
+        console.log("SIGNING UP IN AUTHACTIONS~~~~~~~~~~", payload);
+        const firebase = getFirebase();
+        const firestore = getFirestore();
+        firebase.auth().createUserWithEmailAndPassword(
+            payload.auth.email,
+            payload.auth.password,
+        ).then((res) => {
+            // const expirationDate = new Date(new Date().getTime() + parseInt(res.user.expiresIn) * 1000);
+            // saveDataToStorage({
+            //     userId: res.user.localId,
+            //     token: res.user.idToken,
+            //     email: res.user.email, 
+            //     expirationDate: expirationDate.toISOString()
+            // });
+            return firestore.collection('users').doc(res.user.uid).set(
+                payload.user
+            )
+        }).then(() => {
+            dispatch({ type: 'SIGNUP_SUCCESS' })
+        }).catch( err => {
+            dispatch({ type: 'SIGNUP_ERROR', err })
+        })
+    }
 };
 
 export const authenticate = (userId, token, email, isSignUp) => {
+    // console.log("GOT TO AUTHENTICATE~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~", userId);
     return { type: AUTHENTICATE, userId: userId, token: token, email: email, isSignUp: isSignUp };
 };
 
@@ -76,56 +64,76 @@ export const restoreToken = (payload) => ({
 });
 
 export const login = (payload) => {
-    return async dispatch => {
-        const response = await fetch(
-          `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${FIREBASE_KEY}`,
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              email: payload.email,
-              password: payload.password,
-              returnSecureToken: true
-            })
-          }
-        );
-    
-        if (!response.ok) {
-            const errorResData = await response.json();
-            const errorCode = errorResData.error.message;
-            let message = 'Something went wrong!';
-            if (errorCode == 'EMAIL_NOT_FOUND'){
-                message = 'Email could not be found.'
-            } else if ( errorCode == 'INVALID_PASSWORD'){
-                message = 'Invalid password.'
-            } else if ( errorCode == 'USER_DISABLED'){
-                message = 'User has been disabled, please contact support.'
-            }
-            throw new Error(message);
-        }
-    
-        const resData = await response.json();
-        dispatch(authenticate(resData.localId, resData.idToken, resData.email, false));
-        const expirationDate = new Date(new Date().getTime() + parseInt(resData.expiresIn) * 1000);
-        saveDataToStorage({
-            userId: resData.localId,
-            token: resData.idToken,
-            email: resData.email, 
-            expirationDate: expirationDate.toISOString()
+    return (dispatch, getState, {getFirebase}) => {
+        const firebase = getFirebase();
+        firebase.auth().signInWithEmailAndPassword(
+            payload.email,
+            payload.password
+        ).then(() => {
+            dispatch({ type: "LOGIN_SUCCESS" })
+        }).catch((err) => {
+            dispatch({ type: 'LOGIN_ERROR', err })
         });
-      };
-};
+    }
+}
+
+// export const login = (payload) => {
+//     return async dispatch => {
+//         const response = await fetch(
+//           `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${FIREBASE_KEY}`,
+//           {
+//             method: 'POST',
+//             headers: {
+//               'Content-Type': 'application/json'
+//             },
+//             body: JSON.stringify({
+//               email: payload.email,
+//               password: payload.password,
+//               returnSecureToken: true
+//             })
+//           }
+//         );
+    
+//         if (!response.ok) {
+//             const errorResData = await response.json();
+//             const errorCode = errorResData.error.message;
+//             let message = 'Something went wrong!';
+//             if (errorCode == 'EMAIL_NOT_FOUND'){
+//                 message = 'Email could not be found.'
+//             } else if ( errorCode == 'INVALID_PASSWORD'){
+//                 message = 'Invalid password.'
+//             } else if ( errorCode == 'USER_DISABLED'){
+//                 message = 'User has been disabled, please contact support.'
+//             }
+//             throw new Error(message);
+//         }
+    
+//         const resData = await response.json();
+//         dispatch(authenticate(resData.localId, resData.idToken, resData.email, false));
+//         const expirationDate = new Date(new Date().getTime() + parseInt(resData.expiresIn) * 1000);
+//         saveDataToStorage({
+//             userId: resData.localId,
+//             token: resData.idToken,
+//             email: resData.email, 
+//             expirationDate: expirationDate.toISOString()
+//         });
+//       };
+// };
 
 const saveDataToStorage = ( user ) => {
     AsyncStorage.setItem('userData', JSON.stringify({user}));
 };
 
 export const logout = () => {
-    console.log("LOGGING OUT");
-    AsyncStorage.removeItem('userData');   
-    return { type: LOGOUT };
+    return (dispatch, getState, {getFirebase}) => {
+        const firebase = getFirebase();
+        firebase.auth().signOut().then(() => {
+            dispatch({ type: 'LOGOUT_SUCCESS', })
+            console.log("LOGGING OUT");
+            AsyncStorage.removeItem('userData');   
+        })
+    }
+
 };
 
 
