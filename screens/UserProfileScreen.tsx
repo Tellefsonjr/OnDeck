@@ -31,8 +31,8 @@ import ProfileCard from "../assets/images/ProfileCard.svg";
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    auth: state.auth,
-    user: state.users.user,
+    auth: state.firebase.auth,
+    user: state.firebase,
   };
 };
 const mapDispatchToProps = (dispatch) => {
@@ -42,13 +42,13 @@ const mapDispatchToProps = (dispatch) => {
 };
 
 const UserProfileScreen = (props, getUser) => {
-  const dispatch = useDispatch();
   // console.log("~~~USER ON PROFILE : ", props);
+  const user = props.user.profile;
   const [toggleImage, setToggleImage] = useState(false);
   const [toggleVideo, setToggleVideo] = useState(false);
 
   const [ isEditing, setIsEditing ] = useState(false);
-  const editable = props.user && props.auth.userId == props.user.userId;
+  const editable = props.user && props.auth.uid;
   // TO DO: Either edit in line / pop up modal / nav to screen
   // const [ editUser, setEditUser ] = useState(props.user);
   const renderJobCategories = () => {
@@ -105,8 +105,8 @@ const UserProfileScreen = (props, getUser) => {
             <Avatar.Image
               size={128}
               source={
-                props.user.profile.avatar
-                  ? { uri: props.user.profile.avatar }
+                user.profile.avatar
+                  ? { uri: user.profile.avatar }
                   : require("../assets/images/ProfileIcon.png")
               }
             />
@@ -120,7 +120,7 @@ const UserProfileScreen = (props, getUser) => {
             </View>
 
           </TouchableWithoutFeedback>
-          <Title>{props.user.fullName}</Title>
+          <Title>{user.fullName}</Title>
           <View
             style={[
               styles.horizontalList,
@@ -135,7 +135,7 @@ const UserProfileScreen = (props, getUser) => {
             <Paragraph style={{ opacity: 0.8, marginLeft: 5 }}>4.0</Paragraph>
           </View>
           <View style={{ padding: 5 }}>
-            <Paragraph>{props.user.profile.bio}</Paragraph>
+            <Paragraph>{user.profile.bio}</Paragraph>
           </View>
         </View>
 
@@ -146,7 +146,7 @@ const UserProfileScreen = (props, getUser) => {
               size={20}
               style={{ marginRight: 10, alignSelf: "center" }}
             />
-            <Paragraph> {props.user.location.home.address} </Paragraph>
+            <Paragraph> {user.location.home.address} </Paragraph>
           </View>
           <View style={styles.iconTextPair}>
             <MaterialCommunityIcons
@@ -265,8 +265,8 @@ const UserProfileScreen = (props, getUser) => {
                   style={styles.modalAvatar}
                   size={360}
                   source={
-                    props.user.profile.avatar
-                      ? { uri: props.user.profile.avatar }
+                    user.profile.avatar
+                      ? { uri: user.profile.avatar }
                       : require("../assets/images/ProfileIcon.png")
                   }
                 />

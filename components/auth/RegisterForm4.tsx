@@ -55,7 +55,7 @@ export default function RegisterForm4(props) {
         type: "input",
         name: "ein",
         placeholder: "123456789",
-        icon: "badge-account-horizontal-outline",
+        icon: "account-badge-horizontal-outline",
         size: "lrg",
       },
       {
@@ -110,10 +110,10 @@ export default function RegisterForm4(props) {
     }));
   };
   const handleSubmit = (values) => {
-    console.log("SUBMITTING COMPANY: ", values);
+    // console.log("SUBMITTING COMPANY: ", values);
     let companyId = uuid.v4();
     let siteId = uuid.v4();
-    console.log("SITE ID: ", siteId);
+    // console.log("SITE ID: ", siteId);
     let company = values;
     company.locations[0].siteId = siteId;
     company.companyId = companyId;

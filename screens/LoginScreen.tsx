@@ -7,7 +7,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Wave from 'react-native-waveview';
 import * as _ from 'lodash';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector, useDispatch, connect } from 'react-redux';
 import * as authActions from '../store/actions/auth'; //Redux Actions
 import * as userActions from '../store/actions/users'; //Redux Actions
 
@@ -15,13 +15,12 @@ import * as userActions from '../store/actions/users'; //Redux Actions
 import Logo from '../assets/images/OD_Logo.svg';
 
 
-export default function LoginScreen(props) {
-  const dispatch = useDispatch();
+const LoginScreen = ( props ) => {
   const [ currentRotation, setCurrentRotation ] = useState(-(Math.floor(Math.random() * 30 ) + 20));
   const [ nextRotation, setNextRotation ] = useState((Math.floor(Math.random() * 30 ) + 20));
   const [ animated, setAnimated ] = useState(true);
   const [ isLoading, setIsLoading ] = useState(false);
-  const [ error, setError ] = useState();
+  const [ error, setError ] = useState(props.authError);
   const [ input, setInput ] = useState({
     email: '',
     password: '',
@@ -55,22 +54,19 @@ export default function LoginScreen(props) {
   
     return spinValue;
   };
-  const authHandler = async () => {
+  const authHandler = () => {
     setError(null);
     setIsLoading(true);
-    try {
-      await dispatch(authActions.login(input));
-    } catch (err) {
-      setError(err.message);
-      setIsLoading(false);
-    };
+    props.login(input);
+    console.log("Signed in user: ", props.auth);
+
   }
 
   useEffect( () => {
-    if(error){ 
-      Alert.alert('An error occurred!', error, [{ text: 'Dismiss' }])
+    if(props.authError){ 
+      Alert.alert('An props.authError occurred!', props.authError, [{ text: 'Dismiss', onPress: () => setIsLoading(false) }])
     }
-  }, [error])
+  }, [props.authError])
 
 
   return (
@@ -176,3 +172,18 @@ submitButton: {
   backgroundColor: 'rgba(95,54,221,.9)'
 }
 });
+
+const mapStateToProps = (state) => {
+  return {
+      auth: state.firebase.auth,
+      authError: state.auth.authError,
+  }
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    login: (input) => dispatch(authActions.login(input))
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(LoginScreen);

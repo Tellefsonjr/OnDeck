@@ -28,10 +28,7 @@ const AuthContext = React.createContext();
 
 // If you are not familiar with React Navigation, we recommend going through the
 // "Fundamentals" guide: https://reactnavigation.org/docs/getting-started
-export default function Navigation(
-  { colorScheme }: { colorScheme: ColorSchemeName },
-  { getUser, ...props }
-) {
+const Navigation = (props, colorScheme) => {
   const dispatch = useDispatch();
   const email = useSelector((state) => state.auth.email);
   const token = useSelector((state) => state.auth.token);
@@ -47,59 +44,82 @@ export default function Navigation(
     },
   });
   React.useEffect(() => {
-    let userData;
-    // Fetch the token from storage then navigate to our appropriate place
-    if (!isSignUp) {
-      const tryLogin = async () => {
-        userData = await AsyncStorage.getItem("userData");
-        console.log("UserData found: ", userData);
-        if (!userData) {
-          console.log("No user data found, first catch");
-          setAuthContext({
-            user: {
-              email: null,
-              token: null,
-              userId: null,
-              isSignUp: isSignUp,
-            },
-          });
-          // if no cached data for user, don't try transforming data
-          return;
-        }
-        const transformedData = JSON.parse(userData);
-        setAuthContext(transformedData);
-        const { token, userId, expirationDate, email } = transformedData;
-        // console.log("~~~~~~~~~~~~~~~~~~~~~TRANSFORMED DATA~~~~~~~~~~~~", transformedData, userId, token, email);
-        dispatch(
-          authActions.authenticate(
-            transformedData.user.userId,
-            transformedData.user.token,
-            transformedData.user.email,
-            false
-          )
-        );
-        if (new Date(expirationDate) <= new Date()) {
-          console.log(
-            "Expiry: ",
-            expirationDate,
-            " >= ",
-            new Date().toISOString()
-          );
-          return;
-        }
-      };
-      tryLogin();
-      
 
-      // console.log("Auth Context: ", authContext);
-    }
-  }, [email, userId, token, isSignUp]);
+  })
+  // React.useEffect(() => {
+  //   let userData;
+  //   // Fetch the token from storage then navigate to our appropriate place
+  //   if (!isSignUp) {
+  //     const tryLogin = async () => {
+  //       userData = await AsyncStorage.getItem("userData");
+  //       console.log("UserData found: ", userData);
+  //       if (!userData) {
+  //         console.log("No user data found, first catch");
+  //         setAuthContext({
+  //           user: {
+  //             email: null,
+  //             token: null,
+  //             userId: null,
+  //             isSignUp: isSignUp,
+  //           },
+  //         });
+  //         // if no cached data for user, don't try transforming data
+  //         return;
+  //       }
+  //       const transformedData = JSON.parse(userData);
+  //       setAuthContext(transformedData);
+  //       const { token, userId, expirationDate, email } = transformedData;
+  //       // console.log("~~~~~~~~~~~~~~~~~~~~~TRANSFORMED DATA~~~~~~~~~~~~", transformedData, userId, token, email);
+  //       dispatch(
+  //         authActions.authenticate(
+  //           transformedData.user.userId,
+  //           transformedData.user.token,
+  //           transformedData.user.email,
+  //           false
+  //         )
+  //       );
+  //       if (new Date(expirationDate) <= new Date()) {
+  //         console.log(
+  //           "Expiry: ",
+  //           expirationDate,
+  //           " >= ",
+  //           new Date().toISOString()
+  //         );
+  //         return;
+  //       }
+  //     };
+  //     tryLogin();
+
+
+  //     // console.log("Auth Context: ", authContext);
+  //   }
+  // }, [email, userId, token, isSignUp]);
+  console.log("NAVIGATION CONTAINER PROPS: ", props);
+  // console.log("Props.auth.check: ", props.auth.uid);
   return (
     <NavigationContainer
       linking={LinkingConfiguration}
       theme={colorScheme === "dark" ? DarkTheme : DefaultTheme}
     >
-      <RootNavigator authContext={authContext} />
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        {!props.auth.uid || props.auth.uid == undefined ? (
+          <Stack.Screen
+            name="AuthScreen"
+            component={AuthNavigator}
+            options={{
+              tabBarVisible: false,
+              headerShown: false,
+            }}
+          />
+        ) : (
+            <Stack.Screen
+              name="Root"
+              component={AppNavigator}
+
+            />
+        )}
+        {/* { returnRootScreen(props.auth.uid) } */}
+      </Stack.Navigator>
     </NavigationContainer>
   );
 }
@@ -112,12 +132,12 @@ const returnRootScreen = (userId) => {
       userId
     )
   );
-  return(
+  return (
     <Stack.Screen
-    name="Root"
-    component={AppNavigator}
-    
-  />
+      name="Root"
+      component={AppNavigator}
+
+    />
   )
 }
 
@@ -125,23 +145,24 @@ const returnRootScreen = (userId) => {
 // Read more here: https://reactnavigation.org/docs/modal
 const Stack = createStackNavigator<RootStackParamList>();
 
-function RootNavigator(props) {
-  return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
-      {!props.authContext.user.token ||
-      !props.authContext.user.userId ||
-      props.authContext.user.isSignUp ? (
-        <Stack.Screen
-          name="AuthScreen"
-          component={AuthNavigator}
-          options={{
-            tabBarVisible: false,
-            headerShown: false,
-          }}
-        />
-      ) : (
-        returnRootScreen(props.authContext.user.userId)
-      )}
-    </Stack.Navigator>
-  );
+// function RootNavigator(props) {
+//   console.log("Got to RootNav");
+//   return (
+
+//   );
+// }
+
+const mapStateToProps = (state) => {
+  return {
+    auth: state.firebase.auth,
+    firebase: state.firebase,
+    authError: state.auth.authError,
+  }
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+  }
 }
+
+export default connect(mapStateToProps, mapDispatchToProps)(Navigation);

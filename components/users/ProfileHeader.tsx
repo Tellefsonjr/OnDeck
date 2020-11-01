@@ -11,8 +11,8 @@ import { Text, View } from '../Themed';
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    auth: state.auth.userId,
-    user: state.users.user,
+    auth: state.firebase.auth,
+    user: state.firebase,
   };
 };
 const mapDispatchToProps = (dispatch) => {
@@ -21,18 +21,19 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 
-const ProfileHeader = (props, getUser) => {
-  const loggedInUser = useSelector(state => state.auth.userId);
+const ProfileHeader = (props) => {
   // console.log("USER~~~~~~: ", loggedInUser);
   // console.log("~~~~~~PROPS FROM HEADER: ", props);
+  const user = props.user.profile;
+  console.log("PROFILE HEADER, USER~~~~~~~: ", props.auth, user.profile);
   return (
-        <TouchableOpacity onPress={ () => props.navProps.navigate("Profile", {userId: loggedInUser })}
+        <TouchableOpacity onPress={ () => props.navProps.navigate("Profile", {userId: props.auth.uid })}
             style={[styles.profileImage, { paddingLeft: props.paddingLeft }]} >
         <Avatar.Image
             size={props.size}
             source={
-              props.user && props.user.profile.avatar
-                ? { uri: props.user.profile.avatar }
+              user && user.profile
+                ? { uri: user.profile.avatar }
                 : require("../../assets/images/ProfileIcon.png")
             }
           />   
