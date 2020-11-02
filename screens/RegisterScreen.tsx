@@ -127,18 +127,25 @@ const RegisterScreen = (props) => {
         signUpHandler(input);
       }
     } else if (input.user.type == "Business") {
-      console.log("VALUES AFTER NEXT: ", "PAGE: ", page, values, input.user);
+      if ( page == 1 || page == 2 ){
+        console.log("~~~~~~~~~~~~~Page1or2BusinessAction~~~~~~~~~~~~~~~~");
+        setInput({
+          ...input,
+          user: values,
+        });
+      };
       if (page == 3) {
-        console.log("~~~~~~~~~~~~~Page4Action~~~~~~~~~~~~~~~~");
-        createBusiness(values);
+        console.log("~~~~~~~~~~~~~Page3BusinessAction~~~~~~~~~~~~~~~~");
+        setInput({
+          ...input,
+          company: values,
+        })
       };
       if (page == 4) {
+        console.log("~~~~~~~~~~~~~Page4BusinessAction~~~~~~~~~~~~~~~~");
         signUpHandler(input);
       } else {
-        setInput({
-            ...input,
-            user: values
-        });
+        console.log("Found an edge case in NextPage()");
       }
       // console.log("GOing to nexT PaGE", page+1);
     }
@@ -168,18 +175,11 @@ const RegisterScreen = (props) => {
   };
   const createBusiness = async (values) => {
     console.log("CREATING BUSINESS", values);
-    let userId = input.user.userId;
     let company = values;
-    company.teamMembers.push(userId);
-    console.log("Then create business");
     setError(null);
     setIsLoading(true);
-    try {
-      const newCompany = await dispatch(companyActions.create(company));
-    } catch (err) {
-      setError(err.message);
-      setIsLoading(false);
-    }
+    props.createCompany(company);
+    setIsLoading(false);
   };
   const handleSetType = (type) => {
     let newUser = input.user;
@@ -202,7 +202,10 @@ const RegisterScreen = (props) => {
   const handleSetCompanyTypes = (types) => {
     let tempCompany = input.company;
     tempCompany.categories = types;
-    setinput.company(tempCompany);
+    setInput({
+      ...input,
+      company: tempCompany
+    });
   };
 
   useEffect(() => {
@@ -431,6 +434,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         signUp: (input) => dispatch(authActions.signUp(input)),
+        createCompany: (input) => dispatch(companyActions.create(input)),
     }
 }
 

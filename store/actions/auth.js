@@ -17,6 +17,7 @@ export const AUTHENTICATE = 'AUTHENTICATE';
 
 
 export const signUp = (payload) => {
+    let userId = "";
     return (dispatch, getState, {getFirebase, getFirestore}) => {
         console.log("SIGNING UP IN AUTHACTIONS~~~~~~~~~~", payload);
         const firebase = getFirebase();
@@ -32,9 +33,21 @@ export const signUp = (payload) => {
             //     email: res.user.email, 
             //     expirationDate: expirationDate.toISOString()
             // });
-            return firestore.collection('users').doc(res.user.uid).set(
-                payload.user
+            let user = payload.user;
+            userId = res.user.uid;
+            user.userId = res.user.uid;
+            return (
+                firestore.collection('users').doc(res.user.uid).set(user)
             )
+        }).then(() => {
+            if(payload.user.type == "Business"){
+                console.log("Got to Business Registration: ", userId);
+                let tempCompany = payload.company;
+                tempCompany.teamMembers.push(userId);
+                return (
+                    firestore.collection('companies').add(tempCompany)
+                )
+            }
         }).then(() => {
             dispatch({ type: 'SIGNUP_SUCCESS' })
         }).catch( err => {

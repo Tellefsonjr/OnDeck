@@ -15,7 +15,7 @@ export const SET_COMPANY_FILTERS = 'SET_COMPANY_FILTERS';
 export const create = (payload) => {
     return(dispatch, getState, {getFirestore, }) => {
         const firestore = getFirestore();
-        firestore.collection('companies').doc(payload.companyId).set({
+        firestore.collection('companies').add({
                 ...payload
             }).then(() => {
                 dispatch({ type: "CREATE", data: payload});
