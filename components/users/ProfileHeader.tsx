@@ -12,7 +12,7 @@ import { Text, View } from '../Themed';
 const mapStateToProps = (state, ownProps) => {
   return {
     auth: state.firebase.auth,
-    user: state.firebase,
+    user: state.firebase.profile,
   };
 };
 const mapDispatchToProps = (dispatch) => {
@@ -24,15 +24,17 @@ const mapDispatchToProps = (dispatch) => {
 const ProfileHeader = (props) => {
   // console.log("USER~~~~~~: ", loggedInUser);
   // console.log("~~~~~~PROPS FROM HEADER: ", props);
-  const user = props.user.profile;
-  console.log("PROFILE HEADER, USER~~~~~~~: ", props.auth, user.profile);
+  const user = props.user;
+  console.log("PROFILE HEADER, USER~~~~~~~: ", user);
+  console.log("PROFILE HEADER, Auth~~~~~~~: ", props.auth);
+
   return (
         <TouchableOpacity onPress={ () => props.navProps.navigate("Profile", {userId: props.auth.uid })}
             style={[styles.profileImage, { paddingLeft: props.paddingLeft }]} >
         <Avatar.Image
             size={props.size}
             source={
-              user && user.profile
+              user && !user.isEmpty
                 ? { uri: user.profile.avatar }
                 : require("../../assets/images/ProfileIcon.png")
             }
