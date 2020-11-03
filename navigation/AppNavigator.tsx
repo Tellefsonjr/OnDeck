@@ -14,6 +14,7 @@ import CustomHeaderButton from '../components/HeaderButton';
 import ProfileHeader from '../components/users/ProfileHeader';
 
 import HomeScreen from '../screens/HomeScreen';
+import CompanyHomeScreen from '../screens/CompanyHomeScreen';
 import BrowseScreen from '../screens/BrowseScreen';
 import SosScreen from '../screens/SosScreen';
 import JobDetailScreen from '../screens/JobDetailScreen';
@@ -30,7 +31,7 @@ import * as userActions from '../store/actions/users'; //Redux Actions
 
 
 const Tab = createBottomTabNavigator();
-function TabNavigator() {
+function TabNavigator(props) {
   return (
     <Tab.Navigator
     screenOptions={({ route }) => ({
@@ -71,11 +72,13 @@ return <MaterialCommunityIcons name={iconName} size={size} color={color}     />;
 const HomeStack = createStackNavigator<HomeParamList>();
 
 function HomeNavigator(props) {
+  const user = useSelector( state => state.firebase.profile);
   return (
     <HomeStack.Navigator>
+      { console.log("Home Nav Props::: ", props)}
       <HomeStack.Screen
         name="HomeScreen"
-        component={HomeScreen}
+        component={user.type && user.type == 'Labourer' ? HomeScreen : CompanyHomeScreen}
         options={{
           headerTitle: "Home",
           headerLeft: () => (

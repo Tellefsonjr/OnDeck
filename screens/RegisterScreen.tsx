@@ -168,19 +168,6 @@ const RegisterScreen = (props) => {
     props.signUp(tempInput);
     setIsLoading(false);
   };
-  const createUser = async (values) => {
-    setError(null);
-    setIsLoading(true);
-    console.log("CreateUser Input: ", values);
-  };
-  const createBusiness = async (values) => {
-    console.log("CREATING BUSINESS", values);
-    let company = values;
-    setError(null);
-    setIsLoading(true);
-    props.createCompany(company);
-    setIsLoading(false);
-  };
   const handleSetType = (type) => {
     let newUser = input.user;
     newUser.type = type;
