@@ -75,7 +75,7 @@ function HomeNavigator(props) {
   const user = useSelector( state => state.firebase.profile);
   return (
     <HomeStack.Navigator>
-      { console.log("Home Nav Props::: ", props)}
+      {/* { console.log("Home Nav Props::: ", props)} */}
       <HomeStack.Screen
         name="HomeScreen"
         component={user.type && user.type == 'Labourer' ? HomeScreen : CompanyHomeScreen}

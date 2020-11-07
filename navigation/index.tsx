@@ -94,7 +94,7 @@ const Navigation = (props, colorScheme) => {
   //     // console.log("Auth Context: ", authContext);
   //   }
   // }, [email, userId, token, isSignUp]);
-  console.log("NAVIGATION CONTAINER PROPS: ", props);
+  // console.log("NAVIGATION CONTAINER PROPS: ", props);
   // console.log("Props.auth.check: ", props.auth.uid);
   return (
     <NavigationContainer

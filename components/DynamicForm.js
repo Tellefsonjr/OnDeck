@@ -5,8 +5,10 @@
 
 import React, { PureComponent } from 'react';
 import {
-  View,Text, StyleSheet, Form, Picker, Keyboard, TouchableWithoutFeedback, ActivityIndicator, Platform
+  View,Text, StyleSheet, Form, Keyboard, TouchableWithoutFeedback, ActivityIndicator, Platform
 } from 'react-native';
+import {Picker} from '@react-native-picker/picker';
+
 import { Formik, FieldArray, Field } from 'formik';
 import { withFormikControl } from 'react-native-formik';
 import Colors from '../constants/Colors';
@@ -17,6 +19,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Switch from './SwitchComponent';
 import ImagePickerComponent from './ImagePickerComponent';
 import DocumentPickerComponent from './DocumentPickerComponent';
+import GooglePlacesAutocomplete from './GooglePlacesAutoComplete';
 
 import * as _ from 'lodash';
 
@@ -151,6 +154,18 @@ class DynamicForm extends PureComponent {
             </View>            
           )
   };
+  renderInputLocation = (input, handleChange, values, errors, setFieldValue, setFieldTouched, i, inputs, nextInput) => {
+    const handleUpdate = (value) => {
+      console.log("input update: ", value);
+      setFieldValue(input.name, value);
+    };
+    return(
+      <View style={{ flex: 1, }}>
+      <GooglePlacesAutocomplete inputName={input.name} handleUpdate={handleUpdate} />        
+
+      </View>
+          )
+  };
 
   renderInput = (input, handleChange, handleSubmit, values, errors, isSubmitting, touched, isValid, setFieldValue, setFieldTouched, initialValues, i, inputs, nextInput) => {
     switch (input.type) {
@@ -166,6 +181,8 @@ class DynamicForm extends PureComponent {
         return(this.renderDocumentPicker(input, setFieldValue, handleChange, values, errors, i));
       case 'input':
         return(this.renderText(input, handleChange, values, errors, setFieldTouched, i, inputs, nextInput));
+      case 'input-location':
+        return(this.renderInputLocation(input, handleChange, values, errors, setFieldValue, setFieldTouched, i, inputs, nextInput));
       return(null);
     }
   };

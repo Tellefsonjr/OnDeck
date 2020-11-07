@@ -18,8 +18,9 @@ const JobListItem: React.FC<Props> = (props) => {
       _.find(CATEGORIES, { id: categoryId}).icon
     )
   };
+  console.log("~JOB CARD~", props.company.locations);
   return (
-    <View style={{ backgroundColor: 'rgba(0,0,0,0)'}}>
+    <View style={{ backgroundColor: 'rgba(0,0,0,0)',}}>
     <TouchableRipple
       style={{ backgroundColor: 'rgba(0,0,0,0)'}}
       onPress={() => props.onPress(props.job) }
@@ -31,7 +32,7 @@ const JobListItem: React.FC<Props> = (props) => {
             left={ (p) =>
               <Avatar.Image
                 size={40} {...p}
-                source={{ uri: props.company.icon }}
+                source={{ uri: props.company.icon ? props.company.icon : props.company.logo}}
                 style={{ marginTop: '60%'}}
                 />
             }
@@ -48,7 +49,7 @@ const JobListItem: React.FC<Props> = (props) => {
         <Card.Content style={ styles.cardInner}>
         <View style={{ flexDirection: 'row', justifyContent: 'space-around', marginTop: 5}}>
           <Text style={ styles.detailText }> { props.job.pay.amount } { props.job.pay.rate} </Text>
-          <Text style={ styles.detailText }> { props.company.locations[props.job.location].address.city }, { props.company.locations[props.job.location].address.state } { props.job.location.country } </Text>
+          {/* <Text style={ styles.detailText }> { props.company.locations[props.job.location].address.city }, { props.company.locations[props.job.location].address.state } { props.job.location.country } </Text> */}
         </View>
 
         </Card.Content>

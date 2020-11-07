@@ -20,20 +20,45 @@ import Colors from "../constants/Colors";
 import { Text, View } from "../components/Themed";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import * as _ from "lodash";
-import { useSelector, useDispatch } from 'react-redux';
+import { connect } from 'react-redux';
 import CustomHeaderButton from '../components/HeaderButton';
 import { HeaderButtons, Item } from 'react-navigation-header-buttons';
 
 import JobForm from '../components/jobs/JobForm';
 import Agenda from "../components/Agenda";
+import { compose } from "redux";
+import { firestoreConnect } from "react-redux-firebase";
+import JobListItem from "../components/jobs/JobListItem";
 
 
-export default function CompanyHomeScreen(props: any) {
+const CompanyHomeScreen = ( props: any) => {
+  // console.log("PROPS on COMPANY HOME SCREEN : ", props.jobs);
+  console.log("~COMPANY ID~", props.companyId);
   const [ showJobForm, setShowJobForm ] = useState(false);
 
   const handleDayPressed = (day) => {
     const date = day;
     console.log("DAY PRESSED ON HOME: ", date);
+  };
+  const renderJobsList = () => {
+    return props.jobs.map((job, i) => {
+      return (
+        <View key={i} style={{ flex: 1, }}>
+          <JobListItem
+            job={job}
+            company={ props.company }
+            onPress={handleJobPress}
+          />
+        </View>
+      );
+    });
+  };
+  const handleJobPress = (job) => {
+    console.log("PRESSED: ", job.id);
+    props.navigation.navigate("JobDetailScreen", {
+      id: job.id,
+      title: job.title,
+    });
   };
   return (
     <ImageBackground
@@ -57,30 +82,15 @@ export default function CompanyHomeScreen(props: any) {
       <View style={ styles.jobsContainer }>
           <View style={ styles.jobsHeader }>
             <Title> My Jobs </Title>
-            <Button onPress={ () => setShowJobForm(!showJobForm) }>+ Add</Button>
+            <Button onPress={ () => setShowJobForm(true) }>+ Add</Button>
           </View>
           <View style={ styles.jobsListContainer }>
-            <ScrollView 
-            >
-              <View style={{ flex: 1, height: 100, width: 200}}>
-                <Title>Job</Title> 
-              </View>   
-              <View style={{ flex: 1, height: 100, width: 200}}>
-                <Title>Job</Title> 
-              </View> 
-              <View style={{ flex: 1, height: 100, width: 200}}>
-                <Title>Job</Title> 
-              </View> 
-              <View style={{ flex: 1, height: 100, width: 200}}>
-                <Title>Job</Title> 
-              </View> 
-              <View style={{ flex: 1, height: 100, width: 200}}>
-                <Title>Job</Title> 
-              </View> 
-              <View style={{ flex: 1, height: 100, width: 200}}>
-                <Title>Job</Title> 
-              </View> 
-            </ScrollView>
+          <ScrollView
+          style={styles.scrollViewStyle}
+          contentContainerStyle={styles.cardContentContainer}
+        >
+          {renderJobsList()}
+        </ScrollView> 
           </View>
 
 
@@ -90,9 +100,10 @@ export default function CompanyHomeScreen(props: any) {
 
             <Modal 
               visible={showJobForm}
-              onDismiss={() => setShowJobForm(!showJobForm)}
+              onDismiss={() => setShowJobForm(false)}
+              contentContainerStyle={{ flex: 1, padding: 20 }}
             >
-              <JobForm />
+              <JobForm companyId={props.companyId} onDismiss={() => setShowJobForm(false) }/>
             </Modal>
 
           ) : null }
@@ -125,5 +136,33 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-  }
+  },
+  jobsListContainer: {
+    flex: 1, 
+  },
+  scrollViewStyle: {
+    flex: 1,
+  },
+  cardContentContainer: {
+    flex: 1,
+    width: "100%",
+    flexDirection: 'column',
+    marginHorizontal: 10,
+    paddingHorizontal: 15,
+    justifyContent: "space-around",
+    backgroundColor: "transparent",
+  },
 });
+
+const mapStateToProps = (state:any) => {
+  return({
+    jobs: _.filter(state.firestore.ordered.jobs, { companyId: state.firebase.profile.companyId}),
+    company: _.get(state.firestore.data.companies, state.firebase.profile.companyId ),
+    companyId: state.firebase.profile.companyId,
+  })
+};
+
+export default compose(
+  connect(mapStateToProps),
+  firestoreConnect(() => ['jobs', 'companies'])
+)(CompanyHomeScreen)

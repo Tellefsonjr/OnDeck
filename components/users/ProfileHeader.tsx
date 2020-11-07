@@ -25,8 +25,8 @@ const ProfileHeader = (props) => {
   // console.log("USER~~~~~~: ", loggedInUser);
   // console.log("~~~~~~PROPS FROM HEADER: ", props);
   const user = props.user;
-  console.log("PROFILE HEADER, USER~~~~~~~: ", user);
-  console.log("PROFILE HEADER, Auth~~~~~~~: ", props.auth);
+  // console.log("PROFILE HEADER, USER~~~~~~~: ", user);
+  // console.log("PROFILE HEADER, Auth~~~~~~~: ", props.auth);
 
   return (
         <TouchableOpacity onPress={ () => props.navProps.navigate("Profile", {userId: props.auth.uid })}
