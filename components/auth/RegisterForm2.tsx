@@ -41,8 +41,8 @@ export default function RegisterForm2(props) {
       },
       {
         label: "Location",
-        type: "input",
-        name: "location.home.address",
+        type: "input-location",
+        name: "location",
         placeholder: "Perth, WA, Australia",
         icon: "map-marker-outline",
         size: "lrg",

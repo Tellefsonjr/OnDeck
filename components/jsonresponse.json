@@ -1,0 +1,100 @@
+ {
+  "html_attributions": [],
+  "result": {
+    "address_components": [
+     {
+        "long_name": "252",
+        "short_name": "252",
+        "types": [
+          "street_number",
+        ],
+      },
+     {
+        "long_name": "Acton Place",
+        "short_name": "Acton Pl",
+        "types": [
+          "route",
+        ],
+      },
+     {
+        "long_name": "Cleveland Heights",
+        "short_name": "Cleveland Heights",
+        "types": [
+          "neighborhood",
+          "political",
+        ],
+      },
+     {
+        "long_name": "Oakland",
+        "short_name": "Oakland",
+        "types": [
+          "locality",
+          "political",
+        ],
+      },
+     {
+        "long_name": "Alameda County",
+        "short_name": "Alameda County",
+        "types": [
+          "administrative_area_level_2",
+          "political",
+        ],
+      },
+     {
+        "long_name": "California",
+        "short_name": "CA",
+        "types": [
+          "administrative_area_level_1",
+          "political",
+        ],
+      },
+     {
+        "long_name": "United States",
+        "short_name": "US",
+        "types": [
+          "country",
+          "political",
+        ],
+      },
+     {
+        "long_name": "94606",
+        "short_name": "94606",
+        "types": [
+          "postal_code",
+        ],
+      },
+     {
+        "long_name": "1231",
+        "short_name": "1231",
+        "types": [
+          "postal_code_suffix",
+        ],
+      },
+    ],
+    "adr_address": "<span class=\"street-address\">252 Acton Pl</span>, <span class=\"locality\">Oakland</span>, <span class=\"region\">CA</span> <span class=\"postal-code\">94606-1231</span>, <span class=\"country-name\">USA</span>",
+    "formatted_address": "252 Acton Pl, Oakland, CA 94606, USA",
+    "geometry": {
+      "location": {
+        "lat": 37.8014618,
+        "lng": -122.2513958,
+      },
+      "viewport": {
+        "northeast": {
+          "lat": 37.8028345802915,
+          "lng": -122.2501028197085,
+        },
+        "southwest": {
+          "lat": 37.8001366197085,
+          "lng": -122.2528007802915,
+        },
+      },
+    },
+    "icon": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/geocode-71.png",
+    "name": "252 Acton Pl",
+    "place_id": "ChIJO0CmpzmHj4ARHBpyswfMFWU",
+    "types": [
+      "premise",
+    ],
+  },
+  "status": "OK",
+}

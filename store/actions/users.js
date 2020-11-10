@@ -15,8 +15,8 @@ export const SET_USER_FILTERS = 'SET_USER_FILTERS';
 export const create = (payload) => {
     return(dispatch, getState, {getFirestore, }) => {
         const firestore = getFirestore();
-        firestore.collection('users').doc(payload.userId).set({
-                ...payload
+        firestore.collection('users').doc(payload.user.userId).set({
+                ...payload.user
             }).then(() => {
                 dispatch({ type: "CREATE", data: payload});
             }).catch((err) => {

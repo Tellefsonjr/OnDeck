@@ -18,13 +18,12 @@ const validation = Yup.object().shape({
       .max(35),
   }),
   location: Yup.object().shape({
-    currentLocation: Yup.string()
-      .min(0)
-      .max(255),
-    home: Yup.object().shape({
-      address: Yup.string()
+    currentLocation: Yup.object(),
+    address: Yup.object().shape({
+      formatted: Yup.string()
         .min(0)
         .max(255), 
+      geometry: Yup.object()
     }),
   }),
   profile: Yup.object().shape({

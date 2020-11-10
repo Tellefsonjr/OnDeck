@@ -9,12 +9,12 @@ import { MonoText } from './StyledText';
 
 
 export default function AgendaComponent(props) {
-  console.log("PROPS", props);
+  // console.log("PROPS", props);
   const [ items, setItems ] = useState( { } );
 
 
   function loadItems(day) {
-    console.log("LoadingITems: ", day);
+    // console.log("LoadingITems: ", day);
   setTimeout(() => {
     for (let i = -15; i < 21; i++) {
       const time = day.timestamp + i * 24 * 60 * 60 * 1000;
@@ -85,7 +85,7 @@ function dateNow(date){
   var dateString = new Date(date.getTime() - (date.getTimezoneOffset() * 60000 ))
                     .toISOString()
                     .split("T")[0];
-    console.log("DATESTRING: ", dateString);
+    // console.log("DATESTRING: ", dateString);
   return(dateString);
 }
 function onDayPress(day){
