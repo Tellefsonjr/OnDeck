@@ -82,7 +82,7 @@ function HomeNavigator(props) {
         options={{
           headerTitle: "Home",
           headerLeft: () => (
-            <ProfileHeader size={36} paddingLeft={15} navProps={props.navigation}/>
+            <ProfileHeader size={36} paddingLeft={15} {...props} />
           ),
           headerRight: () => (
           <HeaderButtons HeaderButtonComponent={CustomHeaderButton}>

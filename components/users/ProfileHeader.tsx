@@ -9,27 +9,19 @@ import Colors from '../../constants/Colors';
 import { MonoText } from '../StyledText';
 import { Text, View } from '../Themed';
 
-const mapStateToProps = (state, ownProps) => {
-  return {
-    auth: state.firebase.auth,
-    user: state.firebase.profile,
-  };
-};
-const mapDispatchToProps = (dispatch) => {
-  return {
-    getUser: (userId) => dispatch(userActions.get(userId)),
-  };
-};
+
 
 const ProfileHeader = (props) => {
-  // console.log("USER~~~~~~: ", loggedInUser);
-  // console.log("~~~~~~PROPS FROM HEADER: ", props);
   const user = props.user;
+  const navigation = props.navProps;
   // console.log("PROFILE HEADER, USER~~~~~~~: ", user);
   // console.log("PROFILE HEADER, Auth~~~~~~~: ", props.auth);
+  // console.log("PROFILE HEADER:::: ", user.userId);
+  // console.log("PROFILE PROPS NAVIGATION::: ", props.navProps);
+  // console.log("PROFILE HEADER NAVIGATION: ", navigation); 
 
   return (
-        <TouchableOpacity onPress={ () => props.navProps.navigate("Profile", {userId: props.auth.uid })}
+        <TouchableOpacity onPress={ () => props.navigation.navigate("Profile", { userId: user.userId }) }
             style={[styles.profileImage, { paddingLeft: props.paddingLeft }]} >
         <Avatar.Image
             size={props.size}
@@ -50,5 +42,18 @@ const styles = StyleSheet.create({
   }
 
 });
+
+const mapStateToProps = (state, ownProps) => {
+  console.log(" ProfileHeader: ", state.firebase.profile.userId);
+  return {
+    auth: state.firebase.auth,
+    user: state.firebase.profile,
+  };
+};
+const mapDispatchToProps = (dispatch) => {
+  return {
+    getUser: (userId) => dispatch(userActions.get(userId)),
+  };
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(ProfileHeader);

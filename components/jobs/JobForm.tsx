@@ -18,14 +18,16 @@ import JOB_CATEGORIES from '../../data/stubbed/dummy-job-categories';
 import validation from '../../data/validation/JobValidation';
 
 import * as jobActions from '../../store/actions/jobs'; //Redux Actions
+import GooglePlacesAutocomplete from '../GooglePlacesAutoComplete';
 
 
 
 
 const JobForm = (props) => {
-    console.log("STAAAATE", props.testState); 
+    // console.log("STAAAATE", props.testState); 
     const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
     const [dateType, setDateType] = useState({ value: 'start', type: 'date' });
+    // console.log("PROPS: ", props);
     const job = {
         companyId: props.companyId,
         categories: [],
@@ -100,6 +102,10 @@ const JobForm = (props) => {
             })
         )
     };
+    const handleUpdate = (value, setFieldValue) => {
+        console.log("input update: ", value);
+        setFieldValue('location', value);
+      };
     const showDatePicker = (type) => {
         setDateType(type);
         setDatePickerVisibility(true);
@@ -168,13 +174,10 @@ const JobForm = (props) => {
                                 onBlur={handleBlur('description')}
                                 style={styles.lrg}
                             />
-                            <TextInput
-                                label="Location"
-                                value={values.location.address.line1}
-                                onChangeText={handleChange('location.address.line1')}
-                                onBlur={handleBlur('location.address.line1')}
-                                style={styles.lrg}
-                            />
+                            <View>
+                                <GooglePlacesAutocomplete inputName={'location'} handleUpdate={(value) => handleUpdate(value, setFieldValue)} />        
+                            </View>
+
                             <View>
                                 <ScrollView
                                     horizontal={true}
@@ -265,6 +268,7 @@ const JobForm = (props) => {
                                             // setFieldTouched(input.name);
                                             setFieldValue('pay.currency', itemValue);
                                             } }>
+                                        <Picker.Item label="Select.." value="default" />
                                         <Picker.Item label="$ AUD" value="aud" />
                                         <Picker.Item label="$ USD" value="usd" />
                                         <Picker.Item label="€ EUR" value="eur" />

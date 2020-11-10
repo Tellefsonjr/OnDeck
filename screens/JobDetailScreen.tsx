@@ -4,22 +4,22 @@ import { Button } from 'react-native-paper';
 import * as _ from 'lodash';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Video } from 'expo-av';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector, useDispatch, connect as connectRedux } from 'react-redux';
 
 import EditScreenInfo from '../components/EditScreenInfo';
+import { compose } from 'redux';
+import { firestoreConnect } from 'react-redux-firebase';
 
 
 
-export default function JobDetailScreen( route, navigation) {
-  const dispatch = useDispatch();
-  const JOBS = useSelector(state => state.jobs.jobs);
-  const job = _.find(JOBS, { id: route.route.params.id});
-  console.log("JOB Detail: ", job);
+const JobDetailScreen = ( props ) => {
+  console.log("JOB Detail: ", props.job);
+  const job = props.job;
 
   return (
     <View style={styles.container}>
       <View style={ styles.headerContainer } >
-        <Text style={styles.title}> Company Name </Text>
+        <Text style={styles.title}> { props.company.name} </Text>
         <View style={ styles.horizontalList}>
           <Text style={styles.subTitle}> {job.title} </Text>
           <Text style={styles.subTitle}> Time info </Text>
@@ -104,3 +104,24 @@ const styles = StyleSheet.create({
   }
 
 });
+
+const mapStateToProps = (state:any, ownProps:any) => {
+  // console.log("ownProps::: ", ownProps.route.params.id);
+  let job = _.find(state.firestore.ordered.jobs, {id: ownProps.route.params.id});
+  // console.log("JOB::::: ", job);
+  console.log("COMPANIES ===> ", _.get(state.firestore.ordered.companies, {id: job.companyId }));
+  let company = _.find(state.firestore.ordered.companies, { id: job.companyId });
+  console.log("Company: ", company);
+  let companyId = company ? company.id : null;
+  // console.log("Company ID: ", companyId);
+  return({
+    company: company,
+    companyId: companyId,  
+    job: job,
+  })
+};
+
+export default compose(
+  connectRedux(mapStateToProps),
+  firestoreConnect(() => ['jobs', 'companies'])
+)(JobDetailScreen)

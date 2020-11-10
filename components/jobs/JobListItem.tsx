@@ -12,7 +12,11 @@ export interface Props {
 }
 
 const JobListItem: React.FC<Props> = (props) => {
-
+  const currency = {
+    usd: "$",
+    aud: "$",
+    eur: "€",
+  }
   function renderJobCategoryIcon(categoryId){
     return(
       _.find(CATEGORIES, { id: categoryId}).icon
@@ -48,7 +52,7 @@ const JobListItem: React.FC<Props> = (props) => {
         </View>
         <Card.Content style={ styles.cardInner}>
         <View style={{ flexDirection: 'row', justifyContent: 'space-around', marginTop: 5}}>
-          <Text style={ styles.detailText }> { props.job.pay.amount } { props.job.pay.rate} </Text>
+          <Text style={ styles.detailText }> { _.get(currency, props.job.pay.currency)} { props.job.pay.amount } { props.job.pay.rate} </Text>
           {/* <Text style={ styles.detailText }> { props.company.locations[props.job.location].address.city }, { props.company.locations[props.job.location].address.state } { props.job.location.country } </Text> */}
         </View>
 

@@ -31,6 +31,7 @@ import { firestoreConnect } from "react-redux-firebase";
 import JobListItem from "../components/jobs/JobListItem";
 
 
+
 const CompanyHomeScreen = ( props: any) => {
   // console.log("PROPS on COMPANY HOME SCREEN : ", props.jobs);
   console.log("~COMPANY ID~", props.companyId);
@@ -155,10 +156,12 @@ const styles = StyleSheet.create({
 });
 
 const mapStateToProps = (state:any) => {
+  let company = _.find(state.firestore.ordered.companies, { refId: state.firebase.profile.companyRefId});
+  let companyId = company ? company.id : null;
   return({
-    jobs: _.filter(state.firestore.ordered.jobs, { companyId: state.firebase.profile.companyId}),
-    company: _.get(state.firestore.data.companies, state.firebase.profile.companyId ),
-    companyId: state.firebase.profile.companyId,
+    company: company,
+    companyId: companyId,  
+    jobs: _.filter(state.firestore.ordered.jobs, { companyId: companyId}),
   })
 };
 

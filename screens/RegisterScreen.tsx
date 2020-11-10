@@ -34,6 +34,8 @@ import RegisterForm4 from "../components/auth/RegisterForm4";
 import Logo from "../assets/images/OD_Logo.svg";
 import AsyncStorage from "@react-native-community/async-storage";
 import { connect } from "formik";
+import { compose } from "redux";
+import { firestoreConnect } from "react-redux-firebase";
 
 const RegisterScreen = (props) => {
   const dispatch = useDispatch();
@@ -74,9 +76,10 @@ const RegisterScreen = (props) => {
           certificates: [{ type: "", frontImage: "", backImage: "" }],
           resume: "",
         },
+        companyRefId: "",
     },
     company: {
-        companyId: "",
+        refId: "",
         name: "",
         ein: "",
         icon: "",
@@ -157,7 +160,7 @@ const RegisterScreen = (props) => {
     setIsLoading(true);
     let tempInput = input;
     console.log('TEMP INPUT AT SIGN UP HANDLER~~~~~~~', tempInput);
-
+    tempInput.user.companyRefId = tempInput.company.refId;
     tempInput.auth = values;
     let tempUser = input.user;
     tempUser.contactInfo.email = tempInput.auth.email;
@@ -165,7 +168,7 @@ const RegisterScreen = (props) => {
         ...input,
         user: tempUser
     });
-    props.signUp(tempInput);
+    props.signUp(input);
     setIsLoading(false);
   };
   const handleSetType = (type) => {
@@ -415,6 +418,7 @@ const mapStateToProps = (state) => {
     return {
         auth: state.firebase.auth,
         authError: state.auth.authError,
+        companyId: state.firebase.profile.companyId,
     }
 };
 
@@ -423,6 +427,10 @@ const mapDispatchToProps = (dispatch) => {
         signUp: (input) => dispatch(authActions.signUp(input)),
         createCompany: (input) => dispatch(companyActions.create(input)),
     }
-}
+};
 
-export default connectRedux(mapStateToProps, mapDispatchToProps)(RegisterScreen);
+
+export default compose(
+  connectRedux(mapStateToProps, mapDispatchToProps),
+  firestoreConnect(() => ['companies'])
+)(RegisterScreen);

@@ -68,7 +68,7 @@ export default function RegisterForm4(props) {
       },
       {
         label: "Address",
-        type: "input",
+        type: "input-location",
         name: "locations.[0].address",
         placeholder: "Perth, WA, Australia",
         icon: "map-marker-outline",
@@ -111,12 +111,12 @@ export default function RegisterForm4(props) {
   };
   const handleSubmit = (values) => {
     // console.log("SUBMITTING COMPANY: ", values);
-    let companyId = uuid.v4();
+    let refId = uuid.v4();
     let siteId = uuid.v4();
     // console.log("SITE ID: ", siteId);
     let company = values;
     company.locations[0].siteId = siteId;
-    company.companyId = companyId;
+    company.refId = refId;
     props.handleNext(values);
   };
   return (

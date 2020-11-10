@@ -28,20 +28,12 @@ import { HeaderButtons, Item } from "react-navigation-header-buttons";
 
 import JOB_CATEGORIES from "../data/stubbed/dummy-job-categories";
 import ProfileCard from "../assets/images/ProfileCard.svg";
+import { firestoreConnect } from "react-redux-firebase";
+import { compose } from "redux";
 
-const mapStateToProps = (state, ownProps) => {
-  return {
-    auth: state.firebase.auth,
-    user: state.firebase,
-  };
-};
-const mapDispatchToProps = (dispatch) => {
-  return {
-    getUser: (userId) => dispatch(userActions.get(userId)),
-  };
-};
 
-const UserProfileScreen = (props, getUser) => {
+
+const UserProfileScreen = (props) => {
   // console.log("~~~USER ON PROFILE : ", props);
   const user = props.user.profile;
   const [toggleImage, setToggleImage] = useState(false);
@@ -146,7 +138,7 @@ const UserProfileScreen = (props, getUser) => {
               size={20}
               style={{ marginRight: 10, alignSelf: "center" }}
             />
-            <Paragraph> {user.location.home.address} </Paragraph>
+            <Paragraph> {user.location.location.address.formatted} </Paragraph>
           </View>
           <View style={styles.iconTextPair}>
             <MaterialCommunityIcons
@@ -362,5 +354,43 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
 });
+UserProfileScreen.navigationOptions = (navData:any) => {
+  console.log("NAVIGATION: PROFILE SCREEN", navData);
+  return {
+    // headerTitle: userId.title,
+    // headerRight: (
+    //   <HeaderButtons HeaderButtonComponent={CustomHeaderButton}>
+    //     <Item title="Menu" iconName="menu" onPress={ () => { navData.navigation.openDrawer()}} />
+    //   </HeaderButtons>
+    // )
+  };
+};
 
-export default connect(mapStateToProps, mapDispatchToProps)(UserProfileScreen);
+const mapStateToProps = (state:any, ownProps:any) => {
+  const user = state.firebase.auth;
+  console.log(" USER ON PROFILE SCREEN: ", ownProps);
+  return {
+    auth: state.firebase.auth,
+    user: state.firebase,
+  };
+};
+const mapDispatchToProps = (dispatch) => {
+  return {
+    getUser: (userId) => dispatch(userActions.get(userId)),
+  };
+};
+
+// const mapStateToProps = (state:any) => {
+//   let company = _.find(state.firestore.ordered.companies, { refId: state.firebase.profile.companyRefId});
+//   let companyId = company ? company.id : null;
+//   return({
+//     company: company,
+//     companyId: companyId,  
+//     jobs: _.filter(state.firestore.ordered.jobs, { companyId: companyId}),
+//   })
+// };
+
+export default compose(
+  connect(mapStateToProps, mapDispatchToProps),
+  firestoreConnect(() => ['users'])
+)(UserProfileScreen)
