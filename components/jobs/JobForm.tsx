@@ -29,7 +29,7 @@ const JobForm = (props) => {
     const [dateType, setDateType] = useState({ value: 'start', type: 'date' });
     // console.log("PROPS: ", props);
     const job = {
-        companyId: props.companyId,
+        companyId: props.company.id,
         categories: [],
         title: "",
         description: "",
@@ -64,6 +64,8 @@ const JobForm = (props) => {
         },
         createdTime: '',
         lastModifiedTime: null,
+        applicants: [],
+        filled: false,
     };
     const daysOfWeek = ['Su', 'M', 'Tu', 'W', 'Th', 'F', 'Sa'];
     const categoryChips = (categories, setFieldValue) => {
@@ -386,9 +388,14 @@ const styles = StyleSheet.create({
     }
 })
 
-const mapStateToProps = (state) => ({
-        testState: state,
-})
+const mapStateToProps = (state:any, ownProps) => {
+    let auth = state.firebase.auth;
+    let company = ownProps.companyRefId && auth.isLoaded ? _.find(state.firestore.ordered.companies, { refId: ownProps.companyRefId }) : null;
+    return({
+        auth: auth,
+      company: company,
+    })
+  };
 
 const mapDispatchToProps = (dispatch) => ({
     createJob: (input) => dispatch(jobActions.create(input))

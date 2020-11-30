@@ -46,7 +46,7 @@ const UserProfileScreen = (props) => {
   const renderJobCategories = () => {
     return <Text>hello</Text>;
   };
-
+  const avatar = user.profile && user.profile.avatar ? user.profile.avatar : null;
   return (
     <View style={styles.container}>
       {/* TO DO...Get Reauth working.... */}
@@ -257,7 +257,7 @@ const UserProfileScreen = (props) => {
                   style={styles.modalAvatar}
                   size={360}
                   source={
-                    user.profile.avatar
+                    avatar
                       ? { uri: user.profile.avatar }
                       : require("../assets/images/ProfileIcon.png")
                   }

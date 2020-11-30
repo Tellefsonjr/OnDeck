@@ -15,6 +15,8 @@ export const SET_USER_FILTERS = 'SET_USER_FILTERS';
 export const create = (payload) => {
     return(dispatch, getState, {getFirestore, }) => {
         const firestore = getFirestore();
+        const state = getState();
+        console.log("STAAAAATE~~~~~~~: ", state);
         firestore.collection('users').doc(payload.user.userId).set({
                 ...payload.user
             }).then(() => {
@@ -35,8 +37,11 @@ export const get = (payload) => {
 };
 
 export const login = (payload) => {
+    console.log("LOOGGIN IN");
     return(dispatch, getState, {getFirestore, }) => {
         const firestore = getFirestore();
+        const state = getState();
+        console.log(" LOGIN STAAAAAATE: ", state);
         firestore.collection('users').doc(payload).get().then((doc) => {
             dispatch({ type: "LOGIN", data: doc.data()})
         })

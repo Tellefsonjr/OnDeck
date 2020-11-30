@@ -25,35 +25,35 @@ const LoginScreen = ( props ) => {
     email: '',
     password: '',
   })
-  const spinValue = useRef(new Animated.Value(0)).current;
+  // const spinValue = useRef(new Animated.Value(0)).current;
 
-  const useAnimate = (startDelay = 500) => {
+  // const useAnimate = (startDelay = 500) => {
   
-    const animate = (toValue) => {
-      Animated.timing(
-        spinValue,
-        {
-          toValue: toValue,
-          duration: 6000,
-          easing: Easing.inOut(Easing.quad),
-          useNativeDriver: true
-        }
-      ).start(() => {
-        const newValue = toValue == 0? 1 : 0;
-        //console.log("Newvalue: ", Platform.OS, newValue);
-        newValue == 1? setNextRotation((Math.floor(Math.random() * 30 ) + 20)) : setCurrentRotation(-(Math.floor(Math.random() * 30 ) + 20));
-        // console.log("Finished Animation", toValue, currentRotation, nextRotation);
-        animate(newValue);
-      });
-    };
+  //   const animate = (toValue) => {
+  //     Animated.timing(
+  //       spinValue,
+  //       {
+  //         toValue: toValue,
+  //         duration: 6000,
+  //         easing: Easing.inOut(Easing.quad),
+  //         useNativeDriver: true
+  //       }
+  //     ).start(() => {
+  //       const newValue = toValue == 0? 1 : 0;
+  //       //console.log("Newvalue: ", Platform.OS, newValue);
+  //       newValue == 1? setNextRotation((Math.floor(Math.random() * 30 ) + 20)) : setCurrentRotation(-(Math.floor(Math.random() * 30 ) + 20));
+  //       // console.log("Finished Animation", toValue, currentRotation, nextRotation);
+  //       animate(newValue);
+  //     });
+  //   };
 
-    useEffect(() => {
-      const timeout = setTimeout(() => animate(), startDelay);
-      return () => clearTimeout(timeout);
-    }, []);
+  //   useEffect(() => {
+  //     const timeout = setTimeout(() => animate(), startDelay);
+  //     return () => clearTimeout(timeout);
+  //   }, []);
   
-    return spinValue;
-  };
+  //   return spinValue;
+  // };
   const authHandler = () => {
     setError(null);
     setIsLoading(true);
@@ -75,9 +75,10 @@ const LoginScreen = ( props ) => {
       <View style={ styles.logoNameContainer }>
         <Text style={ styles.logoName }>OnDeck</Text>
       </View>
-      <Animated.View style={ [styles.logoContainer, { transform: [{ rotate: useAnimate()}] }, {perspective: 1000}] }>
+      {/* <View style={ [styles.logoContainer, { transform: [{ rotate: useAnimate()}] }, {perspective: 1000}] }> */}
+      <View style={ [styles.logoContainer,]} >
         <Logo width={250} height={250} fill={'#fff'} />
-      </Animated.View>
+      </View>
 
         <Wave
             style={ styles.wave }
@@ -88,7 +89,7 @@ const LoginScreen = ( props ) => {
                 {A: 70, T: 500, fill: 'rgba(3,102,163,.7)'},
             ]}
             speed={12000}
-            animated={animated}
+            animated={true}
         />
       </View>
       <KeyboardAwareScrollView
