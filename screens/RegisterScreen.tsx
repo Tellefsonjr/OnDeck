@@ -416,9 +416,9 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = (state) => {
     return {
-        auth: state.firebase.auth,
-        authError: state.auth.authError,
-        companyId: state.firebase.profile.companyId,
+        auth: state.firebase.auth ? state.firebase.auth : null,
+        authError: state.firebase.auth ? state.auth.authError: null,
+        companyId: state.firebase.auth ? state.firebase.profile.companyId : null,
     }
 };
 
@@ -432,5 +432,5 @@ const mapDispatchToProps = (dispatch) => {
 
 export default compose(
   connectRedux(mapStateToProps, mapDispatchToProps),
-  firestoreConnect(() => ['companies'])
+  // firestoreConnect(() => ['companies'])
 )(RegisterScreen);

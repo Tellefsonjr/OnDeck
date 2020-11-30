@@ -1,5 +1,6 @@
 import {FIREBASE_KEY} from '@env';
 import { AsyncStorage } from 'react-native';
+import { actionTypes } from 'redux-firestore';
 
 export const SIGNUP = 'SIGNUP';
 export const SIGNUP_ERROR = 'SIGNUP_ERROR';
@@ -79,6 +80,8 @@ export const restoreToken = (payload) => ({
 export const login = (payload) => {
     return (dispatch, getState, {getFirebase}) => {
         const firebase = getFirebase();
+        const state = getState();
+        // console.log("AUUUUUTH STATE: ", state.firebase.auth);
         firebase.auth().signInWithEmailAndPassword(
             payload.email,
             payload.password
@@ -140,13 +143,18 @@ const saveDataToStorage = ( user ) => {
 export const logout = () => {
     return (dispatch, getState, {getFirebase}) => {
         const firebase = getFirebase();
-        firebase.auth().signOut().then(() => {
-            dispatch({ type: 'LOGOUT_SUCCESS', })
-            console.log("LOGGING OUT");
+        const state = getState();
+        // console.log("LOGOUT STAAAATE: ", state.firebase.auth);
+        firebase.logout().then(() => {
+            dispatch({ type: actionTypes.CLEAR_DATA });
+
+        }).then(() => {
             AsyncStorage.removeItem('userData');   
+
+        }).then(() => {
+            dispatch({ type: 'LOGOUT_SUCCESS', })
         })
     }
-
 };
 
 

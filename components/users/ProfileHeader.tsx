@@ -12,6 +12,7 @@ import { Text, View } from '../Themed';
 
 
 const ProfileHeader = (props) => {
+  // console.log("~~ FROM::: ", props.from);
   const user = props.user;
   const navigation = props.navProps;
   // console.log("PROFILE HEADER, USER~~~~~~~: ", user);
@@ -44,10 +45,11 @@ const styles = StyleSheet.create({
 });
 
 const mapStateToProps = (state, ownProps) => {
-  console.log(" ProfileHeader: ", state.firebase.profile.userId);
+  // state.firebase.auth.uid ? console.log("Profile HEader auth uid: ", state.firebase.auth.uid) : console.log("No Profile Found.")
+  // console.log(" ProfileHeader: ", state.firebase.auth.uid ? state.firebase.profile.userId : "No Profile Found");
   return {
     auth: state.firebase.auth,
-    user: state.firebase.profile,
+    user: state.firebase.auth.uid ? state.firebase.profile : null,
   };
 };
 const mapDispatchToProps = (dispatch) => {

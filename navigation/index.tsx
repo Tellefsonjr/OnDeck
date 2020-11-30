@@ -102,7 +102,7 @@ const Navigation = (props, colorScheme) => {
       theme={colorScheme === "dark" ? DarkTheme : DefaultTheme}
     >
       <Stack.Navigator screenOptions={{ headerShown: false }}>
-        {!props.auth.uid || props.auth.uid == undefined ? (
+        { (props.profile.isEmpty && !props.profile.isLoaded) || !props.auth.isLoaded || !props.auth.uid ? (
           <Stack.Screen
             name="AuthScreen"
             component={AuthNavigator}
@@ -153,10 +153,14 @@ const Stack = createStackNavigator<RootStackParamList>();
 // }
 
 const mapStateToProps = (state) => {
+  console.log("Index Navigator Profile~~~~~~", state.firebase.profile.isLoaded);
+  console.log("Index Navigator Auth~~~~~~", state.firebase.auth.uid);
+
   return {
     auth: state.firebase.auth,
-    firebase: state.firebase,
-    authError: state.auth.authError,
+    profile: state.firebase.profile,
+    firebase: state.firebase.auth ? state.firebase : null,
+    authError: state.firebase.auth ? state.auth.authError : null,
   }
 };
 

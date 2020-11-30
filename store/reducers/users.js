@@ -17,7 +17,8 @@ const usersReducer = (state = initialState, action) => {
       return { ...state, selectedUser: action.data};
     case CREATE: 
         console.log("Creating user in reducer: ", action.data.userId);
-        return {...state, user: action.data, userId: action.data.userId};
+        let user = action.data.user;
+        return {...state, user: action.data.user, userId: action.data.user.userId};
     case CREATE_ERROR:
         console.log("Error when creating user: ", action.err);
         return state

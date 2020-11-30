@@ -3,6 +3,8 @@ import { StyleSheet, ScrollView, ImageBackground, View, Text } from 'react-nativ
 import { Avatar, Button, Card, Title, Paragraph, Surface, TouchableRipple, } from 'react-native-paper';
 import Colors from '../../constants/Colors.ts';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { AnimatedCircularProgress } from 'react-native-circular-progress';
+
 import * as _ from 'lodash';
 import CATEGORIES from '../../data/stubbed/dummy-job-categories';
 
@@ -12,6 +14,7 @@ export interface Props {
 }
 
 const JobListItem: React.FC<Props> = (props) => {
+  const userType = props.userType;
   const currency = {
     usd: "$",
     aud: "$",
@@ -22,9 +25,10 @@ const JobListItem: React.FC<Props> = (props) => {
       _.find(CATEGORIES, { id: categoryId}).icon
     )
   };
-  console.log("~JOB CARD~", props.company.locations);
+  const job = props.job;
+  // console.log("~JOB List Item~", job.applicants.length);
   return (
-    <View style={{ backgroundColor: 'rgba(0,0,0,0)',}}>
+    <View style={{ backgroundColor: 'rgba(0,0,0,0)', flex: 1 }}>
     <TouchableRipple
       style={{ backgroundColor: 'rgba(0,0,0,0)'}}
       onPress={() => props.onPress(props.job) }
@@ -40,6 +44,40 @@ const JobListItem: React.FC<Props> = (props) => {
                 style={{ marginTop: '60%'}}
                 />
             }
+            right={ (props) =>
+              ( userType == "Labourer" ?
+                <AnimatedCircularProgress
+                  size={60}
+                  width={5}
+                  fill={58}
+                  tintColor={ Colors.warning }
+                  tintColorSecondary={ Colors.secondary }
+                  rotation={0}
+                  onAnimationComplete={() => console.log('onAnimationComplete')}
+                  style={{ marginRight: 10, marginTop: 10, }}
+                  backgroundColor="#3d5875" 
+                  
+                  >
+{
+                    (fill) => (
+                      <>
+                      <Text>
+                        58%
+                      </Text>
+                      <Text style={{ fontSize: 12}}>
+                        Match
+                      </Text>
+                      </>
+                    )
+                  }
+                  </AnimatedCircularProgress>
+                  :
+                  <View style={{ flexDirection: "row", alignItems: "center", marginRight: 10, }}>
+                    <MaterialCommunityIcons name="account-search" size={30} />
+                    <Text> { job.applicants.length.toString() } </Text>
+                  </View>
+              )
+            }
             style={{ paddingBottom: 0}} />
            <View style={{ flexDirection: 'row', marginLeft: 70, marginTop: -10, paddingBottom: 2, alignItems: 'center'}}>
              <MaterialCommunityIcons name="star" size={18} />
@@ -53,7 +91,11 @@ const JobListItem: React.FC<Props> = (props) => {
         <Card.Content style={ styles.cardInner}>
         <View style={{ flexDirection: 'row', justifyContent: 'space-around', marginTop: 5}}>
           <Text style={ styles.detailText }> { _.get(currency, props.job.pay.currency)} { props.job.pay.amount } { props.job.pay.rate} </Text>
-          {/* <Text style={ styles.detailText }> { props.company.locations[props.job.location].address.city }, { props.company.locations[props.job.location].address.state } { props.job.location.country } </Text> */}
+          <View style={{ flexDirection: 'row' }}>
+            <MaterialCommunityIcons name="map-marker" size={18} style={{ marginLeft: 5, marginRight: -4,  }}/>
+          <Text style={ styles.detailText }> { _.truncate(props.job.location.location.address.formatted, {'length': 38} )} </Text>
+
+          </View>
         </View>
 
         </Card.Content>
@@ -66,7 +108,6 @@ const JobListItem: React.FC<Props> = (props) => {
           // </Card.Actions>
         }
       </Card>
-      <View style = { styles.separator }/>
       </View>
     </TouchableRipple>
     </View>
@@ -76,9 +117,10 @@ const JobListItem: React.FC<Props> = (props) => {
 
 const styles = StyleSheet.create({
   cardContainer:{
-    marginHorizontal: 10,
+    // marginHorizontal: 10,
     backgroundColor: 'rgba(0,0,0,0)',
     paddingBottom: 10,
+
   },
   card: {
     width: '100%',

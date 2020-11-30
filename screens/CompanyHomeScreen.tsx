@@ -29,38 +29,20 @@ import Agenda from "../components/Agenda";
 import { compose } from "redux";
 import { firestoreConnect } from "react-redux-firebase";
 import JobListItem from "../components/jobs/JobListItem";
+import JobList from "../components/jobs/JobList";
 
 
 
 const CompanyHomeScreen = ( props: any) => {
-  // console.log("PROPS on COMPANY HOME SCREEN : ", props.jobs);
-  console.log("~COMPANY ID~", props.companyId);
+  // console.log("PROPS on COMPANY HOME SCREEN : ", props.navigation);
+  // console.log("~COMPANY ID~", props.companyId);
   const [ showJobForm, setShowJobForm ] = useState(false);
 
   const handleDayPressed = (day) => {
     const date = day;
     console.log("DAY PRESSED ON HOME: ", date);
   };
-  const renderJobsList = () => {
-    return props.jobs.map((job, i) => {
-      return (
-        <View key={i} style={{ flex: 1, }}>
-          <JobListItem
-            job={job}
-            company={ props.company }
-            onPress={handleJobPress}
-          />
-        </View>
-      );
-    });
-  };
-  const handleJobPress = (job) => {
-    console.log("PRESSED: ", job.id);
-    props.navigation.navigate("JobDetailScreen", {
-      id: job.id,
-      title: job.title,
-    });
-  };
+
   return (
     <ImageBackground
       style={styles.container}
@@ -86,12 +68,7 @@ const CompanyHomeScreen = ( props: any) => {
             <Button onPress={ () => setShowJobForm(true) }>+ Add</Button>
           </View>
           <View style={ styles.jobsListContainer }>
-          <ScrollView
-          style={styles.scrollViewStyle}
-          contentContainerStyle={styles.cardContentContainer}
-        >
-          {renderJobsList()}
-        </ScrollView> 
+            <JobList companyRefId={props.profile.companyRefId} navigation={props.navigation} />
           </View>
 
 
@@ -104,7 +81,7 @@ const CompanyHomeScreen = ( props: any) => {
               onDismiss={() => setShowJobForm(false)}
               contentContainerStyle={{ flex: 1, padding: 20 }}
             >
-              <JobForm companyId={props.companyId} onDismiss={() => setShowJobForm(false) }/>
+              <JobForm companyRefId={props.profile.companyRefId} onDismiss={() => setShowJobForm(false) }/>
             </Modal>
 
           ) : null }
@@ -139,33 +116,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   jobsListContainer: {
+
     flex: 1, 
   },
-  scrollViewStyle: {
-    flex: 1,
-  },
-  cardContentContainer: {
-    flex: 1,
-    width: "100%",
-    flexDirection: 'column',
-    marginHorizontal: 10,
-    paddingHorizontal: 15,
-    justifyContent: "space-around",
-    backgroundColor: "transparent",
-  },
+  
 });
 
 const mapStateToProps = (state:any) => {
-  let company = _.find(state.firestore.ordered.companies, { refId: state.firebase.profile.companyRefId});
-  let companyId = company ? company.id : null;
+  const auth = state.firebase.auth;
+  // console.log("state.auth", auth);
   return({
-    company: company,
-    companyId: companyId,  
-    jobs: _.filter(state.firestore.ordered.jobs, { companyId: companyId}),
+    auth: auth,
+    profile: state.firebase.profile,
   })
 };
-
+// TO DO --- Put firestoreConnect only in subComponent, must be rendered only if auth.uid!
 export default compose(
   connect(mapStateToProps),
-  firestoreConnect(() => ['jobs', 'companies'])
 )(CompanyHomeScreen)

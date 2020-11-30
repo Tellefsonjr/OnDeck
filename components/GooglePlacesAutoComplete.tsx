@@ -40,7 +40,7 @@ const GooglePlacesInput = (props:any) => {
         try {
             const result = await fetch(apiUrl);
             const json = await result.json();
-            console.log("JSON: ", `\"${json.status}\"`);
+            console.log("Places STATUS: ", `\"${json.status}\"`);
             json.status == "OK" ? setPredictions(json.predictions) : setError(json.error_message);
         } catch (err) {
             console.log("Error: ", err);
@@ -52,7 +52,7 @@ const GooglePlacesInput = (props:any) => {
     const onChangeLocation = async (value:string) => {
         let location = location ?? null;
         setInput(value);
-        console.log("Changing Location: ", value, location);
+        // console.log("Changing Location: ", value, location);
         setIsLoading(true)
         debouncedGetPredictions();
         
@@ -62,13 +62,13 @@ const GooglePlacesInput = (props:any) => {
     // const onChangeLocationDebounced = _.debounce((text) => onChangeLocation(text), 250);
 
     const handleSelectLocation = async (id:string) => {
-        console.log("Searching for place: ", id);
+        // console.log("Searching for place: ", id);
         let fields = "address_component,adr_address,formatted_address,geometry,icon,name,place_id,plus_code,type";
         const apiUrl = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${id}&fields=${fields}&key=${googleConfig.apiKey}`
         try {
             const result = await fetch(apiUrl);
             const json = await result.json();
-            console.log("Details Response: ", json);
+            // console.log("Details Response: ", json);
             // json.status == "OK" ? setSelectedLocation(json.predictions) : setError(json.error_message);
             setInput(json.result.formatted_address);
             setSelectedLocation({

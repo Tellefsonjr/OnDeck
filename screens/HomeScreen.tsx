@@ -30,6 +30,7 @@ import Agenda from "../components/Agenda";
 import JobListItem from "../components/jobs/JobListItem";
 import JobFilterModal from "../components/jobs/JobFilterModal";
 import * as userActions from '../store/actions/users'; //Redux Actions
+import JobList from "../components/jobs/JobList";
 
 export default function HomeScreen(props: any) {
   const dispatch = useDispatch();
@@ -184,10 +185,10 @@ export default function HomeScreen(props: any) {
 
         <ScrollView
           style={styles.scrollViewStyle}
-          containerContainerStyle={styles.cardContentContainer}
+          contentContainerStyle={styles.cardContentContainer}
         >
-          {renderJobsList()}
-        </ScrollView>
+          <JobList companyRefId={null} navigation={props.navigation} />
+        </ScrollView> 
       </View>
       {selectedJob && selectedJob != null ? (
         <JobDetailModal
@@ -231,8 +232,6 @@ const styles = StyleSheet.create({
     flex: 1,
     width: "100%",
     flexDirection: "row",
-    marginHorizontal: 10,
-    paddingHorizontal: 15,
     justifyContent: "space-around",
     backgroundColor: "transparent",
   },

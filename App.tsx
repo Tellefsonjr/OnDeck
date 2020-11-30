@@ -40,6 +40,7 @@ const store = createStore(rootReducer,
 const rrfProps = {
   firebase,
   config: firebaseConfig,
+  initializeAuth: true,
   dispatch: store.dispatch,
   createFirestoreInstance
 };
@@ -48,7 +49,7 @@ export default function App(navigation) {
 
   const isLoadingComplete = useCachedResources();
   const colorScheme = useColorScheme();
-  if (!isLoadingComplete) {
+  if (!isLoadingComplete ) {
     return null;
   } else {
     return (

@@ -82,7 +82,7 @@ function HomeNavigator(props) {
         options={{
           headerTitle: "Home",
           headerLeft: () => (
-            <ProfileHeader size={36} paddingLeft={15} {...props} />
+            <ProfileHeader from={"Line 85 App Navigator"} size={36} paddingLeft={15} {...props} />
           ),
           headerRight: () => (
           <HeaderButtons HeaderButtonComponent={CustomHeaderButton}>
@@ -94,9 +94,14 @@ function HomeNavigator(props) {
       <HomeStack.Screen
         name="JobDetailScreen"
         component={JobDetailScreen}
-        options={({ route }) => ({ title: route.params.title,
-          headerLeft: () => (
-            <ProfileHeader size={36} paddingLeft={15} navProps={props.navigation} />
+        options={({ route, navigation }) => ({ title: route.params.title,
+          headerLeft: (props) => (
+            <HeaderBackButton
+              {...props}
+              onPress={() => {
+                navigation.goBack()
+              }}
+            />
           ),
           headerRight: () => (
           <HeaderButtons HeaderButtonComponent={CustomHeaderButton}>
@@ -119,7 +124,7 @@ function Sos(props) {
         component={SosScreen}
         options={{ headerTitle: 'Sos',
         headerLeft: () => (
-          <ProfileHeader size={36} paddingLeft={15} navProps={props.navigation} />
+          <ProfileHeader from={"SOS Screen Header"} size={36} paddingLeft={15} navProps={props.navigation} />
         ),
         headerRight: () => (
         <HeaderButtons HeaderButtonComponent={CustomHeaderButton}>
@@ -132,7 +137,7 @@ function Sos(props) {
         component={JobDetailScreen}
         options={{ headerTitle: 'OnDeck',
         headerLeft: () => (
-          <ProfileHeader size={36} paddingLeft={15} navProps={props.navigation} />
+          <ProfileHeader from={"SOS Stack Job Detail Header"} size={36} paddingLeft={15} navProps={props.navigation} />
         ),
         headerRight: () => (
         <HeaderButtons HeaderButtonComponent={CustomHeaderButton}>
@@ -155,7 +160,7 @@ function Browse(props) {
         component={BrowseScreen}
         options={{ headerTitle: 'Browse',
         headerLeft: () => (
-          <ProfileHeader size={36} paddingLeft={15} navProps={props.navigation} />
+          <ProfileHeader from={"Browse Screen Profile Header"} size={36} paddingLeft={15} navProps={props.navigation} />
         ),
         headerRight: () => (
         <HeaderButtons HeaderButtonComponent={CustomHeaderButton}>
@@ -168,7 +173,7 @@ function Browse(props) {
         component={JobDetailScreen}
         options={{ headerTitle: 'OnDeck',
         headerLeft: () => (
-          <ProfileHeader size={36} paddingLeft={15} navProps={props.navigation} />
+          <ProfileHeader from={"Job Detail Screen Profile Header"} size={36} paddingLeft={15} navProps={props.navigation} />
         ),
         headerRight: () => (
         <HeaderButtons HeaderButtonComponent={CustomHeaderButton}>
@@ -190,7 +195,7 @@ function Events(props) {
         component={EventsScreen}
         options={{ headerTitle: 'Events',
         headerLeft: () => (
-          <ProfileHeader size={36} paddingLeft={15} navProps={props.navigation} />
+          <ProfileHeader from={"Events Header Profile"} size={36} paddingLeft={15} navProps={props.navigation} />
         ),
         headerRight: () => (
         <HeaderButtons HeaderButtonComponent={CustomHeaderButton}>
@@ -262,6 +267,7 @@ function Settings(props) {
 
 function CustomDrawerContent(props) {
   const dispatch = useDispatch();
+  // console.log("Props in Custom Drawer COntent: ", props);
   // console.log("DRAWER PROPS: ", props.navigation.navigate);
   return (
     <DrawerContentScrollView {...props} contentContainerStyle={{ flex: 1 }}>
@@ -270,7 +276,7 @@ function CustomDrawerContent(props) {
         style={{backgroundColor: Colors.secondary, position: 'absolute', bottom: 10, width: '92%'}} 
         onPress={() => {
           dispatch(authActions.logout()); 
-          props.navigation.navigate("Home", {screen: "AuthScreen"});
+          // props.navigation.navigate("Home");
         }}
           icon= {() => (
             <MaterialCommunityIcons name='logout' size={36} color="white" />
@@ -291,10 +297,10 @@ function DrawerNavigator(props) {
       options={({ navigation }) => ({
         headerTitle: "Hello",
         drawerIcon: () => (
-          <ProfileHeader size={36} paddingLeft={0} navProps={props.navigation} />
+          <ProfileHeader from={"Drawer Profile Button"} size={36} paddingLeft={0} navProps={props.navigation} />
         ),
         headerLeft: () => (
-          <ProfileHeader
+          <ProfileHeader from={"Drawer Profile Header"}
             size={36}
             paddingLeft={15}
             navProps={navigation}
@@ -324,7 +330,7 @@ function DrawerNavigator(props) {
             <MaterialCommunityIcons name='cogs' size={36} />
           ), 
           headerLeft: () => (
-            <ProfileHeader size={36} paddingLeft={15} navProps={props.navigation} />
+            <ProfileHeader from={"Drawer Settings"} size={36} paddingLeft={15} navProps={props.navigation} />
           ),
           headerRight: () => (
           <HeaderButtons HeaderButtonComponent={CustomHeaderButton}>
