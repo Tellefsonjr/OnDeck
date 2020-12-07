@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { StyleSheet, View, Text } from "react-native";
+import { StyleSheet, View, Text, Dimensions } from "react-native";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import Colors from "../../constants/Colors";
@@ -7,17 +7,43 @@ import { useSelector } from 'react-redux'
 import { firestoreConnect, useFirebase, } from "react-redux-firebase";
 import { compose } from "redux";
 import _ from "lodash";
+import ApplicantCardItem from "./ApplicantCardItem";
+import { IconButton } from "react-native-paper";
+import * as jobActions from '../../store/actions/jobs';
 
 export interface Props {
     key: string;
     job?: object;
   }
+const {height, width} = Dimensions.get('window');
 
 const ApplicantContainer = (props) => {
-    console.log("APPLICANT USERS: ", props.applicants);
+    const declineApplicant = (applicant) => {
+      console.log("Declining Applicant: ", applicant.id );
+      props.decline(props.job, applicant.id)
+    };
+    const skipApplicant = (applicant) => {
+      console.log("Skipping Applicant: ", applicant.id );
+    };
+    const approveApplicant = (applicant) => {
+      console.log("Approving Applicant: ", applicant.id );
+      console.log("APPROVING JOB: ", props.job.id);
+      props.approveJob(props.job, applicant.id)
+    };
     return (
     <View style={styles.container}>
-        <Text>{ props.applicants == null ? "No applicants here" : props.applicants.length} </Text>
+      <View style={ styles.applicantContainer }>
+      { props.applicants.map((applicant, index) => {
+          return ( 
+            <ApplicantCardItem key={index} user={applicant} 
+              decline={ declineApplicant }
+              skip={ skipApplicant }
+              approve={ approveApplicant }
+            /> 
+          )
+        })}
+      </View>
+
     </View>
     );
 }
@@ -25,23 +51,43 @@ const ApplicantContainer = (props) => {
 
 const mapStateToProps = (state: any, ownProps: any) => {
     // console.log("ownProps::: ", ownProps.route.params.id);
-    let applicants = _.reject(ownProps.job.applicants, (userId) => _.find(state.firestore.data.users, { id: userId} ));
+    // console.log("APPLICANT CONTAINER USER: ", state.firestore.ordered.users);
+    // let applicants = _.reject(state.firestore.ordered.users, (userId) => _.find(ownProps.job.applicants, userId ));
+    // console.log("State", state.firebase.auth.isLoaded, "users: ", state.firestore.ordered);
+    let users = state.firestore.ordered.users;
+    let applicants = [];
+    if( ownProps.job.applicants.length){
+      applicants = users != undefined? _.filter(users, (user) => 
+      ownProps.job.applicants.every((userId) => userId == user.id)) : [];
+    }
 
-    console.log("APPLICANT CONTAINER APPLICANTS: ", applicants);
+    console.log("APPLICANT CONTAINER APPLICANTS: ", applicants.length);
     return {
-        auth: state.firebase.auth,
+      auth: state.firebase.auth,
       applicants: applicants
     };
   };
 
 
-const mapDispatchToProps = {};
+const mapDispatchToProps = (dispatch) => {
+  return {
+    decline: (job, userId) => dispatch(jobActions.decline(job, userId)),
+    approveJob: (job, userId) => dispatch(jobActions.approve(job, userId)),
+  };
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    height: height,
+    width: width,
+    padding: 16,
     backgroundColor: Colors.light.background,
   },
+  applicantContainer: {
+    height: '100%',
+  },
+
 });
 // const firestoreQuery = (state, ownProps) => {
 //     return (state.auth.isLoaded && state.auth.uid ? 
@@ -53,6 +99,7 @@ const styles = StyleSheet.create({
 // }
 export default compose(
     connect(mapStateToProps, mapDispatchToProps),
+    //TO DO: Select only users from job.applicants list of IDs
     // firestoreConnect((state, ownProps ) => {
     //         console.log("ownProps.job.applicants", ownProps.job.applicants);
     //         return (
@@ -65,9 +112,10 @@ export default compose(
     //     connect(({ firestore: { ordered } }) => ({
     //         pendingApplicants: ordered.pendingApplicants // an array list of registrations
     //       }))
-    firestoreConnect((state, ownProps ) => {
+    firestoreConnect((state) => {
         return (
             state.auth.isLoaded ? ['users'] : []
+            // ['users']
         )
     })
   )(ApplicantContainer);

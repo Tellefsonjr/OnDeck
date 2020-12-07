@@ -187,7 +187,7 @@ export default function HomeScreen(props: any) {
           style={styles.scrollViewStyle}
           contentContainerStyle={styles.cardContentContainer}
         >
-          <JobList companyRefId={null} navigation={props.navigation} />
+          <JobList companyRefId={null} navigation={props.navigation} applied={false} approved={false} />
         </ScrollView> 
       </View>
       {selectedJob && selectedJob != null ? (

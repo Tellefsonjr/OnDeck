@@ -9,7 +9,7 @@ import JobListItem from './JobListItem';
 const JobList = (props: any) => {
     const renderJobsList = () => {
         let jobs = _.concat(props.jobs, props.jobs, props.jobs);
-        return jobs.map((job, i) => {
+       return jobs.map((job, i) => {
             let company = _.find(props.companies, { id: job.companyId });
             // console.log("company: ", company.id);
           return (
@@ -21,7 +21,7 @@ const JobList = (props: any) => {
                 userType={props.profile.type}
               />
           );
-        });
+        })
       };
       const handleJobPress = (job) => {
         console.log("PRESSED: ", job.id);
@@ -60,6 +60,7 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = (state:any, ownProps) => {
     let auth = state.firebase.auth;
+    let profile = state.firebase.profile;
     let company = ownProps.companyRefId && auth.isLoaded && state.firestore.ordered.companies ? _.find(state.firestore.ordered.companies, { refId: ownProps.companyRefId }) : null;
     // console.log("OwnProps::: ", ownProps.companyRefId ? ownProps.companyRefId : "no company provided");
     // console.log("COMPANY: ", company);
@@ -69,11 +70,25 @@ const mapStateToProps = (state:any, ownProps) => {
     let jobs = auth.isLoaded ? company ? _.filter(state.firestore.ordered.jobs, { companyId: company.id}) : state.firestore.ordered.jobs : [];
     // console.log("Jobs length: ", jobs ? jobs.length : "No jobs!?");
     let companies = auth.isLoaded ? state.firestore.ordered.companies : [];
+    console.log("AUTH UID: ", auth.uid);
+
+    //Labourer filters on JobList props
+    if(profile.type == "Labourer" && ownProps.approved == false){
+      jobs = _.reject(jobs, {approvedApplicant: auth.uid})
+    }
+    if(profile.type == "Labourer" && ownProps.applied == false){
+      console.log("JOBS BEFORE: ", jobs);
+      jobs = _.reject(jobs, (job) => 
+        job.applicants.includes(auth.uid)
+        )
+    }
+
+
     // console.log("STATE FIRESTORE: ", state.firestore);
     // console.log("JobList, Auth.uid: ", auth.uid);
     return({
-        auth: auth,
-        profile: state.firebase.profile,
+      auth: auth,
+      profile: profile,
       companies: companies,
       jobs: jobs,
     })

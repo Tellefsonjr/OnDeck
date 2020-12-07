@@ -1,5 +1,5 @@
 import JOBS from '../../data/stubbed/dummy-jobs';
-import { GET, CREATE, CREATE_ERROR, DELETE, UPDATE, APPLY, APPLY_ERROR, UNAPPLY, UNAPPLY_ERROR } from '../actions/jobs';
+import { GET, CREATE, CREATE_ERROR, DELETE, UPDATE, APPLY, APPLY_ERROR, UNAPPLY, UNAPPLY_ERROR, APPROVE, APPROVE_ERROR, DECLINE, DECLINE_ERROR, } from '../actions/jobs';
 import Job from '../../data/models/Job';
 
 const initialState = {
@@ -48,11 +48,17 @@ const jobsReducer = (state = initialState, action) => {
     case APPLY_ERROR:
       console.log("Error when applying for job, uid: ", action.uid, " jobID: ", action.job.id);
       return { ...state }
-    case APPLY: 
+    case UNAPPLY: 
       console.log("Got to reducer, removing application")
       return { ...state }
-    case APPLY_ERROR:
+    case UNAPPLY_ERROR:
       console.log("Error when removing application for job, uid: ", action.uid, " jobID: ", action.job.id);
+      return { ...state }
+    case APPROVE: 
+      console.log("Got to reducer, APPROVE")
+      return { ...state }
+    case APPROVE_ERROR:
+      console.log("Error when approving for job, uid: ", action.uid, " jobID: ", action.job.id);
       return { ...state }
     case DELETE:
       console.log("Deleting in reducer: ", action.jobId);
