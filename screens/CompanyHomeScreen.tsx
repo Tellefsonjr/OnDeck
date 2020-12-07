@@ -68,7 +68,7 @@ const CompanyHomeScreen = ( props: any) => {
             <Button onPress={ () => setShowJobForm(true) }>+ Add</Button>
           </View>
           <View style={ styles.jobsListContainer }>
-            <JobList companyRefId={props.profile.companyRefId} navigation={props.navigation} />
+            <JobList companyRefId={props.profile.companyRefId} navigation={props.navigation} applied={true} approved={true} />
           </View>
 
 

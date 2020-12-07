@@ -26,10 +26,11 @@ import { Video } from 'expo-av';
 import * as userActions from "../store/actions/auth"; //Redux Actions
 import { HeaderButtons, Item } from "react-navigation-header-buttons";
 
-import JOB_CATEGORIES from "../data/stubbed/dummy-job-categories";
 import ProfileCard from "../assets/images/ProfileCard.svg";
 import { firestoreConnect } from "react-redux-firebase";
 import { compose } from "redux";
+import UserInfoContainer from "../components/users/UserInfoContainer";
+import Rating from "../components/shared/Rating";
 
 
 
@@ -113,96 +114,15 @@ const UserProfileScreen = (props) => {
 
           </TouchableWithoutFeedback>
           <Title>{user.fullName}</Title>
-          <View
-            style={[
-              styles.horizontalList,
-              { alignItems: "center", marginLeft: "7%", alignSelf: "center" },
-            ]}
-          >
-            <MaterialCommunityIcons name="star" size={20} />
-            <MaterialCommunityIcons name="star" size={20} />
-            <MaterialCommunityIcons name="star" size={20} />
-            <MaterialCommunityIcons name="star" size={20} />
-            <MaterialCommunityIcons name="star-outline" size={20} />
-            <Paragraph style={{ opacity: 0.8, marginLeft: 5 }}>4.0</Paragraph>
-          </View>
+
+          <Rating rating={user.rating} />
+          
           <View style={{ padding: 5 }}>
             <Paragraph>{user.profile.bio}</Paragraph>
           </View>
         </View>
-
-        <View style={styles.infoContainer}>
-          <View style={styles.iconTextPair}>
-            <MaterialCommunityIcons
-              name="map-marker"
-              size={20}
-              style={{ marginRight: 10, alignSelf: "center" }}
-            />
-            <Paragraph> {user.location.location.address.formatted} </Paragraph>
-          </View>
-          <View style={styles.iconTextPair}>
-            <MaterialCommunityIcons
-              name="magnify"
-              size={20}
-              style={{ marginRight: 10, alignSelf: "center" }}
-            />
-            <View style={styles.horizontalList}>
-              <Chip
-                icon="information"
-                style={{ padding: 0 }}
-                textStyle={{ fontSize: 12 }}
-              >
-                Gig
-              </Chip>
-              <Chip
-                icon="information"
-                style={{ padding: 0 }}
-                textStyle={{ fontSize: 12 }}
-              >
-                Full-Time
-              </Chip>
-              <Chip
-                icon="information"
-                style={{ padding: 0 }}
-                textStyle={{ fontSize: 12 }}
-              >
-                Part-Time
-              </Chip>
-              <Chip
-                icon="information"
-                style={{ padding: 0 }}
-                textStyle={{ fontSize: 12 }}
-              >
-                Skilled
-              </Chip>
-              <Chip
-                icon="information"
-                style={{ padding: 0 }}
-                textStyle={{ fontSize: 12 }}
-              >
-                Unskilled
-              </Chip>
-            </View>
-          </View>
-          <View style={styles.iconTextPair}>
-            <MaterialCommunityIcons
-              name="certificate"
-              size={20}
-              style={{ marginRight: 10, alignSelf: "center" }}
-            />
-            <Paragraph> White card </Paragraph>
-          </View>
-          <View style={styles.iconTextPair}>
-            <MaterialCommunityIcons
-              name="bag-personal-outline"
-              size={20}
-              style={{ marginRight: 10, alignSelf: "center" }}
-            />
-            <Paragraph style={{ flex: 1, flexWrap: "wrap" }}>
-              PPE: high visibility clothing, steel-toe boots, hard hat, ear
-              plugs, face mask
-            </Paragraph>
-          </View>
+        <View style={{ flex: 4 }} >
+          <UserInfoContainer user={user} />
         </View>
 
         <View style={styles.buttonContainer}>
@@ -318,15 +238,7 @@ const styles = StyleSheet.create({
 
     elevation: 15,
   },
-  infoContainer: {
-    marginTop: 5,
-    flex: 4,
-    padding: 20,
-  },
-  iconTextPair: {
-    flexDirection: "row",
-    marginBottom: 5,
-  },
+
   modal: {},
   modalContainer: {
     height: "100%",

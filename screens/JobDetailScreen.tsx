@@ -1,5 +1,5 @@
 import * as React from "react";
-import { StyleSheet, ScrollView, View, Text } from "react-native";
+import { StyleSheet, ScrollView, View, Text, Dimensions } from "react-native";
 import { Button, Modal } from "react-native-paper";
 import * as _ from "lodash";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -13,6 +13,8 @@ import { useState } from "react";
 
 import * as jobActions from "../store/actions/jobs.js";
 import ApplicantContainer from "../components/jobs/ApplicantContainer";
+
+const { height, width } = Dimensions.get("window");
 
 const JobDetailScreen = (props) => {
   // console.log("JOB Detail: ", props.job.id);
@@ -119,8 +121,11 @@ const JobDetailScreen = (props) => {
       </View>
         {
           applicantContainer ? 
-          <Modal visible={applicantContainer} onDismiss={ () => setApplicantContainer(false)} contentContainerStyle={{ height: '60%'}}>
-            <ApplicantContainer job={job} />
+          <Modal visible={applicantContainer} onDismiss={ () => setApplicantContainer(false)} contentContainerStyle={{ height: '100%', width: width }}>
+            { props.auth.isLoaded ?
+              <ApplicantContainer job={job} />
+              : null
+            }
           </Modal>
           : 
           null

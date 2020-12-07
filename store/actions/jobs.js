@@ -6,6 +6,10 @@ export const APPLY = 'APPLY';
 export const APPLY_ERROR = 'APPLY_ERROR';
 export const UNAPPLY = 'UNAPPLY';
 export const UNAPPLY_ERROR = 'UNAPPLY_ERROR';
+export const APPROVE = 'APPROVE';
+export const APPROVE_ERROR = 'APPROVE_ERROR';
+export const DECLINE = 'DECLINE';
+export const DECLINE_ERROR = 'DECLINE_ERROR';
 export const DELETE = 'DELETE_JOB';
 import * as _ from 'lodash';
 
@@ -72,6 +76,29 @@ export const unApply = (job, uid) => {
           dispatch({ type: "UNAPPLY", job: job, uid: uid });
         }).catch((err) => {
             dispatch({ type: "UNAPPLY_ERROR", err});
+        })
+}
+};
+
+export const approve = (job, uid) => {
+  console.log("Job Approve Action: ", job.id, uid);
+  let updatedJob = job;
+  console.log("Applicants before::: ", updatedJob.applicants);
+  updatedJob = {
+    ...updatedJob,
+    applicants: _.without( updatedJob.applicants, uid ),
+    isFilled: true,
+    approvedApplicant: uid,
+  };
+  console.log(" Approve ACTION, UPDATED JOB: ", updatedJob.applicants);
+  return(dispatch, getState, {getFirestore, }) => {
+    const firestore = getFirestore();
+    firestore.collection('jobs').doc(job.id).set(
+      updatedJob
+      ).then(() => {
+          dispatch({ type: "APPROVE", job: job, uid: uid });
+        }).catch((err) => {
+            dispatch({ type: "APPROVE_ERROR", err});
         })
 }
 };

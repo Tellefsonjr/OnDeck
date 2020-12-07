@@ -109,9 +109,9 @@ const LoginScreen = ( props ) => {
             { isLoading == true ? 
               <ActivityIndicator size="small" color={Colors.primary} />
             :
-              <Button color='rgba(95,54,221,.9)' label="home" mode="contained" style={ styles.submitButton } onPress={ () => {setAnimated(false); authHandler()}}> Login </Button>
+              <Button color='rgba(95,54,221,.9)' mode="contained" style={ styles.submitButton } onPress={ () => {setAnimated(false); authHandler()}}> Login </Button>
             }
-            <Button color='rgba(95,54,221,.9)' label="home" mode="contained" style={ styles.submitButton } onPress={ () => {setAnimated(false); props.navigation.navigate('Register')}}> Register </Button>
+            <Button color='rgba(95,54,221,.9)' mode="contained" style={ styles.submitButton } onPress={ () => {setAnimated(false); props.navigation.navigate('Register')}}> Register </Button>
           </View>
         </View>
       </KeyboardAwareScrollView>
