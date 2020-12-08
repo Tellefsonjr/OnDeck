@@ -28,7 +28,12 @@ const ApplicantContainer = (props) => {
     const approveApplicant = (applicant) => {
       console.log("Approving Applicant: ", applicant.id );
       console.log("APPROVING JOB: ", props.job.id);
-      props.approveJob(props.job, applicant.id)
+      const approvedApplicant = {
+        id: applicant.id,
+        avatar: applicant.profile.avatar,
+      }
+      props.approveJob(props.job, approvedApplicant)
+      props.onApprove();
     };
     return (
     <View style={styles.container}>

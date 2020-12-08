@@ -14,6 +14,8 @@ export interface Props {
 }
 
 const JobListItem: React.FC<Props> = (props) => {
+  // console.log("Job applicants: ", props.job.applicants, props.job.approvedApplicant);
+  const job = props.job;
   const userType = props.userType;
   const currency = {
     usd: "$",
@@ -25,7 +27,6 @@ const JobListItem: React.FC<Props> = (props) => {
       _.find(CATEGORIES, { id: categoryId}).icon
     )
   };
-  const job = props.job;
   // console.log("~JOB List Item~", job.applicants.length);
   return (
     <View style={{ backgroundColor: 'rgba(0,0,0,0)', flex: 1 }}>
@@ -73,8 +74,19 @@ const JobListItem: React.FC<Props> = (props) => {
                   </AnimatedCircularProgress>
                   :
                   <View style={{ flexDirection: "row", alignItems: "center", marginRight: 10, }}>
+                    { job.approvedApplicant ?
+                      <Avatar.Image
+                        size={40}
+                        source={{ uri: job.approvedApplicant.avatar}}
+                        style={{ marginTop: '60%'}}
+                      />
+                      :
+                      <>
                     <MaterialCommunityIcons name="account-search" size={30} />
                     <Text> { job.applicants.length.toString() } </Text>
+                    </>
+                    }
+
                   </View>
               )
             }

@@ -151,8 +151,37 @@ export default function HomeScreen(props: any) {
           <Agenda onDayPress={handleDayPressed} hideKnob={true} />
         </View>
       </View>
-
-      <View style={{ backgroundColor: "rgba(0,0,0,0)", flex: 6 }}>
+      <View style={{ backgroundColor: "rgba(0,0,0,0)", flex: 3 }}>
+        <View
+          style={{
+            backgroundColor: "transparent",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            borderBottomWidth: 1,
+            borderBottomColor: Colors.textLight,
+            paddingHorizontal: 15,
+            marginVertical: 10,
+          }}
+        >
+          <Title
+            style={{
+              fontWeight: "bold",
+              fontSize: 22,
+              color: Colors.textLight,
+            }}
+          >
+            {" "}
+            My Jobs:{" "}
+          </Title>
+        </View>
+        <ScrollView
+          style={styles.scrollViewStyle}
+          contentContainerStyle={styles.cardContentContainer}
+        >
+          <JobList companyRefId={null} navigation={props.navigation} applied={false} approved={true} indicator={"calendar"} />
+        </ScrollView> 
+      </View>
+      <View style={{ backgroundColor: "rgba(0,0,0,0)", flex: 3 }}>
         <View
           style={{
             backgroundColor: "transparent",
@@ -182,7 +211,6 @@ export default function HomeScreen(props: any) {
             />
           </TouchableHighlight>
         </View>
-
         <ScrollView
           style={styles.scrollViewStyle}
           contentContainerStyle={styles.cardContentContainer}
