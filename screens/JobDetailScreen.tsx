@@ -123,7 +123,7 @@ const JobDetailScreen = (props) => {
           applicantContainer ? 
           <Modal visible={applicantContainer} onDismiss={ () => setApplicantContainer(false)} contentContainerStyle={{ height: '100%', width: width }}>
             { props.auth.isLoaded ?
-              <ApplicantContainer job={job} />
+              <ApplicantContainer job={job} onApprove={ () => setApplicantContainer(false)} />
               : null
             }
           </Modal>

@@ -77,8 +77,15 @@ const mapStateToProps = (state:any, ownProps) => {
       jobs = _.reject(jobs, {approvedApplicant: auth.uid})
     }
     if(profile.type == "Labourer" && ownProps.applied == false){
-      console.log("JOBS BEFORE: ", jobs);
-      jobs = _.reject(jobs, (job) => 
+        jobs = _.reject(jobs, (job) => 
+        job.applicants.includes(auth.uid)
+        )
+    }
+    if(profile.type == "Labourer" && ownProps.approved == true){
+      jobs = _.filter(jobs, {approvedApplicant: auth.uid})
+    }
+    if(profile.type == "Labourer" && ownProps.applied == true){
+      jobs = _.filter(jobs, (job) => 
         job.applicants.includes(auth.uid)
         )
     }

@@ -80,15 +80,15 @@ export const unApply = (job, uid) => {
 }
 };
 
-export const approve = (job, uid) => {
-  console.log("Job Approve Action: ", job.id, uid);
+export const approve = (job, approvedApplicant) => {
+  console.log("Job Approve Action: ", job.id, approvedApplicant);
   let updatedJob = job;
   console.log("Applicants before::: ", updatedJob.applicants);
   updatedJob = {
     ...updatedJob,
-    applicants: _.without( updatedJob.applicants, uid ),
+    applicants: _.without( updatedJob.applicants, approvedApplicant.id ),
     isFilled: true,
-    approvedApplicant: uid,
+    approvedApplicant: approvedApplicant,
   };
   console.log(" Approve ACTION, UPDATED JOB: ", updatedJob.applicants);
   return(dispatch, getState, {getFirestore, }) => {
