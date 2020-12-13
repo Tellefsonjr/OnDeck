@@ -8,7 +8,7 @@ import JobListItem from './JobListItem';
 
 const JobList = (props: any) => {
     const renderJobsList = () => {
-        let jobs = _.concat(props.jobs, props.jobs, props.jobs);
+        let jobs = props.jobs;
        return jobs.map((job, i) => {
             let company = _.find(props.companies, { id: job.companyId });
             // console.log("company: ", company.id);
@@ -70,27 +70,25 @@ const mapStateToProps = (state:any, ownProps) => {
     let jobs = auth.isLoaded ? company ? _.filter(state.firestore.ordered.jobs, { companyId: company.id}) : state.firestore.ordered.jobs : [];
     // console.log("Jobs length: ", jobs ? jobs.length : "No jobs!?");
     let companies = auth.isLoaded ? state.firestore.ordered.companies : [];
-    console.log("AUTH UID: ", auth.uid);
+    console.log("AUTH UID: ", auth.uid, profile.type);
 
     //Labourer filters on JobList props
     if(profile.type == "Labourer" && ownProps.approved == false){
-      jobs = _.reject(jobs, {approvedApplicant: auth.uid})
+      jobs = _.reject(jobs, {approvedApplicant: {id: auth.uid}})
     }
     if(profile.type == "Labourer" && ownProps.applied == false){
         jobs = _.reject(jobs, (job) => 
         job.applicants.includes(auth.uid)
         )
     }
-    if(profile.type == "Labourer" && ownProps.approved == true){
-      jobs = _.filter(jobs, {approvedApplicant: auth.uid})
+    if(profile.type == "Labourer" && ownProps.approved ){
+      jobs = _.filter(jobs, {approvedApplicant: {id: auth.uid}})
     }
-    if(profile.type == "Labourer" && ownProps.applied == true){
+    if(profile.type == "Labourer" && ownProps.applied ){
       jobs = _.filter(jobs, (job) => 
         job.applicants.includes(auth.uid)
         )
     }
-
-
     // console.log("STATE FIRESTORE: ", state.firestore);
     // console.log("JobList, Auth.uid: ", auth.uid);
     return({
