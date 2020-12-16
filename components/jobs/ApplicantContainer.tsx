@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, useState } from "react";
 import { StyleSheet, View, Text, Dimensions } from "react-native";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
@@ -18,12 +18,22 @@ export interface Props {
 const {height, width} = Dimensions.get('window');
 
 const ApplicantContainer = (props) => {
+    const [ applicants, setApplicants ] = useState(props.applicants);
     const declineApplicant = (applicant) => {
       console.log("Declining Applicant: ", applicant.id );
-      props.decline(props.job, applicant.id)
+      props.decline(props.job, applicant.id);
+      setApplicants(_.without(applicants, applicant)
+      )
     };
     const skipApplicant = (applicant) => {
       console.log("Skipping Applicant: ", applicant.id );
+      // let declinedIndex = _.indexOf(props.applicants, applicant.id);
+      let updatedApplicants = applicants;
+      updatedApplicants = _.without(updatedApplicants, applicant);
+      console.log("YOOOOO: ", updatedApplicants);
+      setApplicants( _.concat( updatedApplicants, applicant));
+      console.log("AFter: ", applicants);
+      
     };
     const approveApplicant = (applicant) => {
       console.log("Approving Applicant: ", applicant.id );
@@ -38,9 +48,9 @@ const ApplicantContainer = (props) => {
     return (
     <View style={styles.container}>
       <View style={ styles.applicantContainer }>
-      { props.applicants.map((applicant, index) => {
+      { applicants.map((applicant, index) => {
           return ( 
-            <ApplicantCardItem key={index} user={applicant} 
+            <ApplicantCardItem key={index} user={applicant} index={-index}
               decline={ declineApplicant }
               skip={ skipApplicant }
               approve={ approveApplicant }
@@ -62,11 +72,11 @@ const mapStateToProps = (state: any, ownProps: any) => {
     let users = state.firestore.ordered.users;
     let applicants = [];
     if( ownProps.job.applicants.length){
-      applicants = users != undefined? _.filter(users, (user) => 
-      ownProps.job.applicants.every((userId) => userId == user.id)) : [];
+      applicants = users != undefined? _.reject(users, (user) => 
+      ownProps.job.applicants.every((userId) => userId != user.id)) : [];
     }
 
-    console.log("APPLICANT CONTAINER APPLICANTS: ", applicants.length);
+    console.log("APPLICANT CONTAINER APPLICANTS: ", ownProps.job.applicants.length, applicants.length);
     return {
       auth: state.firebase.auth,
       applicants: applicants

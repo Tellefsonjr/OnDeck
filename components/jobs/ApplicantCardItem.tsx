@@ -13,7 +13,7 @@ const PADDING = 16;
 const ApplicantCardItem = (props) => {
     const user = props.user;
     return (
-        <View style={ styles.container }>
+        <View style={ [ StyleSheet.absoluteFill, styles.container, { zIndex: props.index}] }>
             <View style={ styles.applicantContainer }>
             <View style={ styles.avatar }>
                 <Avatar.Image
@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         flexGrow: 1,
-
+        backgroundColor: Colors.light.background,
     },
     applicantContainer: {
       alignItems: 'center',
