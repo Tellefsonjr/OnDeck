@@ -103,6 +103,26 @@ export const approve = (job, approvedApplicant) => {
 }
 };
 
+export const decline = (job, declinedApplicantId) => {
+  let updatedJob = job;
+  updatedJob = {
+    ...updatedJob,
+    applicants: _.without( updatedJob.applicants, declinedApplicantId),
+    declinedApplicants: _.concat(updatedJob.declinedApplicants, declinedApplicantId),
+    isFilled: false,
+  };
+  return(dispatch, getState, {getFirestore, }) => {
+    const firestore = getFirestore();
+    firestore.collection('jobs').doc(job.id).set(
+      updatedJob
+    ).then(() => {
+      dispatch({ type: "DECLINE", job: job, uid: uid });
+    }).catch((err) => {
+      dispatch({ type: "DECLINE_ERROR", err});
+    })
+  }
+};
+
 export const deleteJob = JobId => {
   return { type: DELETE, data: JobId }
 };

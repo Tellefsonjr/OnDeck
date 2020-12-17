@@ -1,169 +1,205 @@
-import React, { useState } from 'react';
-import {Alert, StyleSheet, TouchableOpacity, View, Text, Platform} from 'react-native';
-import { Button, Avatar } from 'react-native-paper';
-import {Agenda} from 'react-native-calendars';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { NativeModules } from 'react-native'
-import Moment from 'moment';
+import React, { useState } from "react";
+import {
+  Alert,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+  Text,
+  Platform,
+} from "react-native";
+import { Button, Avatar } from "react-native-paper";
+import { Agenda } from "react-native-calendars";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import Moment from "moment";
+import "moment-recur";
 
-import Colors from '../constants/Colors';
-import { MonoText } from './StyledText';
-import _ from 'lodash';
+import Colors from "../../constants/Colors";
+import { MonoText } from "./StyledText";
+import _ from "lodash";
+import AgendaItem from "./AgendaItem";
 
-const LOCALE = Platform.OS == 'ios' ? NativeModules.SettingsManager.settings.AppleLocale || NativeModules.SettingsManager.settings.AppleLanguages[0] : NativeModules.I18nManager.localeIdentifier;
+export default AgendaComponent = (props) => {
+  const [items, setItems] = useState({});
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [markedDates, setMarkedDates] = useState({});
 
-export default function AgendaComponent(props) {
-  // console.log("PROPS", props);
-  // console.log("PRops.companies: ", props.companies);
-  const [ items, setItems ] = useState( { } );
+  function loadItems(month) {
+//    // TO DO - This function is WAY inefficient, need to sort through fewer arrays...
+    // setIsRefreshing(true);
+    const tempItems = [];
+    let tempMarked = markedDates;
+//    // map through each job, then dates to push job item in between items
+    props.jobs.map((job, index) => {
+      let company = _.find(props.companies, { id: job.companyId });
+      let startDate = Moment(job.dates.date_start.toDate());
+      let endDate = Moment(job.dates.date_end.toDate());
+      let numDays = Math.ceil(
+        Moment.duration(endDate.diff(startDate)).asDays()
+      );
 
-  function loadItems(day) {
-    // console.log("LoadingITems: ", day);
-  // setTimeout(() => {
-  //   for (let i = -15; i < 21; i++) {
-  //     const time = day.timestamp + i * 24 * 60 * 60 * 1000;
-  //     const strTime = timeToString(time);
-  //     if (!items[strTime]) {
-  //       items[strTime] = [];
-  //       const numItems = Math.floor(Math.random() * 2 + 1);
-  //       for (let j = 0; j < numItems; j++) {
-  //         items[strTime].push({
-  //           name: 'Item for ' + strTime + ' #' + j,
-  //           height: Math.max(50, Math.floor(Math.random() * 150)),
-  //           id: Math.floor(Math.random() * 10),
-  //         });
-  //       }
-  //     }
-  //   }
-  //   const newItems = {};
-  //   Object.keys(items).forEach(key => { newItems[key] = items[key]; });
-  //   setItems(newItems);
-  setTimeout(() => {
-    // console.log("Props.jobs: ", props.jobs);
-    props.jobs.map((job, i) => {
-      const time = day.timestamp + i * 24 * 60 * 60 * 1000;
-      const strTime = timeToString(time);
-      if (!items[strTime]) {
-        items[strTime] = [];
-        const numItems = props.jobs.length;
-        for (let j = 0; j < numItems; j++) {
+//      // in each job, set a recurrence based on job.dates.days
+      let recurrence = Moment.recur({
+        start: Moment(startDate).format("YYYY-MM-DD"),
+        end: Moment(endDate).format("YYYY-MM-DD"),
+      })
+        .every(job.dates.days)
+        .daysOfWeek();
+      // console.log("Recurrence: ", recurrence)
+
+      //load dates based on recurrence dates
+      const dates = recurrence.next(numDays, "YYYY-MM-DD");
+      // console.log("DATES: ", dates);
+
+//      // iterate over each date, checking IF items[date] doesn't already include the job item, otherwise push into items
+
+      for (let i = -90; i <= 90; i++) {
+        const time = month.timestamp + i * 24 * 60 * 60 * 1000;
+        const strTime = timeToString(time);
+        if (!items[strTime] && !_.includes(dates, strTime)) {
+//          //No current item, and not a date in recurrence range
+          // console.log("First: ", !items[strTime] && !_.includes(dates, strTime), job.id, strTime, i)
+          items[strTime] = [];
+        } else if (
+          !items[strTime] &&
+          _.includes(dates, strTime) &&
+          !_.some(items[strTime], { id: job.id })
+        ) {
+//         //No current item, but date in recurrence range
+          // console.log("Second, ", !items[strTime] && _.includes(dates, strTime) && !_.some(items[strTime], { id: job.id}), job.id, strTime);
+
+          items[strTime] = [
+            {
+              name: "Item for " + strTime,
+              height: 20,
+              id: job.id,
+              job: {
+                id: job.id,
+                dates: job.dates,
+                title: job.title,
+              },
+              company: {
+                id: company.id,
+                logo: company.logo,
+                name: company.name,
+              },
+            },
+          ];
+          if (!tempMarked[strTime]) {
+            tempMarked[strTime] = {};
+          }
+          tempMarked[strTime] = {
+            marked: true,
+            dotColor: "#50cebb",
+            textColor: "black",
+          };
+        } else if (
+          items[strTime] &&
+          _.includes(dates, strTime) &&
+          !_.some(items[strTime], { id: job.id })
+        ) {
+//          //current item already, date also in recurrence range
+          console.log(
+            "Third, ",
+            items[strTime] &&
+              _.includes(dates, strTime) &&
+              !_.some(items[strTime], { id: job.id }),
+            job.id,
+            strTime
+          );
+          console.log(items[strTime]);
           items[strTime].push({
-            name: 'Item for ' + strTime + ' #' + j,
+            name: "Item for " + strTime,
             height: 20,
             id: job.id,
-            job: job,
-            company: _.find(props.companies, {id: job.companyId})
+            job: {
+              id: job.id,
+              dates: job.dates,
+              title: job.title,
+            },
+            company: {
+              id: company.id,
+              logo: company.logo,
+              name: company.name,
+            },
           });
+          if (!tempMarked[strTime]) {
+            tempMarked[strTime] = {};
+          }
+          tempMarked[strTime] = {
+            marked: true,
+            dotColor: "#50cebb",
+            textColor: "black",
+          };
         }
+
       }
-    })
+    });
+
+    //console.log("Setting Items!");
+
     const newItems = {};
-    Object.keys(items).forEach(key => { newItems[key] = items[key]; });
+    const newMarked = {};
+
+    Object.keys(items).forEach((key) => {
+      newItems[key] = items[key];
+    });
+    Object.keys(tempMarked).forEach((key) => {
+      newMarked[key] = tempMarked[key];
+    });
+    // console.log("New items: ", newItems);
     setItems(newItems);
-  }, 1000);
-}
-
-function renderItem(item) {
-  const company = item.company;
-  const job = item.job;
-
-  const displayTime = (time) => {
-    Moment.locale(LOCALE);
-    console.log("TIME: ", time);
-    // const locale = _.toLower(_.replace(LOCALE, '_', '-'));
-    // const locale = LOCALE ? LOCALE : 'en-us'
-    // console.log(`LOCALE:${LOCALE},${locale}`);
-    let timeValue = Moment(time).format('h:mm A');
-    // console.log("COnversion 1: ", timeValue);
-    // timeValue = timeValue.match(/^([0-9]{1,2}:[0-9]{2}).*( AM| PM)$/);
-    console.log("TimeValue: ", timeValue);
-    return (timeValue);
+    setMarkedDates(newMarked);
+    setIsRefreshing(false);
   }
-  return (
-    <View style={ styles.item }>
-      <View style={ styles.eventItemTop }>
-        <Text style={{ fontWeight: 'bold'}}>{displayTime(job.dates.time_start.seconds)} - {displayTime(job.dates.time_end.seconds)}</Text>
-        <Avatar.Image size={28} source={{ uri: company.logo }} />
-      </View>
-      <View style={ styles.eventTitleContainer }>
-        <View style={{ flexDirection: 'row', alignItems: 'center'}}>
-          <MaterialCommunityIcons name="human-greeting" size={18} style={{ marginRight: 5, }}/>
-          <Text> { job.title } </Text>
-        </View>
-        <View style={{ flexDirection: 'row', alignItems: 'center'}}>
-          <Text>@{company.name}</Text>
-        </View>
-      </View>
-      <View style={ styles.buttonContainer }>
-        <Button icon="phone" color='rgba(40,140,31,1)' onPress={() => console.log("Pressed Phone")} mode='contained' style={[ styles.eventButton, { borderTopLeftRadius: 5, borderBottomLeftRadius: 5, } ]} labelStyle={ styles.eventButtonInner }   />
-        <Button icon="message-text-outline" color='rgba(242,156,85,1)' onPress={() => console.log("Pressed Message")} mode='contained' style={ styles.eventButton } labelStyle={ styles.eventButtonInner } />
-        <Button icon="information-outline" color='rgba(77,177,249,1)' onPress={() => console.log("Pressed Info")} mode='contained' style={ styles.eventButton } labelStyle={ styles.eventButtonInner } />
-        <Button icon="map-outline" color='rgba(85,116,242,1)' onPress={() => console.log("Pressed Navigation")} mode='contained' style={ styles.eventButton } labelStyle={ styles.eventButtonInner }  />
-        <Button icon="cancel" color='rgba(221,104,46,1)' onPress={() => console.log("Pressed Phone")} mode='contained' style={[styles.eventButton, { borderTopRightRadius: 5, borderBottomRightRadius: 5, } ]} labelStyle={ styles.eventButtonInner }   />
-      </View>
-    </View>
 
-  );
-}
+  function renderItem(item) {
+    console.log("Rendering Items");
+    return <AgendaItem item={item} />;
+  }
 
-function renderEmptyDate() {
-  return (
-    <View style={styles.emptyDate}>
-      <Text>This is empty date!</Text>
-    </View>
-  );
-}
+  function renderEmptyDate() {
+    // return (
+    //   <View style={styles.emptyDate}>
+    //     <Text style={ styles.emptyText }>No jobs today, feel free to take a break :)</Text>
+    //   </View>
+    // );
+  }
 
-function rowHasChanged(r1, r2) {
-  return r1.name !== r2.name;
-}
-
-function timeToString(time) {
-  const date = new Date(time);
-  return date.toISOString().split('T')[0];
-}
-function dateNow(date){
-  var dateString = new Date(date.getTime() - (date.getTimezoneOffset() * 60000 ))
-                    .toISOString()
-                    .split("T")[0];
-    // console.log("DATESTRING: ", dateString);
-  return(dateString);
-}
-function onDayPress(day){
-  console.log("PRESSED THE THING:::" ,day);
-  props.onDayPress(day);
-}
-const job1 = {key:'job1', color: 'blue', selectedDotColor: 'blue'};
-const job2 = {key:'job2', color: 'green'};
+  function timeToString(time) {
+    const date = new Date(time);
+    return date.toISOString().split("T")[0];
+  }
+  function onDayPress(day) {
+    console.log("PRESSED THE THING:::", day);
+    props.onDayPress(day);
+  }
+  const job1 = { key: "job1", color: "blue", selectedDotColor: "blue" };
+  const job2 = { key: "job2", color: "green" };
 
   return (
-    <View style={styles.container}>
-      <Agenda
-        items={items}
-        selected={ dateNow(new Date()) }
-        renderItem={renderItem.bind(this)}
-        renderEmptyDate={renderEmptyDate.bind(this)}
-        rowHasChanged={rowHasChanged.bind(this)}
-        onDayPress={(day)=>{ onDayPress(day) }}
-        hideKnob={props.hideKnob}
-        loadItemsForMonth={loadItems.bind(this)}
-        markedDates={{
-          '2020-07-25': {marked: true, dotColor: '#50cebb', textColor: 'black'},
-          '2020-07-26': {startingDay: true, color: '#50cebb', textColor: 'black'},
-          '2020-07-27': {color: '#70d7c7', textColor: 'black'},
-          '2020-07-28': {color: '#70d7c7', textColor: 'black', marked: true, dotColor: 'black'},
-          '2020-07-29': {color: '#70d7c7', textColor: 'black'},
-          '2020-07-30': {endingDay: true, color: '#50cebb', textColor: 'black'},
-          '2020-07-31': {marked: true, dotColor: 'rgba(218,134,36,1)', textColor: 'black'},
-          '2020-08-01': {marked: true, dotColor: '#50cebb', textColor: 'black'},
-          '2020-08-02': {startingDay: true, color: '#50cebb', textColor: 'black'},
-          '2020-08-03': {color: '#70d7c7', textColor: 'black'},
-          '2020-08-04': {color: '#70d7c7', textColor: 'black', marked: true, dotColor: 'black'},
-          '2020-08-05': {color: '#70d7c7', textColor: 'black'},
-          '2020-08-06': {endingDay: true, color: '#50cebb', textColor: 'black'},
-          '2020-08-07': {marked: true, dotColor: 'rgba(218,134,36,1)', textColor: 'black'},
-        }}
-        markingType={'period'}
+    <Agenda
+      items={items}
+      selected={new Date()}
+      renderItem={(item) => renderItem(item)}
+      renderEmptyDate={(date) => renderEmptyDate(date)}
+      rowHasChanged={(r1, r2) => {
+        return r1.name !== r2.name;
+      }}
+      onDayPress={(day) => {
+        onDayPress(day);
+      }}
+      // hideKnob={props.hideKnob}
+      loadItemsForMonth={(month) => loadItems(month)}
+      refreshing={isRefreshing}
+      markedDates={markedDates}
+      onDayChange={(day) => {
+        console.log("day changed", day);
+      }}
+      markingType={"period"}
+      // Specify what should be rendered instead of ActivityIndicator
+      renderEmptyData={() => {
+        return <Text>No Jobs for this day, pick a marked date! </Text>;
+      }}
       // markedDates={{
       //    '2017-05-08': {textColor: '#43515c'},
       //    '2017-05-09': {textColor: '#43515c'},
@@ -177,62 +213,53 @@ const job2 = {key:'job2', color: 'green'};
       // theme={{calendarBackground: 'red', agendaKnobColor: 'green'}}
       //renderDay={(day, item) => (<Text>{day ? day.day: 'item'}</Text>)}
       // hideExtraDays={false}
-      />
-    </View>
+      style={{ flex: 1 }}
+      theme={{
+        backgroundColor: '#ffffff',
+    calendarBackground: '#ffffff',
+    textSectionTitleColor: Colors.textSecondary,
+    textSectionTitleDisabledColor: '#d9e1e8',
+    selectedDayBackgroundColor: '#00adf5',
+    selectedDayTextColor: Colors.primaryLight,
+    todayTextColor: Colors.secondary,
+    dayTextColor: Colors.primaryDark,
+    textDisabledColor: '#d9e1e8',
+    dotColor: '#00adf5',
+    selectedDotColor: Colors.secondaryDark,
+    arrowColor: 'orange',
+    disabledArrowColor: '#d9e1e8',
+    monthTextColor: 'blue',
+    indicatorColor: 'blue',
+    // textDayFontFamily: 'monospace',
+    // textMonthFontFamily: 'monospace',
+    // textDayHeaderFontFamily: 'monospace',
+    textDayFontWeight: '300',
+    textMonthFontWeight: 'bold',
+    textDayHeaderFontWeight: '300',
+    textDayFontSize: 16,
+    textMonthFontSize: 16,
+    textDayHeaderFontSize: 14,
+        agendaDayTextColor: Colors.primaryLight,
+        agendaDayNumColor: Colors.primaryDark,
+        agendaTodayColor: Colors.secondary,
+        agendaKnobColor: Colors.primary,
+        
+      }}
+    />
   );
-}
-
-
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  eventItemContainer: {
-  },
-  buttonContainer:{
-    flexDirection: 'row',
-    width: '100%',
-    justifyContent: 'center',
-  },
-  eventButton: {
-    flex: 1,
-    borderRadius: 0,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginHorizontal: 1,
-    width: '16%',
-    paddingLeft: 5,
-  },
-  eventButtonInner: {
-    alignSelf: 'center',
-    marginLeft: '15%',
-    fontSize: 22,
-    color: 'white',
-  },
-  eventItemTop:{
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  eventTitleContainer:{
-    width: '100%',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    padding: 12,
-  },
-  item: {
-    backgroundColor: 'white',
-    flex: 1,
-    borderRadius: 5,
-    padding: 10,
-    marginRight: 10,
-    marginVertical: 10
-  },
+
   emptyDate: {
     height: 15,
-    flex:1,
-    paddingTop: 30
+    flex: 1,
+    paddingTop: 30,
   },
-
+  emptyText: {
+    color: Colors.textSecondary
+  }
 });

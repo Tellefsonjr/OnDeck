@@ -74,7 +74,7 @@ const JobListItem: React.FC<Props> = (props) => {
                   </AnimatedCircularProgress>
                   :
                   <View style={{ flexDirection: "row", alignItems: "center", marginRight: 10, }}>
-                    { job.approvedApplicant ?
+                    { job.isFilled ?
                       <Avatar.Image
                         size={40}
                         source={{ uri: job.approvedApplicant.avatar}}

@@ -32,10 +32,12 @@ export default {
   primary: '#0d46a0',
   primaryDark: '#002071',
   primaryLight: '#5471d2',
-  text: 'rgba(60,60,60,1)',
+  text: 'rgba(40,40,40,1)',
+  textSecondary: 'rgba(60,60,60,1)',
   textDark: 'rgba(38,38,38,1)',
   textLight: 'rgba(210,210,210,1)',
   secondary: '#4db6ac',
   secondaryDark: '#00867d',
   secondaryLight: '#82e9de',
+  secondaryLightest: '#d5edeb',
 };
