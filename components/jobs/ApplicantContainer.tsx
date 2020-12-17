@@ -10,7 +10,8 @@ import _ from "lodash";
 import ApplicantCardItem from "./ApplicantCardItem";
 import { IconButton } from "react-native-paper";
 import * as jobActions from '../../store/actions/jobs';
-
+import Animated, { interpolate } from 'react-native-reanimated';
+import {usePanGestureHandler, withSpring, useTransition } from  "react-native-redash/lib/module/v1";
 export interface Props {
     key: string;
     job?: object;
@@ -19,21 +20,29 @@ const {height, width} = Dimensions.get('window');
 
 const ApplicantContainer = (props) => {
     const [ applicants, setApplicants ] = useState(props.applicants);
+    const [ currentIndex, setCurrentIndex ] = useState(0);
+    const [ currentApplicant, setCurrentApplicant ] = useState(applicants ? applicants[currentIndex] : null);
+    const aIndex = useTransition(currentIndex);
     const declineApplicant = (applicant) => {
       console.log("Declining Applicant: ", applicant.id );
       props.decline(props.job, applicant.id);
-      setApplicants(_.without(applicants, applicant)
-      )
+      setApplicants(_.without(applicants, applicant));
+      setCurrentIndex(currentIndex + 1);
+      setCurrentApplicant(applicants[currentIndex+1]);
     };
-    const skipApplicant = (applicant) => {
-      console.log("Skipping Applicant: ", applicant.id );
-      // let declinedIndex = _.indexOf(props.applicants, applicant.id);
-      let updatedApplicants = applicants;
-      updatedApplicants = _.without(updatedApplicants, applicant);
-      console.log("YOOOOO: ", updatedApplicants);
-      setApplicants( _.concat( updatedApplicants, applicant));
-      console.log("AFter: ", applicants);
-      
+    const skipApplicant = () => {
+      let nextIndex = currentIndex + 1;
+      if( nextIndex > applicants.length - 1){
+        setCurrentIndex(0);
+        setCurrentApplicant(applicants[0]);
+      } else {
+        setCurrentIndex(currentIndex + 1);
+        setCurrentApplicant(applicants[currentIndex+1])
+      }
+
+      // console.log("Applicantant. id:", applicant.id);
+      // let updatedApplicants = _.without(applicants, applicant);
+      // setApplicants( _.concat( updatedApplicants, applicant));
     };
     const approveApplicant = (applicant) => {
       console.log("Approving Applicant: ", applicant.id );
@@ -45,18 +54,30 @@ const ApplicantContainer = (props) => {
       props.approveJob(props.job, approvedApplicant)
       props.onApprove();
     };
+
+    const renderApplicant = () => {
+      if(currentApplicant){
+        return (
+          <ApplicantCardItem key={currentApplicant.id} user={currentApplicant}
+          decline={ declineApplicant }
+          skip={ skipApplicant }
+          approve={ approveApplicant }
+          />
+        )
+      } else {
+        return null
+      }
+    }
+
+
     return (
     <View style={styles.container}>
       <View style={ styles.applicantContainer }>
-      { applicants.map((applicant, index) => {
-          return ( 
-            <ApplicantCardItem key={index} user={applicant} index={-index}
-              decline={ declineApplicant }
-              skip={ skipApplicant }
-              approve={ approveApplicant }
-            /> 
-          )
-        })}
+        { applicants ?
+          renderApplicant()
+          :
+          null
+        }
       </View>
 
     </View>

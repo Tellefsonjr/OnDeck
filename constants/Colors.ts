@@ -39,4 +39,5 @@ export default {
   secondary: '#4db6ac',
   secondaryDark: '#00867d',
   secondaryLight: '#82e9de',
+  secondaryLightest: '#d5edeb',
 };
